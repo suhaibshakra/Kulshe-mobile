@@ -168,6 +168,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                       shrinkWrap: true,
                       itemCount: 1,
                       itemBuilder: (BuildContext context, index) {
+                        // print(_adForm[0]['responseData']['attributes'][0]['name']);
                         return Container(
                           decoration: BoxDecoration(
                               color: Colors.grey.shade300,
@@ -191,8 +192,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                       ),
                                       hint: Text(
                                         cityID.toString(),
-                                        style: TextStyle(
-                                            fontSize: 18, fontFamily: 'Anton'),
+                                        style: appStyle(fontSize: 18),
                                       ),
                                       onChanged: (String value) {
                                         setState(() {
@@ -634,7 +634,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   btnColor: Colors.white),
             if (_options.length != 0)
 
-                _buildSelectRadioCheckBox(_type, _options)
+                _buildSelectRadioCheckBox(_type, _options,_listAttributes[index])
 
 
           ],
@@ -683,7 +683,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   }
 
   int groupValue = -1;
-  Container _buildSelectRadioCheckBox(_type, _options) {
+  Container _buildSelectRadioCheckBox(_type, _options,var list) {
     return Container(
       child: ListView.builder(
         shrinkWrap: true,
@@ -692,9 +692,10 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
         itemBuilder: (context, index) {
           // print('OPTIONS: $_options');
           List options = _options.toList();
-          print('OPTIONS: $options');
+          // print('OPTIONS: $options');
           int id = index;
-          print('ID: $id');
+
+          // print('ID: $id');
           return Column(
             children: [
               // for (int i=0;i<_options.length;i++)
@@ -723,13 +724,17 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
               //      ),
               //    ],
               //  ),
+
                 Row(
                   children: <Widget>[
-                    Radio(
+                    Radio<dynamic>(
                       focusColor: Colors.white,
-                      groupValue: _selection,
-                      onChanged: selectTime,
-                      value: id,
+                      groupValue: list['name'],
+                      onChanged: (dynamic newValue) {
+                        setState(() {
+                          list['name'] = newValue;
+                        });},
+                      value: _options[index]['id'],
                     ),
                     Text(
                       _options[index]['label'][_lang],
@@ -850,11 +855,12 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
     );
   }
 
-  int _selection = 0;
+  int _selectiona = 0;
+  int _selectionb = 0;
 
-  selectTime(int timeSelected) {
+  selectTime(dynamic timeSelected) {
     setState(() {
-      _selection = timeSelected;
+      _selectiona = timeSelected;
     });
   }
 }

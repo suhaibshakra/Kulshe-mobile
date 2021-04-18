@@ -88,12 +88,14 @@ abstract class Strings {
   //contact
   String callUs;
   String callAdv;
+  String callAdvPrice;
 
   //Ads
   String adDetails;
   String warning;
   String active;
   String edit;
+  String free;
 
 
   //Filter
@@ -194,12 +196,14 @@ class EnglishString extends Strings {
     //contact
     callUs = "Call Us";
     callAdv = "Communicate with the advertiser";
+    callAdvPrice = "Communicate advertiser for details";
 
     //Ads
     adDetails = "Ad Details";
     warning = "Warning against theft and fraud";
     active = "Active";
     edit = "Edit";
+    free = "Free";
 
     //Filter
     fPrice = 'Price';
@@ -299,12 +303,14 @@ class ArabicString extends Strings {
     //contact
     callUs = "تواصل معنا";
     callAdv = "تواصل مع المعلن";
+    callAdvPrice = "تواصل مع المعلن لمعرفة السعر";
 
     //Ads
     adDetails = "تفاصيل الإعلان";
     warning = "تحذير من الإحتيال و السكام";
     active = "تنشيط";
     edit = "تعديل";
+    free = "مجانا";
 
     //Filter
     fPrice = 'السعر';

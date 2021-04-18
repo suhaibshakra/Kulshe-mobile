@@ -54,9 +54,9 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
   int offset = 0;
   int limit = 10;
   String countOfAds;
+  double countOfPager;
   String sorting;
   String lang;
-  double countOfPager;
   List _currentCountry;
   List _countryData;
 
@@ -100,66 +100,19 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
     });
     // print('ID : ${widget.sectionId}');
     // print('SUB ID : ${widget.subSectionId}');
-    PublicAdsServicesNew.getPublicAdsData(
-            sectionId: widget.sectionId,
-            subSectionId: widget.subSectionId,
-            txt: widget.txt,
-            offset: '$offset',
-            countryId: 110,
-            hasImage: 0,
-            sort: sorting,
-            hasPrice: '',
-            limit: '$limit')
-        .then((value) {
-      setState(() {
-        print('-------------------------------------------------');
-        print('${widget.txt}');
-        print('-------------------------------------------------');
-        _publicAd = value[0]['responseData']['ads'];
-        if (widget.isFav)
-          setState(() {
-            _publicAd = _publicAd
-                .where((element) => element['is_favorite_ad'] == true)
-                .toList();
-          });
-        countOfAds = (value[0]['responseData']['total']).toString();
-        // print('count of ads : ${countOfAds.toString()}');
-        countOfPager = (double.parse(countOfAds) / 10);
-        countOfPager = countOfPager.ceil().toDouble();
-        // print("CEIL : " + countOfPager.toString());
-        // print('ADS Data: ${_publicAd}');
-        _loading = false;
-        // print('_publicAd : ${_publicAd.length}');
-      });
-    });
-  }
-
-  void toggleCheckbox(bool value) {
-    if (isChecked == false) {
-      // Put your code here which you want to execute on CheckBox Checked event.
-      PublicAdsServicesNew.getPublicAdsData(
-              sectionId: widget.sectionId,
-              subSectionId: widget.subSectionId,
-              txt: widget.txt,
-              offset: '$offset',
-              countryId: 110,
-              hasImage: 1,
-              sort: sorting,
-              hasPrice: '',
-              limit: '$limit')
+    if (widget.isFav)
+      FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
           .then((value) {
         setState(() {
           _publicAd = value[0]['responseData']['ads'];
           countOfAds = (value[0]['responseData']['total']).toString();
-          print('count of ads : ${countOfAds.toString()}');
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
           _loading = false;
         });
       });
-      setState(() {
-        isChecked = true;
-      });
-    } else {
-      // Put your code here which you want to execute on CheckBox Un-Checked event.
+
+    if (!widget.isFav)
       PublicAdsServicesNew.getPublicAdsData(
               sectionId: widget.sectionId,
               subSectionId: widget.subSectionId,
@@ -172,12 +125,88 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
               limit: '$limit')
           .then((value) {
         setState(() {
+          print('-------------------------------------------------');
+          print('${widget.txt}');
+          print('-------------------------------------------------');
           _publicAd = value[0]['responseData']['ads'];
           countOfAds = (value[0]['responseData']['total']).toString();
-          print('count of ads : ${countOfAds.toString()}');
+          // print('count of ads : ${countOfAds.toString()}');
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
+          // print("CEIL : " + countOfPager.toString());
+          // print('ADS Data: ${_publicAd}');
           _loading = false;
+          // print('_publicAd : ${_publicAd.length}');
         });
       });
+  }
+
+  void toggleCheckbox(bool value) {
+    if (isChecked == false) {
+      // Put your code here which you want to execute on CheckBox Checked event.
+      if (widget.isFav)
+        FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            _loading = false;
+          });
+        });
+      if (!widget.isFav)
+        PublicAdsServicesNew.getPublicAdsData(
+                sectionId: widget.sectionId,
+                subSectionId: widget.subSectionId,
+                txt: widget.txt,
+                offset: '$offset',
+                countryId: 110,
+                hasImage: 1,
+                sort: sorting,
+                hasPrice: '',
+                limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            _loading = false;
+          });
+        });
+      setState(() {
+        isChecked = true;
+      });
+    } else {
+      // Put your code here which you want to execute on CheckBox Un-Checked event.
+      if (widget.isFav)
+        FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            _loading = false;
+          });
+        });
+      if (!widget.isFav)
+        PublicAdsServicesNew.getPublicAdsData(
+                sectionId: widget.sectionId,
+                subSectionId: widget.subSectionId,
+                txt: widget.txt,
+                offset: '$offset',
+                countryId: 110,
+                hasImage: 0,
+                sort: sorting,
+                hasPrice: '',
+                limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            _loading = false;
+          });
+        });
       setState(() {
         isChecked = false;
       });
@@ -234,14 +263,16 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
+                                Text(countOfPager.toString()),
                                 OutlineButton(
                                   onPressed: goToPrevious,
-                                  child: Text("<"),
+                                  child: Text("< previous"),
                                 ),
                                 OutlineButton(
                                   onPressed: goToNext,
-                                  child: Text(">"),
+                                  child: Text(" next >"),
                                 ),
+                                Text(countOfAds.toString()),
                               ],
                             ),
                           ],
@@ -524,8 +555,8 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
             var _data = _publicAd[index];
 
             // print(_data['user_contact'].toString() +'---------------'+_data['id'].toString());
-            print(
-                'ISFAV ${_data['is_favorite_ad']} , ${_data['id']} , ${_data['slug']} ');
+            // print(
+            //     'ISFAV ${_data['is_favorite_ad']} , ${_data['id']} , ${_data['slug']} ');
 
             return InkWell(
               onTap: () {
@@ -711,9 +742,10 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                               size: 25,
                                               hasDecoration: false),
                                           buildTxt(
-                                              txt: TimeAgo.timeAgoSinceDate(
-                                                      _data['created_at'])
-                                                  .toString(),
+                                              txt:
+                                                  // TimeAgo.timeAgoSinceDate
+                                                  (_data['created_at'])
+                                                      .toString(),
                                               txtColor: Colors.black54)
                                         ],
                                       ),
@@ -726,7 +758,8 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    if (_data['show_contact'] != false)
+                                    if (_data['show_contact'] != false &&
+                                        _data['user_contact'] != null)
                                       CircleAvatar(
                                         radius: 20,
                                         backgroundImage: _data['user_contact']
@@ -775,7 +808,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                 ),
                               ),
                               if ((_data['has_price'] &&
-                                      _data['currency'] != null) &&
+                                      _data['currency'] != null) && _data['is_free'] == false&&
                                   _data['price'] != 0)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -792,14 +825,17 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     ),
                                   ),
                                 ),
-                              if (_data['has_price'] && _data['price'] == 0)
+                              // if (_data['has_price']==flase && _data['price'] == 0)
+                              //   Text(""),
+
+                                if(_data['is_free'])
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16),
                                   child: Container(
                                     width: double.infinity,
                                     child: Text(
-                                      _strController.callUs,
+                                      _strController.free,
                                       style: appStyle(
                                           fontSize: 16,
                                           color: AppColors.greenColor),
@@ -859,7 +895,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               Container(
-                width: MediaQuery.of(context).size.width*0.3,
+                width: MediaQuery.of(context).size.width * 0.3,
                 color: AppColors.whiteColor,
                 child: Row(
                   children: [
@@ -880,7 +916,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               Container(
-                width: MediaQuery.of(context).size.width*0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
                 color: AppColors.whiteColor,
                 child: Container(
                   decoration: BoxDecoration(
@@ -924,6 +960,18 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                         _strController.priceLessToHigh)
                                     ? "priceLessToHigh"
                                     : "priceHighToLess";
+                        if(widget.isFav)
+                            FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+                                .then((value) {
+                              setState(() {
+                                _publicAd = value[0]['responseData']['ads'];
+                                countOfAds =
+                                    (value[0]['responseData']['total']).toString();
+                                print('count of ads : ${countOfAds.toString()}');
+                                _loading = false;
+                              });
+                            });
+                        if(!widget.isFav)
                         PublicAdsServicesNew.getPublicAdsData(
                                 sectionId: widget.sectionId,
                                 subSectionId: widget.subSectionId,
@@ -949,7 +997,6 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                   ),
                 ),
               ),
-
             ],
           ),
         ],
@@ -971,9 +1018,9 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: buildTxt(
-                  fontSize: 14,
+                  fontSize: 12,
                   txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   txt: "${_currentCountry[0]['label'][lang]}",
                   textAlign: TextAlign.center),
             ),
@@ -987,9 +1034,9 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: buildTxt(
-                  fontSize: 14,
+                  fontSize: 12,
                   txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   txt: "${_currentCountry[0]['cities'][0]['label']['ar']}",
                   textAlign: TextAlign.center),
             ),
@@ -1003,9 +1050,11 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: buildTxt(
-                  fontSize: 14,
+                  fontSize: 12,
+                  maxLine: 1,
                   txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w700,
+                  overflow: TextOverflow.ellipsis,
+                  fontWeight: FontWeight.w500,
                   txt: "${widget.section}",
                   textAlign: TextAlign.center),
             ),
@@ -1019,9 +1068,10 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: buildTxt(
-                  fontSize: 14,
+                  fontSize: 12,
+                  maxLine: 1,
                   txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w500,
                   txt: "${widget.subSection}",
                   textAlign: TextAlign.center),
             ),
@@ -1033,11 +1083,29 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
 
   goToPrevious() {
     setState(() {
+      _loading = true;
+      if (widget.isFav)
+        FavoriteAdsServices.getFavData(offset: '${offset >= 10 && offset != 0 ? offset -= 10 : offset}', limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            countOfPager = (double.parse(countOfAds) / 10);
+            countOfPager = countOfPager.ceil().toDouble();
+            print("CEIL : " + countOfPager.toString());
+            print('OFFSET = $offset');
+            // print('ADS Data: ${_publicAd}');
+            _loading = false;
+            // print('_publicAd : ${_publicAd.length}');
+          });
+        });
+      if(!widget.isFav)
       PublicAdsServicesNew.getPublicAdsData(
               sectionId: widget.sectionId,
               subSectionId: widget.subSectionId,
               txt: widget.txt,
-              offset: '${offset > 11 && offset != 0 ? offset - 10 : offset}',
+              offset: '${offset >= 10 && offset != 0 ? offset -= 10 : offset}',
               countryId: 110,
               hasImage: isChecked ? 1 : 0,
               hasPrice: '',
@@ -1062,12 +1130,30 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
 
   goToNext() {
     setState(() {
+      _loading = true;
+      if (widget.isFav)
+        FavoriteAdsServices.getFavData(offset: '${int.parse(countOfAds) > (offset + 10) ? offset += 10 : offset}', limit: '$limit')
+            .then((value) {
+          setState(() {
+            _publicAd = value[0]['responseData']['ads'];
+            countOfAds = (value[0]['responseData']['total']).toString();
+            print('count of ads : ${countOfAds.toString()}');
+            countOfPager = (double.parse(countOfAds) / 10);
+            countOfPager = countOfPager.ceil().toDouble();
+            print("CEIL : " + countOfPager.toString());
+            print('OFFSET = $offset');
+            // print('ADS Data: ${_publicAd}');
+            _loading = false;
+            // print('_publicAd : ${_publicAd.length}');
+          });
+        });
+      if(!widget.isFav)
       PublicAdsServicesNew.getPublicAdsData(
               sectionId: widget.sectionId,
               subSectionId: widget.subSectionId,
               txt: widget.txt,
               offset:
-                  '${int.parse(countOfAds) > (offset + 9) ? offset + 10 : offset}',
+                  '${int.parse(countOfAds) > (offset + 10) ? offset += 10 : offset}',
               countryId: 110,
               hasImage: isChecked ? 1 : 0,
               hasPrice: '',
@@ -1091,34 +1177,34 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
   }
 }
 
-class TimeAgo {
-  static String timeAgoSinceDate(String dateString,
-      {bool numericDates = true}) {
-    DateTime notificationDate =
-        DateFormat("yyyy-dd-MM\Thh:mm:sssssssssssssss\Z").parse(dateString);
-    final date2 = DateTime.now();
-    final difference = date2.difference(notificationDate);
-
-    if (difference.inDays > 8) {
-      return dateString;
-    } else if ((difference.inDays / 7).floor() >= 1) {
-      return (numericDates) ? '1 week ago' : 'Last week';
-    } else if (difference.inDays >= 2) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inDays >= 1) {
-      return (numericDates) ? '1 day ago' : 'Yesterday';
-    } else if (difference.inHours >= 2) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inHours >= 1) {
-      return (numericDates) ? '1 hour ago' : 'An hour ago';
-    } else if (difference.inMinutes >= 2) {
-      return '${difference.inMinutes} minutes ago';
-    } else if (difference.inMinutes >= 1) {
-      return (numericDates) ? '1 minute ago' : 'A minute ago';
-    } else if (difference.inSeconds >= 3) {
-      return '${difference.inSeconds} seconds ago';
-    } else {
-      return 'Just now';
-    }
-  }
-}
+// class TimeAgo {
+//   static String timeAgoSinceDate(String dateString,
+//       {bool numericDates = true}) {
+//     DateTime notificationDate =
+//         DateFormat("yyyy-dd-MM\Thh:mm:sssssssssssssss\Z").parse(dateString);
+//     final date2 = DateTime.now();
+//     final difference = date2.difference(notificationDate);
+//
+//     if (difference.inDays > 8) {
+//       return dateString;
+//     } else if ((difference.inDays / 7).floor() >= 1) {
+//       return (numericDates) ? '1 week ago' : 'Last week';
+//     } else if (difference.inDays >= 2) {
+//       return '${difference.inDays} days ago';
+//     } else if (difference.inDays >= 1) {
+//       return (numericDates) ? '1 day ago' : 'Yesterday';
+//     } else if (difference.inHours >= 2) {
+//       return '${difference.inHours} hours ago';
+//     } else if (difference.inHours >= 1) {
+//       return (numericDates) ? '1 hour ago' : 'An hour ago';
+//     } else if (difference.inMinutes >= 2) {
+//       return '${difference.inMinutes} minutes ago';
+//     } else if (difference.inMinutes >= 1) {
+//       return (numericDates) ? '1 minute ago' : 'A minute ago';
+//     } else if (difference.inSeconds >= 3) {
+//       return '${difference.inSeconds} seconds ago';
+//     } else {
+//       return 'Just now';
+//     }
+//   }
+// }

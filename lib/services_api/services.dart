@@ -55,7 +55,7 @@ class MyAdsServicesNew {
 
     try {
       final response = await http.get(
-          'https://api.kulshe.nurdevops.com/api/v1/user/classifieds?status=$status&limit=&offset=',
+          'https://api.kulshe.nurdevops.com/api/v1/user/classifieds?status=$status&limit=$limit&offset=$offset',
           headers: {
             'lang': '${_pref.getString('lang')}',
             'Accept': 'application/json',
@@ -181,7 +181,7 @@ class FavoriteAdsServices {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
-          '${baseURL}user/classifieds/favorite?limit=10&offset=0',
+          '${baseURL}user/classifieds/favorite?limit=$limit&offset=$offset',
           headers: {
       'lang': '${_pref.getString('lang')}',
       'Accept': 'application/json',

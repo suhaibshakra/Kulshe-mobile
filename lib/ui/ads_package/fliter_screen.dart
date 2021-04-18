@@ -99,7 +99,7 @@ class _FilterScreenState extends State<FilterScreen> {
                               // List _radioData =
                               return Column(
                                   children: [
-                                    _buildCheckBox(),
+                                    // _buildCheckBox(),
                                   ],
                               );
                             },

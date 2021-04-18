@@ -23,6 +23,10 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
 
+  int offset = 0;
+  int limit = 10;
+  String countOfAds;
+  double countOfPager;
   bool _loading = true;
   bool isList;
   List _privateAd;
@@ -49,10 +53,14 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
     });
     print(widget.actionTitle);
     MyAdsServicesNew.getMyAdsData(
-            offset: '', limit: '', status: widget.actionTitle)
+        offset:
+        '$offset', limit: '$limit', status: widget.actionTitle)
         .then((value) {
       setState(() {
         _privateAd = value[0]['responseData']['ads'];
+        countOfAds = (value[0]['responseData']['total']).toString();
+        countOfPager = (double.parse(countOfAds) / 10);
+        countOfPager = countOfPager.ceil().toDouble();
         print('ADS Length: ${_privateAd.length}');
         _loading = false;
       });
@@ -123,6 +131,19 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                 ),
                                 if (isList) buildListOneItem(mq),
                                 if (isList == false) buildGridList(mq),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    OutlineButton(
+                                      onPressed: goToPrevious,
+                                      child: Text("<"),
+                                    ),
+                                    OutlineButton(
+                                      onPressed: goToNext,
+                                      child: Text(">"),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
@@ -235,8 +256,8 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                               ).then((value) {
                                                 setState(() {
                                                   MyAdsServicesNew.getMyAdsData(
-                                                          offset: '',
-                                                          limit: '',
+                                                          offset: '$offset',
+                                                          limit: '$limit',
                                                           status: widget
                                                               .actionTitle)
                                                       .then((value) {
@@ -499,8 +520,8 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                           ).then((value) {
                                             setState(() {
                                               MyAdsServicesNew.getMyAdsData(
-                                                      offset: '',
-                                                      limit: '',
+                                                      offset: '$offset',
+                                                      limit: '$limit',
                                                       status:
                                                           widget.actionTitle)
                                                   .then((value) {
@@ -675,46 +696,46 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
               ),
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: AppColors.whiteColor,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: AppColors.whiteColor,
-                ),
-                child: DropdownButton<String>(
-                  value: _chosenValue,
-                  //elevation: 5,
-                  style: TextStyle(color: Colors.black),
-                  items: <String>[
-                    _strController.oldToNew,
-                    _strController.newToOld,
-                    _strController.priceHighToLess,
-                    _strController.priceLessToHigh,
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value,style:appStyle(fontSize: 14),),
-                    );
-                  }).toList(),
-                  hint: Text(
-                    _strController.orderBy,
-                    style: appStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w300),
-                  ),
-                  onChanged: (String value) {
-                    setState(() {
-                      _chosenValue = value;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
+          // Expanded(
+          //   flex: 1,
+          //   child: Container(
+          //     color: AppColors.whiteColor,
+          //     child: Container(
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.circular(10),
+          //         color: AppColors.whiteColor,
+          //       ),
+          //       child: DropdownButton<String>(
+          //         value: _chosenValue,
+          //         //elevation: 5,
+          //         style: TextStyle(color: Colors.black),
+          //         items: <String>[
+          //           _strController.oldToNew,
+          //           _strController.newToOld,
+          //           _strController.priceHighToLess,
+          //           _strController.priceLessToHigh,
+          //         ].map<DropdownMenuItem<String>>((String value) {
+          //           return DropdownMenuItem<String>(
+          //             value: value,
+          //             child: Text(value,style:appStyle(fontSize: 14),),
+          //           );
+          //         }).toList(),
+          //         hint: Text(
+          //           _strController.orderBy,
+          //           style: appStyle(
+          //               color: Colors.black,
+          //               fontSize: 14,
+          //               fontWeight: FontWeight.w300),
+          //         ),
+          //         onChanged: (String value) {
+          //           setState(() {
+          //             _chosenValue = value;
+          //           });
+          //         },
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -762,8 +783,8 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                 //     ? pausedColor = Colors.green
                                 //     : pausedColor = Colors.amber;
                                 MyAdsServicesNew.getMyAdsData(
-                                  offset: '',
-                                  limit: '',
+                                  offset: '$offset',
+                                  limit: '$limit',
                                   status: widget.actionTitle,
                                 ).then((value) {
                                   setState(() {
@@ -832,8 +853,8 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                   ).then((value) {
                                     setState(() {
                                       MyAdsServicesNew.getMyAdsData(
-                                        offset: '',
-                                        limit: '',
+                                        offset: '$offset',
+                                        limit: '$limit',
                                         status: widget.actionTitle,
                                       ).then((value) {
                                         setState(() {
@@ -878,8 +899,8 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                               reNewAd(context: ctx, adId: _data['id']).then((value) {
                                 setState(() {
                                   MyAdsServicesNew.getMyAdsData(
-                                    offset: '',
-                                    limit: '',
+                                    offset: '$offset',
+                                    limit: '$limit',
                                     status: widget.actionTitle,
                                   ).then((value) {
                                     setState(() {
@@ -901,5 +922,55 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
         ],
       ),
     );
+  }
+
+  goToPrevious() {
+    setState(() {
+      _loading = true;
+
+      MyAdsServicesNew.getMyAdsData(
+          offset: '${offset >= 10 && offset != 0 ? offset -= 10 : offset}',
+          limit: '$limit',
+        status: widget.actionTitle,)
+          .then((value) {
+        setState(() {
+          _privateAd = value[0]['responseData']['ads'];
+          countOfAds = (value[0]['responseData']['total']).toString();
+          print('count of ads : ${countOfAds.toString()}');
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
+          print("CEIL : " + countOfPager.toString());
+          print('OFFSET = $offset');
+          // print('ADS Data: ${_publicAd}');
+          _loading = false;
+          // print('_publicAd : ${_publicAd.length}');
+        });
+      });
+    });
+  }
+
+  goToNext() {
+    setState(() {
+      _loading = true;
+      MyAdsServicesNew.getMyAdsData(
+          offset:
+          '${int.parse(countOfAds) > (offset + 10) ? offset += 10 : offset}',
+          limit: '$limit',
+          status: widget.actionTitle)
+          .then((value) {
+        setState(() {
+          _privateAd = value[0]['responseData']['ads'];
+          countOfAds = (value[0]['responseData']['total']).toString();
+          print('count of ads : ${countOfAds.toString()}');
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
+          print("CEIL : " + countOfPager.toString());
+          print('OFFSET = $offset');
+          // print('ADS Data: ${_publicAd}');
+          _loading = false;
+          // print('_publicAd : ${_publicAd.length}');
+        });
+      });
+    });
   }
 }
