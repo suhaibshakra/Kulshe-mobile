@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1042813820303",
+    "project_id": "kulshe-app-23f9a",
+    "storage_bucket": "kulshe-app-23f9a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042813820303:android:59a524dbe2ffbed696bffa",
+        "android_client_info": {
+          "package_name": "com.nurinteractive.kulshe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1042813820303-gpnarl06tfhnb3pmtj8nqdsgdiekn4rs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQvIab0oUrt0i7qLnKsYHyO4sB8oL2e-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1042813820303-gpnarl06tfhnb3pmtj8nqdsgdiekn4rs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

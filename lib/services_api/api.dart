@@ -1,0 +1,618 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:kulshe/app_helpers/app_colors.dart';
+import 'package:kulshe/app_helpers/app_widgets.dart';
+import 'package:kulshe/app_helpers/shared_preferences.dart';
+import 'package:kulshe/ui/auth/login.dart';
+import 'package:kulshe/ui/main_bottom_navigation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
+
+const String baseURL = 'https://api.kulshe.nurdevops.com/api/v1/';
+
+const String sections = 'sections';
+var headers = {
+  'lang': 'ar',
+  'Accept': 'application/json'
+};
+var headersUpdate = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+};
+
+// Future getTokens() async {
+//   try {
+//     SharedPreferences _preferences = await SharedPreferences.getInstance();
+//     return _preferences.getString('token');
+//   } catch (e) {
+//     print(e);
+//   }
+// }
+
+Future getSectionsSP(List list, {Function action}) async {
+  SharedPreferences _gp = await SharedPreferences.getInstance();
+  final List sections = jsonDecode(_gp.getString("allSectionsData"));
+  list = sections[0].responseData;
+  if (action != null) action();
+}
+
+// var mainHeaders = {'lang': 'ar', 'Accept': 'application/json'};
+// login method...
+Future<List<Map<String, dynamic>>> loginFunction(
+    {String email, String password, BuildContext context}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var map = Map<String, dynamic>();
+  map['email'] = email;
+  map['password'] = password;
+
+  http.Response response = await http.post('${baseURL}login',
+      body: map,
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+  var decodedData = jsonDecode(response.body);
+
+  if (response.statusCode != 200) {
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  } else {
+    var mainToken = decodedData['token_data']['token'];
+    var refreshToken = decodedData['token_data']['token'];
+    bool isEmailVerified = decodedData['token_data']['is_email_verified'];
+
+    print('TOKEN: \n \n$mainToken \n \n');
+    print('REFRESH TOKEN: \n \n$refreshToken \n \n');
+    print('Is Email Verified:  $isEmailVerified \n \n');
+
+    AppSharedPreferences.saveTokenSP(mainToken.toString());
+    AppSharedPreferences.saveRefreshTokenSP(
+        'bearer ${refreshToken.toString()}');
+    AppSharedPreferences.saveIsEmailVerified(isEmailVerified);
+    AppSharedPreferences.saveCountryId(
+        decodedData['token_data']['country_id'].toString());
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MainBottomNavigation(),
+      ),
+    );
+    // print(response.body);
+    // print(decodedData);
+  }
+  // return decodedData;
+}
+
+//forget password
+Future forgetPasswordEmail(BuildContext context, String bodyData) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var map = Map<String, dynamic>();
+  map['email'] = bodyData;
+
+  http.Response response = await http.post('${baseURL}reset-password',
+      body: map,
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.CENTER);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.CENTER);
+  }
+}
+
+//Delete ad
+Future deleteAd({BuildContext context, @required int adId}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var map = Map<String, dynamic>();
+  http.Response response = await http
+      .post('${baseURL}user/classifieds/$adId/delete', body: map, headers: {
+    'lang': _pref.getString('lang'),
+    'Accept': 'application/json',
+    'token': '${_pref.getString('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+  });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.CENTER);
+  } else {
+    print(decodeData['custom_message']);
+    // viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+    //     Toast.CENTER);
+  }
+}
+
+//Pause ad
+Future pauseAd({
+  @required BuildContext context,
+  @required int adId,
+  @required int pausedStatus,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  http.Response response = await http.get(
+      '${baseURL}user/classifieds/$adId/paused?paused=$pausedStatus',
+      headers: {
+        'lang': _pref.getString('lang'),
+        'Accept': 'application/json',
+        'token': '${_pref.getString('token')}',
+        'Authorization': 'bearer ${_pref.getString('token')}',
+      });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
+//renew ad
+Future reNewAd({
+  @required BuildContext context,
+  @required int adId,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  http.Response response =
+      await http.get('${baseURL}user/classifieds/$adId/renew', headers: {
+    'lang': _pref.getString('lang'),
+    'Accept': 'application/json',
+    'token': '${_pref.getString('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+  });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+//abuse ad
+Future abuseAd({
+  @required BuildContext context,
+  @required int adId,
+  @required int abuseId,
+  String abuseDescription,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  var body = json.encode({
+    'abuseId':abuseId,
+    'abuseDescription':abuseDescription
+  });
+  http.Response response =
+      await http.post('${baseURL}user/classifieds/$adId/abuse', headers: {
+    'lang': _pref.getString('lang'),
+    'Content-Type': 'application/json',
+    'token': '${_pref.getString('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+  },body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
+//favorite
+Future favoriteAd({
+  @required BuildContext context,
+  @required int adId,
+  @required String state,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  http.Response response = await http
+      .get('${baseURL}user/classifieds/$adId/favorite/$state', headers: {
+    'lang': _pref.getString('lang'),
+    'Accept': 'application/json',
+    'token': '${_pref.getString('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+  });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
+Future createAccountFunction({
+  BuildContext context,
+  String nickName,
+  String mobileNumber,
+  String email,
+  String password,
+  String confirmPassword,
+  String countryId,
+  String mobileCountryPhoneCode,
+  String mobileCountryIsoCode,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  print('nickName : $nickName');
+  print('mobileNumber : $mobileNumber');
+  print('email : $email');
+  print('password : $password');
+  print('confirmPassword : $confirmPassword');
+  print('countryId : $countryId');
+  print('mobileCountryPhoneCode : $mobileCountryPhoneCode');
+  print('mobileCountryIsoCode : $mobileCountryIsoCode');
+
+  var map = Map<String, dynamic>();
+  map['email'] = email;
+  map['password'] = password;
+  map['confirmPassword'] = confirmPassword;
+  map['countryId'] = countryId;
+  map['nickName'] = nickName;
+  map['mobileNumber'] = mobileNumber;
+  map['mobileCountryPhoneCode'] = mobileCountryPhoneCode;
+  map['mobileCountryIsoCode'] = mobileCountryIsoCode;
+  map['comeFrom'] = "m";
+  var response = await http.post('${baseURL}register',
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'},
+      body: map);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
+Future updateProfile({
+  String nickName,
+  String fullName,
+  String email,
+  String newPassword,
+  String oldPassword,
+  String confirmPassword,
+  String mobileNumber,
+  String mobileCountryIsoCode,
+  String mobileCountryCode,
+  String additionalPhoneNumber,
+  String additionalPhoneCountryIsoCode,
+  String additionalPhoneCountryCode,
+  String countryId,
+  bool newsLetter,
+  bool promotions,
+  bool showContactInfo,
+  String profileImage,
+  String currentLang,
+  BuildContext context,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  // var map = Map<String, dynamic>();
+  // map['email'] = email;
+  // map['old_password'] = oldPassword;
+  // map['password'] = newPassword;
+  // map['confirm_password'] = confirmPassword;
+  // map['nick_name'] = nickName;
+  // map['full_name'] = fullName;
+  // map['mobile_number'] = mobileNumber;
+  // map['mobile_country_iso_code'] = mobileCountryIsoCode;
+  // map['mobile_country_code'] = mobileCountryCode;
+  // map['additional_phone_number'] = additionalPhoneNumber;
+  // map['additional_phone_country_iso_code'] = additionalPhoneCountryIsoCode;
+  // map['additional_phone_country_code'] = additionalPhoneCountryCode;
+  // map['country_id'] = countryId;
+  // map['newsletter'] = 0 ;
+  // map['promotions'] = 1 ;
+  // map['show_contact_info'] = 1 ;
+  // map['profile_image'] = profileImage;
+  // map['current_lang'] = currentLang;
+
+  // print('DATa DECODED : ${jsonEncode(map)}');
+  var body = json.encode({
+    'email': email,
+    'old_password': oldPassword,
+    'password': newPassword,
+    'confirm_password': confirmPassword,
+    'nick_name': nickName,
+    'full_name': fullName,
+    'mobile_number': mobileNumber,
+    'mobile_country_iso_code': mobileCountryIsoCode,
+    'mobile_country_code': mobileCountryCode,
+    'additional_phone_number': additionalPhoneNumber,
+    'additional_phone_country_iso_code': additionalPhoneCountryIsoCode,
+    'additional_phone_country_code': additionalPhoneCountryCode,
+    'country_id': countryId,
+    'newsletter': newsLetter,
+    'promotions': promotions,
+    'show_contact_info': showContactInfo,
+    'profile_image': profileImage,
+    'current_lang': currentLang,
+  });
+  var response = await http.post('${baseURL}profile',
+      headers: {
+        'token': _pref.getString('token'),
+        'Authorization': "bearer ${_pref.getString('token')}",
+        'lang': _pref.getString('lang'),
+        'Content-Type': 'application/json'
+      },
+      body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    AppSharedPreferences.saveCountryId(countryId);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
+Future addAdFunction({
+  @required BuildContext context,
+  String sectionId,
+  String subSectionId,
+  String cityId,
+  String localityId,
+  String brandId,
+  String subBrandId,
+  String title,
+  String bodyAd,
+  String currencyId,
+  String lat,
+  String lag,
+  double price,
+  int zoom,
+  bool negotiable,
+  bool isFree,
+  bool isDelivery,
+  bool showContact,
+  String video,
+  List adAttributes,
+  List images,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var headers = {
+    'token': '${_pref.get('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+    'lang': '${_pref.getString('lang')}',
+    'Content-Type': 'application/json'
+  };
+
+  var body = json.encode({
+    "section_id": sectionId,
+    "sub_section_id": subSectionId,
+    "country_id": _pref.getString('countryId'),
+    "city_id": cityId,
+    "locality_id": localityId,
+    "brand_id": brandId,
+    "sub_brand_id": subBrandId,
+    "title": title,
+    "body": bodyAd,
+    "currency_id": currencyId,
+    "lat": lat,
+    "lag": lag,
+    "price": price,
+    "zoom": zoom,
+    "negotiable": negotiable,
+    "is_free": isFree,
+    "is_delivery": isDelivery,
+    "show_contact": showContact,
+    "video": "https://www.youtube.com/watch?v=kSDJZTzCl8k",
+    //https://www.youtube.com/watch?v=kSDJZTzCl8k
+    "ad_attributes": adAttributes,
+    "images": images
+  });
+  var response = await http.post(
+      'https://api.kulshe.nurdevops.com/api/v1/classified',
+      headers: headers,
+      body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    print('********************************${decodeData['custom_message']}');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+// async {
+//   SharedPreferences _pref = await SharedPreferences.getInstance();
+//
+//   var headers = {
+//     'token': '${_pref.get('token')}',
+//     'Authorization': 'bearer ${_pref.getString('token')}',
+//     'lang': '${_pref.getString('lang')}',
+//     'Content-Type': 'application/json'
+//   };
+//   var request = http.Request('POST', Uri.parse('https://api.kulshe.nurdevops.com/api/v1/classified'));
+//   request.body =
+//   request.headers.addAll(headers);
+//
+//   http.StreamedResponse response = await request.send();
+//
+//   if (response.statusCode == 200) {
+//     print(await response.stream.bytesToString());
+//     print('Done');
+//   }
+//   else {
+//     print(response.reasonPhrase);
+//     print('Failed');
+//   }
+//
+// }
+
+Future logoutFunction({BuildContext context}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  String token = _pref.getString("token");
+  var map = Map<String, dynamic>();
+  map['token'] = token;
+  map['refresh_token'] = "bearer $token";
+
+  http.Response response = await http.post('${baseURL}logout',
+      body: map,
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+  var decodedData = jsonDecode(response.body);
+
+  if (response.statusCode != 200) {
+    print(response.statusCode);
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  } else {
+    viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+    AppSharedPreferences.saveTokenSP(null);
+    AppSharedPreferences.saveRefreshTokenSP(null);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
+  }
+}
+
+Future maxPrice({BuildContext context,@required int subSectionId}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  http.Response response = await http.get('${baseURL}classified/$subSectionId/max-price',
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json', 'Country-id': _pref.getString('countryId')});
+  var decodedData = jsonDecode(response.body);
+
+  if (response.statusCode != 200) {
+    print(response.statusCode);
+    // viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
+    //     Toast.BOTTOM);
+  } else {
+    // viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
+    //     Toast.BOTTOM);
+    return decodedData;
+  }
+}
+
+Future<bool> emailStatus() async {
+  SharedPreferences preferences = await SharedPreferences.getInstance();
+  return preferences.getBool("isEmailVerified");
+}
+
+//social
+
+Future createAccountFunctionGoogle({
+  String gId,
+  String gToken,
+  String email,
+  String nickName,
+  String userImage,
+  String mobileNumber,
+  String mobileCountryPhoneCode,
+  String mobileCountryIsoCode,
+  String countryId
+ }) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var response = await http.post('${baseURL}login/google',
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'},
+      body: {
+
+      });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    // viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,        Toast.BOTTOM);
+
+  } else {
+    print(decodeData['custom_message']);
+    print(decodeData['custom_code']);
+    print('********************************Wrong');
+
+    // viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
+    //     Toast.BOTTOM);  }
+  }
+}
+
+Future createAccountFunctionFacebook(
+    {String email,
+    String fbId,
+    String fbToken,
+    String nickName,
+    String userImage,
+    String mobileNumber,
+    String mobileCountryPhoneCode,
+    String mobileCountryIsoCode,
+    String countryId}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var response = await http
+      .post('https://api.kulshe.nurdevops.com/api/v1/login/facebook', headers: {
+    'lang': _pref.getString('lang'),
+    'Accept': 'application/json'
+  }, body: {
+    'email': email,
+    'fbId': fbId,
+    'fbToken': fbToken,
+    'nickName': nickName,
+    'comeFrom': 'm',
+    'userImage': userImage,
+    'mobileNumber': mobileNumber,
+    'mobileCountryPhoneCode': '962',
+    'mobileCountryIsoCode': 'JO',
+    'countryId': '110'
+  });
+  //
+  print('email : $email');
+  print('fbId : $fbId');
+  print('fbToken : $fbToken');
+  print('nickName : $nickName');
+  print('userImage : $userImage');
+  print('mobileNumber : $mobileNumber');
+  print('mobileCountryPhoneCode : $mobileCountryPhoneCode');
+  print('mobileCountryIsoCode : $mobileCountryIsoCode');
+  print('countryId : $countryId');
+
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    // _widgets.viewToast('${decodeData['custom_message']}', AppColors.greenColor);
+  } else {
+    print(decodeData['custom_message']);
+    print(decodeData['custom_code']);
+    print('********************************Not Done');
+    return decodeData['custom_code'];//2095
+    // _widgets.viewToast('${decodeData['custom_message']}', AppColors.redColor);
+  }
+}
+
