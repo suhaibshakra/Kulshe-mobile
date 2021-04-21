@@ -51,7 +51,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   DateTime _selectedDate;
 
   var attributes = [];
-  var checkboxDetails = new Map();
+  List<dynamic> checkboxDetails = [];
   void _pickDateDialog() {
     showDatePicker(
             context: context,
@@ -635,8 +635,9 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   btnTxt: "Choose Date",
                   txtColor: Colors.black54,
                   btnColor: Colors.white),
-            if (_options.length != 0)
 
+
+            if (_options.length != 0)
                 _buildSelectRadioCheckBox(_type, _options,_listAttributes[index])
 
 
@@ -693,19 +694,11 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
         physics: ClampingScrollPhysics(),
         itemCount: _type == 'select' ? 1 : _options.length,
         itemBuilder: (context, index) {
+
           if(_type == 'checkbox')
+            print (index);
 
-            // print('$_options////////////////////');
-          if(_type == 'checkbox')
-            checkboxDetails[_options[index]] = false;
 
-          // print('check:${checkboxDetails['id']}');
-
-          // List<Map<String, dynamic>> resultList = checkboxDetails.map((elem) {
-          //   final map = Map<String, dynamic>.from(elem);
-          //   map.addAll({'${_options[index]}': false});
-          //   return map;
-          // }).toList();
 
             return Column(
             children: [
@@ -754,7 +747,8 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   ],
                 ),
               if (_type == 'checkbox')
-                  Container(
+
+              Container(
                     color: AppColors.whiteColor,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -766,14 +760,14 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                           Column(
                             children: <Widget>[
                               new CheckboxListTile(
-                                  value: checkboxDetails[_options[index]['name']],
+                                  value: checkboxDetails.contains(_options[index]['id']),
                                   title: new Text("${_options[index]['label'][_lang]}"),
                                   controlAffinity: ListTileControlAffinity.leading,
-                                  tristate: false,
+                                  tristate: true,
                                   onChanged:(bool val){
                                     setState(() {
-                                      checkboxDetails[_options[index]['name']] = val;
-                                      print(_options[index]['label'][_lang]);
+                                      checkboxDetails.contains(_options[index]['id']) ? checkboxDetails.remove(_options[index]['id']):  checkboxDetails.add(_options[index]['id']);
+
                               });
                                   }
                               )
