@@ -89,7 +89,8 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
             .push(MaterialPageRoute(builder: (context) => AddAdSectionsScreen()));
       },
       tooltip: _strController.addAd,
-      child: Icon(Icons.add),
+      // child: Icon(Icons.add),
+      child: Text(_strController.addAd,style: appStyle(fontWeight: FontWeight.w700,),maxLines: 2,textAlign: TextAlign.center,),
       elevation: 2.0,
     );
   }

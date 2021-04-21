@@ -51,7 +51,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   DateTime _selectedDate;
 
   var attributes = [];
-
+  var checkboxDetails = new Map();
   void _pickDateDialog() {
     showDatePicker(
             context: context,
@@ -115,12 +115,15 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
         // print('_listAttributes  : $_listAttributes');
         // print('_AD  : $_dataCurrency');
         // print('_AD  : $_dataCurrency');
+
       });
     });
     super.initState();
   }
 
-  @override
+  Map<String,bool> _map ;
+
+   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     return Scaffold(
@@ -366,29 +369,29 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                   ],
                                 ),
                               ),
-                            if (_adForm[0]['responseData']['is_free'])
-                              Container(
-                                color: AppColors.whiteColor,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    buildTxt(txt: "مجانا"),
-                                    Transform.scale(
-                                      scale: 1.2,
-                                      child: Checkbox(
-                                        value: _isFree,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _isFree = value;
-                                          });
-                                        },
-                                        activeColor: Colors.green,
-                                        checkColor: Colors.white,
-                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            // if (_adForm[0]['responseData']['is_free'])
+                            //   Container(
+                            //     color: AppColors.whiteColor,
+                            //     child: Row(
+                            //       mainAxisAlignment: MainAxisAlignment.center,
+                            //       children: [
+                            //         buildTxt(txt: "مجانا"),
+                            //         Transform.scale(
+                            //           scale: 1.2,
+                            //           child: Checkbox(
+                            //             value: _isFree,
+                            //             onChanged: (value) {
+                            //               setState(() {
+                            //                 _isFree = value;
+                            //               });
+                            //             },
+                            //             activeColor: Colors.green,
+                            //             checkColor: Colors.white,
+                            //            ),
+                            //         ),
+                            //       ],
+                            //     ),
+                            //   ),
                           ]),
                       SizedBox(
                         height: 20,
@@ -662,7 +665,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
               title: _titleController.text.toString(),
               bodyAd: _addBody.text.toLowerCase(),
               cityId: '8',
-              price:  _priceController.text.toString()!= null?double.parse(_priceController.text.toString()):0,
+              price:  _priceController.text.toString().isNotEmpty?double.parse(_priceController.text.toString()):0,
               localityId: '1',
               lat: '${_selectedLocation.latitude}',
               lag: '${_selectedLocation.longitude}',
@@ -690,13 +693,21 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
         physics: ClampingScrollPhysics(),
         itemCount: _type == 'select' ? 1 : _options.length,
         itemBuilder: (context, index) {
-          // print('OPTIONS: $_options');
-          List options = _options.toList();
-          // print('OPTIONS: $options');
-          int id = index;
+          if(_type == 'checkbox')
 
-          // print('ID: $id');
-          return Column(
+            // print('$_options////////////////////');
+          if(_type == 'checkbox')
+            checkboxDetails[_options[index]] = false;
+
+          // print('check:${checkboxDetails['id']}');
+
+          // List<Map<String, dynamic>> resultList = checkboxDetails.map((elem) {
+          //   final map = Map<String, dynamic>.from(elem);
+          //   map.addAll({'${_options[index]}': false});
+          //   return map;
+          // }).toList();
+
+            return Column(
             children: [
               // for (int i=0;i<_options.length;i++)
               if (_type == 'radio')
@@ -747,26 +758,44 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                     color: AppColors.whiteColor,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          buildTxt(txt: "${_options[index]['label'][_lang]}"),
-                          Transform.scale(
-                            scale: 1.2,
-                            child: Checkbox(
-                              value: _negotiable,
-                              onChanged: (value) {
-                                setState(() {
-                                  _negotiable = value;
-                                });
-                              },
-                              activeColor: Colors.green,
-                              checkColor: Colors.white,
-                              tristate: false,
-                            ),
+                      child:
+                      // Row(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // children: [
+                        //   buildTxt(txt: "${_options[index]['label'][_lang]}"),
+                          Column(
+                            children: <Widget>[
+                              new CheckboxListTile(
+                                  value: checkboxDetails[_options[index]['name']],
+                                  title: new Text("${_options[index]['label'][_lang]}"),
+                                  controlAffinity: ListTileControlAffinity.leading,
+                                  tristate: false,
+                                  onChanged:(bool val){
+                                    setState(() {
+                                      checkboxDetails[_options[index]['name']] = val;
+                                      print(_options[index]['label'][_lang]);
+                              });
+                                  }
+                              )
+                            ],
                           ),
-                        ],
-                      ),
+                        //   Transform.scale(
+                        //     scale: 1.2,
+                        //     child: Checkbox(
+                        //       value: _isChecked = true,
+                        //       onChanged: (val) {
+                        //         setState(() {
+                        //           _isChecked = val;
+                        //
+                        //         });
+                        //       },
+                        //       activeColor: Colors.green,
+                        //       checkColor: Colors.white,
+                        //       tristate: false,
+                        //     ),
+                        //   ),
+                        // ],
+                      // ),
                     ),
                   ),
               if (_type == 'select')
@@ -863,6 +892,14 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
       _selectiona = timeSelected;
     });
   }
+}
+
+class CheckBoxModel{
+  final String title;
+  final bool isChecked;
+
+  CheckBoxModel({this.title,this.isChecked});
+
 }
 
 // class AllData {

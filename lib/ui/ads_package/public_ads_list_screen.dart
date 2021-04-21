@@ -239,20 +239,25 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                         color: AppColors.whiteColor,
                         child: Column(
                           children: [
-                            Container(
-                                padding: EdgeInsets.all(5),
-                                width: double.infinity,
-                                child: buildTxt(
-                                  txt: "${widget.section}",
-                                  fontSize: 18,
-                                  txtColor: Colors.black,
-                                )),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            _buildPath(),
-                            SizedBox(
-                              height: 10,
+                            if(!widget.isFav)
+                              Column(
+                              children: [
+                                Container(
+                                    padding: EdgeInsets.all(5),
+                                    width: double.infinity,
+                                    child: buildTxt(
+                                      txt: "${widget.section}",
+                                      fontSize: 18,
+                                      txtColor: Colors.black,
+                                    )),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                  _buildPath(),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
                             ),
                             buildFilter(),
                             SizedBox(
@@ -370,7 +375,19 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                                     : "add",
                                           ).then((value) {
                                             setState(() {
-                                              PublicAdsServicesNew
+                                              if(widget.isFav)
+                                                FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+                                                    .then((value) {
+                                                  setState(() {
+                                                    _publicAd = value[0]['responseData']['ads'];
+                                                    countOfAds =
+                                                        (value[0]['responseData']['total']).toString();
+                                                    print('count of ads : ${countOfAds.toString()}');
+                                                    _loading = false;
+                                                  });
+                                                });
+                                              if(!widget.isFav)
+                                                PublicAdsServicesNew
                                                       .getPublicAdsData(
                                                           sectionId:
                                                               widget.sectionId,
@@ -634,6 +651,18 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                                   : "add",
                                             ).then((value) {
                                               setState(() {
+                                                  if(widget.isFav)
+                                                    FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+                                                        .then((value) {
+                                                      setState(() {
+                                                        _publicAd = value[0]['responseData']['ads'];
+                                                        countOfAds =
+                                                            (value[0]['responseData']['total']).toString();
+                                                        print('count of ads : ${countOfAds.toString()}');
+                                                        _loading = false;
+                                                      });
+                                                    });
+                                                if(!widget.isFav)
                                                 PublicAdsServicesNew
                                                         .getPublicAdsData(
                                                             sectionId: widget
@@ -863,7 +892,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: widget.isFav?MainAxisAlignment.start:MainAxisAlignment.spaceEvenly,
             children: [
               Container(
                 margin: EdgeInsets.all(5),
@@ -894,7 +923,9 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                   ],
                 ),
               ),
-              Container(
+              if(!widget.isFav)
+
+                Container(
                 width: MediaQuery.of(context).size.width * 0.3,
                 color: AppColors.whiteColor,
                 child: Row(
@@ -915,7 +946,9 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                   ],
                 ),
               ),
-              Container(
+              if(!widget.isFav)
+
+                Container(
                 width: MediaQuery.of(context).size.width * 0.4,
                 color: AppColors.whiteColor,
                 child: Container(

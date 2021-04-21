@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/app_helpers/shared_preferences.dart';
 import 'package:kulshe/ui/auth/login.dart';
+import 'package:kulshe/ui/auth/social_media/google_login.dart';
 import 'package:kulshe/ui/main_bottom_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -13,10 +15,7 @@ import 'package:toast/toast.dart';
 const String baseURL = 'https://api.kulshe.nurdevops.com/api/v1/';
 
 const String sections = 'sections';
-var headers = {
-  'lang': 'ar',
-  'Accept': 'application/json'
-};
+var headers = {'lang': 'ar', 'Accept': 'application/json'};
 var headersUpdate = {
   'Accept': 'application/json',
   'Content-Type': 'application/json'
@@ -40,11 +39,11 @@ Future getSectionsSP(List list, {Function action}) async {
 
 // var mainHeaders = {'lang': 'ar', 'Accept': 'application/json'};
 // login method...
-Future<List<Map<String, dynamic>>> loginFunction(
+Future loginFunction(
     {String email, String password, BuildContext context}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   var map = Map<String, dynamic>();
-  map['email'] = email;
+  map['email'] = email.trim();
   map['password'] = password;
 
   http.Response response = await http.post('${baseURL}login',
@@ -52,9 +51,11 @@ Future<List<Map<String, dynamic>>> loginFunction(
       headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
   var decodedData = jsonDecode(response.body);
 
-  if (response.statusCode != 200) {
+  if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+  }else if(decodedData['custom_code'] == 2166){
+    return decodedData;
   } else {
     var mainToken = decodedData['token_data']['token'];
     var refreshToken = decodedData['token_data']['token'];
@@ -80,6 +81,28 @@ Future<List<Map<String, dynamic>>> loginFunction(
     // print(decodedData);
   }
   // return decodedData;
+}
+
+Future changePasswordSocial(BuildContext context,String password,String confirmPassword,String newToken) async{
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  var map = Map<String, dynamic>();
+  map['password'] = password;
+  map['confirmPassword'] = confirmPassword;
+  map['token'] = newToken;
+
+  http.Response response = await http.post('${baseURL}change-password-social',
+      body: map,
+      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+  var decodedData = jsonDecode(response.body);
+
+  if (response.statusCode != 200) {
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }else  {
+    viewToast(context, '${decodedData['custom_message']}', AppColors.green,
+        Toast.BOTTOM);
+  }
 }
 
 //forget password
@@ -183,6 +206,7 @@ Future reNewAd({
         Toast.BOTTOM);
   }
 }
+
 //abuse ad
 Future abuseAd({
   @required BuildContext context,
@@ -192,17 +216,17 @@ Future abuseAd({
 }) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
 
-  var body = json.encode({
-    'abuseId':abuseId,
-    'abuseDescription':abuseDescription
-  });
+  var body =
+      json.encode({'abuseId': abuseId, 'abuseDescription': abuseDescription});
   http.Response response =
-      await http.post('${baseURL}user/classifieds/$adId/abuse', headers: {
-    'lang': _pref.getString('lang'),
-    'Content-Type': 'application/json',
-    'token': '${_pref.getString('token')}',
-    'Authorization': 'bearer ${_pref.getString('token')}',
-  },body: body);
+      await http.post('${baseURL}user/classifieds/$adId/abuse',
+          headers: {
+            'lang': _pref.getString('lang'),
+            'Content-Type': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}',
+          },
+          body: body);
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
@@ -451,31 +475,6 @@ Future addAdFunction({
         Toast.BOTTOM);
   }
 }
-// async {
-//   SharedPreferences _pref = await SharedPreferences.getInstance();
-//
-//   var headers = {
-//     'token': '${_pref.get('token')}',
-//     'Authorization': 'bearer ${_pref.getString('token')}',
-//     'lang': '${_pref.getString('lang')}',
-//     'Content-Type': 'application/json'
-//   };
-//   var request = http.Request('POST', Uri.parse('https://api.kulshe.nurdevops.com/api/v1/classified'));
-//   request.body =
-//   request.headers.addAll(headers);
-//
-//   http.StreamedResponse response = await request.send();
-//
-//   if (response.statusCode == 200) {
-//     print(await response.stream.bytesToString());
-//     print('Done');
-//   }
-//   else {
-//     print(response.reasonPhrase);
-//     print('Failed');
-//   }
-//
-// }
 
 Future logoutFunction({BuildContext context}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
@@ -496,6 +495,8 @@ Future logoutFunction({BuildContext context}) async {
   } else {
     viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
+    signOutGoogle();
+    _logoutFacebook();
     AppSharedPreferences.saveTokenSP(null);
     AppSharedPreferences.saveRefreshTokenSP(null);
     Navigator.pushReplacement(
@@ -507,10 +508,26 @@ Future logoutFunction({BuildContext context}) async {
   }
 }
 
-Future maxPrice({BuildContext context,@required int subSectionId}) async {
+Future<void> signOutGoogle() async {
+  await googleSignIn.signOut();
+  print("User Signed Out");
+}
+
+var _facebookLogin = FacebookLogin();
+
+_logoutFacebook() async {
+  await _facebookLogin.logOut();
+  print("Logged out");
+}
+
+Future maxPrice({BuildContext context, @required int subSectionId}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
-  http.Response response = await http.get('${baseURL}classified/$subSectionId/max-price',
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json', 'Country-id': _pref.getString('countryId')});
+  http.Response response =
+      await http.get('${baseURL}classified/$subSectionId/max-price', headers: {
+    'lang': _pref.getString('lang'),
+    'Accept': 'application/json',
+    'Country-id': _pref.getString('countryId')
+  });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -531,33 +548,67 @@ Future<bool> emailStatus() async {
 
 //social
 
-Future createAccountFunctionGoogle({
-  String gId,
-  String gToken,
-  String email,
-  String nickName,
-  String userImage,
-  String mobileNumber,
-  String mobileCountryPhoneCode,
-  String mobileCountryIsoCode,
-  String countryId
- }) async {
+Future createAccountFunctionGoogle(
+    {BuildContext context,
+    String gId,
+    String gToken,
+    String email,
+    String nickName,
+    String userImage,
+    String mobileNumber,
+    String mobileCountryPhoneCode,
+    String mobileCountryIsoCode,
+    String countryId}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
+  var body = jsonEncode({
+    'email': email,
+    'googleId': gId,
+    'googleToken': gToken,
+    'nickName': nickName,
+    'comeFrom': 'm',
+    'userImage': userImage,
+    'mobileNumber': mobileNumber,
+    'mobileCountryPhoneCode': mobileCountryPhoneCode,
+    'mobileCountryIsoCode': mobileCountryIsoCode,
+    'countryId': countryId
+  });
   var response = await http.post('${baseURL}login/google',
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'},
-      body: {
-
-      });
-  var decodeData = jsonDecode(response.body);
+      headers: {
+        'lang': _pref.getString('lang'),
+        'Content-Type': 'application/json'
+      },
+      body: body);
+  var decodedData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
+    var mainToken = decodedData['token_data']['token'];
+    var refreshToken = decodedData['token_data']['token'];
+    bool isEmailVerified = decodedData['token_data']['is_email_verified'];
+
+    print('TOKEN: \n \n$mainToken \n \n');
+    print('REFRESH TOKEN: \n \n$refreshToken \n \n');
+    print('Is Email Verified:  $isEmailVerified \n \n');
+
+    AppSharedPreferences.saveTokenSP(mainToken.toString());
+    AppSharedPreferences.saveRefreshTokenSP(
+        'bearer ${refreshToken.toString()}');
+    AppSharedPreferences.saveIsEmailVerified(isEmailVerified);
+    AppSharedPreferences.saveCountryId(
+        decodedData['token_data']['country_id'].toString());
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainBottomNavigation(),
+        ));
     print('********************************Done');
     // viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,        Toast.BOTTOM);
 
   } else {
-    print(decodeData['custom_message']);
-    print(decodeData['custom_code']);
+    print(decodedData['custom_message']);
+    print(decodedData['custom_code']);
     print('********************************Wrong');
+    return decodedData['custom_code'];
 
     // viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
     //     Toast.BOTTOM);  }
@@ -565,7 +616,8 @@ Future createAccountFunctionGoogle({
 }
 
 Future createAccountFunctionFacebook(
-    {String email,
+    {BuildContext context,
+    String email,
     String fbId,
     String fbToken,
     String nickName,
@@ -575,11 +627,7 @@ Future createAccountFunctionFacebook(
     String mobileCountryIsoCode,
     String countryId}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
-  var response = await http
-      .post('https://api.kulshe.nurdevops.com/api/v1/login/facebook', headers: {
-    'lang': _pref.getString('lang'),
-    'Accept': 'application/json'
-  }, body: {
+  var body = jsonEncode({
     'email': email,
     'fbId': fbId,
     'fbToken': fbToken,
@@ -587,10 +635,17 @@ Future createAccountFunctionFacebook(
     'comeFrom': 'm',
     'userImage': userImage,
     'mobileNumber': mobileNumber,
-    'mobileCountryPhoneCode': '962',
-    'mobileCountryIsoCode': 'JO',
-    'countryId': '110'
+    'mobileCountryPhoneCode': mobileCountryPhoneCode,
+    'mobileCountryIsoCode': mobileCountryIsoCode,
+    'countryId': countryId
   });
+  var response = await http.post(
+      'https://api.kulshe.nurdevops.com/api/v1/login/facebook',
+      headers: {
+        'lang': _pref.getString('lang'),
+        'Content-Type': 'application/json'
+      },
+      body: body);
   //
   print('email : $email');
   print('fbId : $fbId');
@@ -602,17 +657,36 @@ Future createAccountFunctionFacebook(
   print('mobileCountryIsoCode : $mobileCountryIsoCode');
   print('countryId : $countryId');
 
-  var decodeData = jsonDecode(response.body);
+  var decodedData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
+    var mainToken = decodedData['token_data']['token'];
+    var refreshToken = decodedData['token_data']['token'];
+    bool isEmailVerified = decodedData['token_data']['is_email_verified'];
+
+    print('TOKEN: \n \n$mainToken \n \n');
+    print('REFRESH TOKEN: \n \n$refreshToken \n \n');
+    print('Is Email Verified:  $isEmailVerified \n \n');
+
+    AppSharedPreferences.saveTokenSP(mainToken.toString());
+    AppSharedPreferences.saveRefreshTokenSP(
+        'bearer ${refreshToken.toString()}');
+    AppSharedPreferences.saveIsEmailVerified(isEmailVerified);
+    AppSharedPreferences.saveCountryId(
+        decodedData['token_data']['country_id'].toString());
+
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainBottomNavigation(),
+        ));
     print('********************************Done');
     // _widgets.viewToast('${decodeData['custom_message']}', AppColors.greenColor);
   } else {
-    print(decodeData['custom_message']);
-    print(decodeData['custom_code']);
+    print(decodedData['custom_message']);
+    print(decodedData['custom_code']);
     print('********************************Not Done');
-    return decodeData['custom_code'];//2095
+    return decodedData['custom_code']; //2095
     // _widgets.viewToast('${decodeData['custom_message']}', AppColors.redColor);
   }
 }
-

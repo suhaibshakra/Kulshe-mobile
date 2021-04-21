@@ -1,14 +1,17 @@
 import 'dart:convert';
 
+import 'package:country_list_pick/country_list_pick.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_string.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/ui/auth/signup_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'social_media/google_login.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,11 +28,32 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _countryControllerS = TextEditingController()..text;
   TextEditingController _emailForgetController = TextEditingController()..text;
   TextEditingController _passwordController = TextEditingController()..text;
+  TextEditingController _newPasswordController = TextEditingController()..text;
+  TextEditingController _confirmPasswordController = TextEditingController()..text;
+  TextEditingController _mobileCountryCode = TextEditingController()..text;
+  TextEditingController mobileCountryIsoCode = TextEditingController()..text;
+  String _selectedCountry;
+  String _myCountry;
+  List _countryData;
 
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
+  var facebookLoginResult;
+
+  _getCountries() async {
+    SharedPreferences _gp = await SharedPreferences.getInstance();
+    final List countries = jsonDecode(_gp.getString("allCountriesData"));
+    _countryData = countries[0]['responseData'];
+    setState(() {
+      _countryData = _countryData
+          .where((element) => element['classified'] == true)
+          .toList();
+    });
+
+    print('_${_countryData.where((element) => element['classified'] == true)}');
+  }
 
   void _validateAndSubmit() {
     final FormState form = _formKey.currentState;
@@ -37,10 +61,52 @@ class _LoginScreenState extends State<LoginScreen> {
       loginFunction(
           email: _emailController.text.toString().trim(),
           password: _passwordController.text.toString(),
-          context: context);
+          context: context).then((value){
+        print('VAL:$value');
+        if(value['custom_code'] == 2166){
+              buildDialog(desc: '',no: _strController.cancel,yes: _strController.done,title: "Enter New Password", context: context,content: Column(
+                children: [
+                  buildTextField(
+                    fromDialog: true,
+                    label: _strController.newPassword,
+                    controller: _newPasswordController,
+                    textInputType: TextInputType.visiblePassword,
+                    isPassword: true
+                  ),
+                  buildTextField(
+                    fromDialog: true,
+                    label: _strController.confirmPassword,
+                    controller: _confirmPasswordController,
+                    textInputType: TextInputType.visiblePassword,
+                      isPassword: true
+                  ),
+                ],
+              ),
+                action:()=> changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),value['responseData']['token'].toString()).then((value) {
+                  print('VALUE');
+                  print(value['responseData']['token']);
+
+                  })
+              );
+            }
+      });
     } else {
       print('Form is invalid');
     }
+  }
+  void _validateDialog() {
+    final FormState form = _formKey2.currentState;
+    if (form.validate()) {
+    } else {
+      print('Form is invalid');
+    }
+  }
+
+  @override
+  void initState() {
+    _selectedCountry = "Select country";
+    _getCountries();
+    super.initState();
   }
 
   @override
@@ -118,21 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? Alignment.centerLeft
                                 : Alignment.centerRight,
                             child: GestureDetector(
-                              onTap: () => buildDialog(
-                                context: ctx,
-                                title: AppController.strings.forgetPassword,
-                                height: mq.size.height * 0.22,
-                                hintTxt: "email@test.com",
-                                labelTxt: AppController.strings.email,
-                                textInputType: TextInputType.emailAddress,
-                                onChanged: (val) {
-                                  setState(() {
-                                    _emailForgetController = val;
-                                  });
-                                },
-                                controller: _emailForgetController,
-                                withToast: true,
-                              ),
+                              onTap: () => buildDialog(title: 'استرجاع كلمة السر',
+                              no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailControllerS.text.toString())),
                               child: buildTxt(
                                   txt: _strController.forgetPassword,
                                   txtColor: AppColors.blue,
@@ -271,18 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void buildDialog(
-      {BuildContext context,
-      String title,
-      double height,
-      TextInputType textInputType,
-      String hintTxt,
-      String labelTxt,
-      String body,
-      TextEditingController controller,
-      Function onChanged,
-      bool withToast = false,
-      Function action}) {
+  void _buildDialog({BuildContext context,String title,double height,TextInputType textInputType,String hintTxt,String labelTxt,String body,TextEditingController controller,Function onChanged,bool withToast = false,Function action}) {
     showDialog(
         context: context,
         builder: (ctx) {
@@ -292,9 +334,6 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Divider(
-                    color: Colors.black,
-                  ),
                   // buildTxt(txt: labelTxt),
                   buildTextField(
                     textInputType: textInputType,
@@ -369,36 +408,165 @@ class _LoginScreenState extends State<LoginScreen> {
 
   buildGoogleLogin() {
     signInWithGoogle().then((result) {
-      // if (result != null)
-      // createAccountFunctionGoogle(
-      //   bodyData:
-      //       '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "$email",\r\n  "nickName": "Sabaneh!)!)",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n
-      //       "mobileNumber": "779712002",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}''',
-      //   action: () => showInformationDialog(
-      //     context: context,
-      //     emailController: _emailControllerS,
-      //     nickNameController: _nickNameControllerS,
-      //     phoneController: _phoneControllerS,
-      //     formKey: _formKey2,
-      //     cancel: signOutGoogle(),
-      //     onPressed: createAccountFunctionGoogle(
-      //       bodyData:
-      //           '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "$email",\r\n  "nickName": "Laith",\r\n  "comeFrom": "w",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "779712002",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}''',
-      //       // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-      //     ),
-      //     hasEmail: (_emailControllerS.text.toString() == null ||
-      //             _emailControllerS.text.toString() == "")
-      //         ? false
-      //         : true,
-      //   ),
-      // );
+      if (result != null)
+        createAccountFunctionGoogle(
+          context: context,
+          gId: gId,
+          gToken: gToken,
+          email: email,
+          nickName: _nickNameControllerS.text.toString(),
+          userImage: imageUrl,
+        ).then((value) {
+          if (value == 2095) {
+            print('TRY NOW');
+            _buildChoiceDialog(noEmail: email.isEmpty, from: 'google');
+          }
+        });
     });
   }
 
-  Future<void> signOutGoogle() async {
-    await googleSignIn.signOut();
-    print("User Signed Out");
+  _buildChoiceDialog({bool noEmail, String from}) {
+    return buildDialog(
+        context: context,
+        title: "يرجى إدخال الحقول المطلوبة",
+        desc: "",
+        no: _strController.cancel,
+        yes: _strController.done,
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: 8, left: 12, right: 12),
+              child: myButton(
+                  txtColor: AppColors.blackColor,
+                  fontSize: 18,
+                  context: context,
+                  btnColor: AppColors.greyOne,
+                  radius: 4,
+                  btnTxt: _selectedCountry,
+                  width: double.infinity,
+                  onPressed: () =>
+                      _showCountriesDialog(mq: MediaQuery.of(context))),
+            ),
+            buildTextField(
+              label: _strController.nickName,
+              controller: _nickNameControllerS,
+              textInputType: TextInputType.name,
+            ),
+            if (noEmail)
+              buildTextField(
+                label: _strController.email,
+                controller: _emailControllerS,
+                textInputType: TextInputType.emailAddress,
+              ),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    height: 46,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.6),
+                        border: Border.all(width: 1, color: Colors.grey),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: CountryListPick(
+                      appBar: AppBar(
+                        backgroundColor: Colors.blue,
+                        title: Text(
+                          _strController.country,
+                          style: appStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                        ),
+                      ),
+                      theme: CountryTheme(
+                          isShowFlag: false,
+                          isShowTitle: false,
+                          isShowCode: true,
+                          isDownIcon: false,
+                          showEnglishName: true,
+                          initialSelection: '+962'),
+                      initialSelection: '+962',
+                      useSafeArea: true,
+                      onChanged: (CountryCode code) {
+                        print(code.name);
+                        print(code.code);
+                        print(code.dialCode);
+                        print(code.dialCode);
+                        print(code.dialCode);
+                        print(code.flagUri);
+                        setState(() {
+                          mobileCountryIsoCode.text = code.code;
+                          _mobileCountryCode.text =
+                              code.dialCode.replaceAll('+', '').toString();
+                          print('code : ${_mobileCountryCode.text}');
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: buildTextField(
+                    fromDialog: true,
+                    label: _strController.mobile,
+                    controller: _phoneControllerS,
+                    hintTxt: _strController.mobile,
+                    textInputType: TextInputType.phone,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        action: () => from == 'google'
+            ? createAccountFunctionGoogle(
+                    context: context,
+                    gId: gId,
+                    gToken: gToken,
+                    email: email,
+                    nickName: _nickNameControllerS.text.toString(),
+                    userImage: imageUrl,
+                    countryId: _myCountry.toString(),
+                    mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
+                        ? '962'
+                        : mobileCountryIsoCode.text.toString(),
+                    mobileNumber: _phoneControllerS.text.toString(),
+                    mobileCountryPhoneCode: _mobileCountryCode.text.toString())
+                .then((value) {
+                if (value == 200)
+                  Navigator.of(context, rootNavigator: true).pop();
+              })
+            : from == 'facebook'
+                ? createAccountFunctionFacebook(
+                        context: context,
+                        email:
+                            "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
+                        mobileNumber: "${_phoneControllerS.text.toString()}",
+                        nickName: "${_nickNameControllerS.text.toString()}",
+                        fbId: "${facebookLoginResult.accessToken.userId}",
+                        fbToken: "${facebookLoginResult.accessToken.token}",
+                        userImage: "${profileData['picture']['data']['url']}",
+                        mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
+                            ? '962'
+                            : mobileCountryIsoCode.text.toString(),
+                        mobileCountryPhoneCode:
+                            _mobileCountryCode.text.toString(),
+                        countryId: _myCountry.toString()
+
+                        // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
+                        )
+                    .then((value) {
+                    if (value == 200)
+                      Navigator.of(context, rootNavigator: true).pop();
+                  })
+                : null);
   }
+
+  // Future<void> signOutGoogle() async {
+  //   await googleSignIn.signOut();
+  //   print("User Signed Out");
+  // }
 
   //facebook
   var facebookLogin = FacebookLogin();
@@ -413,7 +581,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void initiateFacebookLogin() async {
-    var facebookLoginResult = await facebookLogin.logIn(['email']);
+    facebookLoginResult = await facebookLogin.logIn(['email']);
 
     switch (facebookLoginResult.status) {
       case FacebookLoginStatus.error:
@@ -434,96 +602,24 @@ class _LoginScreenState extends State<LoginScreen> {
           onLoginStatusChanged(true, profileData: profile);
 
           createAccountFunctionFacebook(
-            email:
-                "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
+            context: context,
+            email: profileData['email'],
+            // "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
             mobileNumber: "${_phoneControllerS.text.toString()}",
             nickName: "${_nickNameControllerS.text.toString()}",
             fbId: "${facebookLoginResult.accessToken.userId}",
             fbToken: "${facebookLoginResult.accessToken.token}",
             userImage: "${profileData['picture']['data']['url']}",
-            mobileCountryIsoCode: "962",
-            mobileCountryPhoneCode: "JO",
-            countryId: "110",
-
-            // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
+            mobileCountryIsoCode: mobileCountryIsoCode.text.toString(),
+            mobileCountryPhoneCode: _mobileCountryCode.text.toString(),
+            countryId: _myCountry,
           ).then((value) {
             print('VALUE : $value');
-            value == 2095
-                ? showInformationDialog(
-                    context: context,
-                    formKey: _formKey2,
-
-                    // cancel: _logout(),
-                    emailController: _emailControllerS,
-                    nickNameController: _nickNameControllerS,
-                    phoneController: _phoneControllerS,
-                    hasEmail: (profileData['email'] == "" ||
-                            profileData['email'] == null)
-                        ? false
-                        : true,
-                    onPressed: () => createAccountFunctionFacebook(
-                          email:
-                              "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
-                          mobileNumber: "${_phoneControllerS.text.toString()}",
-                          nickName: "${_nickNameControllerS.text.toString()}",
-                          fbId: "${facebookLoginResult.accessToken.userId}",
-                          fbToken: "${facebookLoginResult.accessToken.token}",
-                          userImage: "${profileData['picture']['data']['url']}",
-                          mobileCountryIsoCode: "962",
-                          mobileCountryPhoneCode: "JO",
-                          countryId: "110",
-
-                          // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-                        ))
-                : Center();
+            if (value == 2095) {
+              _buildChoiceDialog(
+                  noEmail: profileData['email'].isEmpty, from: 'facebook');
+            }
           });
-          // showInformationDialog(
-          //   context: context,
-          //   emailController: _emailControllerS,
-          //   nickNameController: _nickNameControllerS,
-          //   phoneController: _phoneControllerS,
-          //   formKey: _formKey2,
-          //   cancel: ()=>print('Not Done!'),
-          //   onPressed:()=> createAccountFunctionFacebook(
-          //           email:
-          //               "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
-          //           mobileNumber: "${_phoneControllerS.text.toString()}",
-          //           nickName: "${_nickNameControllerS.text.toString()}",
-          //           fbId: "${facebookLoginResult.accessToken.userId}",
-          //           fbToken: "${facebookLoginResult.accessToken.token}",
-          //           userImage: "${profileData['picture']['data']['url']}",
-          //           mobileCountryIsoCode: "962",
-          //           mobileCountryPhoneCode: "JO",
-          //           countryId: "110",
-          //
-          //     // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-          //   ),
-          // );
-
-          // showInformationDialog(
-          //     context: context,
-          //     cancel: _logout(),
-          //     emailController: _emailControllerS,
-          //     nickNameController: _nickNameControllerS,
-          //     phoneController: _phoneControllerS,
-          //     hasEmail:
-          //         (profileData['email'] == "" || profileData['email'] == null)
-          //             ? false
-          //             : true,
-          //     onPressed: createAccountFunctionFacebook(
-          //       email:
-          //           "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
-          //       mobileNumber: "${_phoneControllerS.text.toString()}",
-          //       nickName: "${_nickNameControllerS.text.toString()}",
-          //       fbId: "${facebookLoginResult.accessToken.userId}",
-          //       fbToken: "${facebookLoginResult.accessToken.token}",
-          //       userImage: "${profileData['picture']['data']['url']}",
-          //       mobileCountryIsoCode: "962",
-          //       mobileCountryPhoneCode: "JO",
-          //       countryId: "110",
-          //
-          //       // '''{\r\n  "email": ,\r\n  "fbId": ,\r\n  "fbToken": ,\r\n  "nickName": ,\r\n  "comeFrom": "m",\r\n  "userImage": ,\r\n  "mobileNumber": ,\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-          //     ));
           break;
         }
     }
@@ -574,5 +670,121 @@ class _LoginScreenState extends State<LoginScreen> {
     await facebookLogin.logOut();
     onLoginStatusChanged(false);
     print("Logged out");
+  }
+
+  void _showCountriesDialog({MediaQueryData mq}) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.only(left: 15, right: 15),
+            title: Center(child: Text(_strController.country)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            content: Container(
+              height: mq.size.height * 0.5,
+              width: mq.size.width * 1,
+              child: ListView.builder(
+                itemCount: _countryData.length,
+                itemBuilder: (context, index) {
+                  final list = _countryData[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedCountry = list['name'];
+                          _myCountry = list['id'].toString();
+                          print(_myCountry);
+                          _dismissDialog(context: context);
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: Text(
+                              list['name'],
+                              maxLines: 3,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SvgPicture.network(
+                                list['flag'],
+                                fit: BoxFit.fill,
+                                height: 25,
+                                width: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.16,
+                    child: RaisedButton(
+                      child: new Text(
+                        'Fund',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Color(0xFF121A21),
+                      shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(30.0),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.01,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 70.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.20,
+                      child: RaisedButton(
+                        child: new Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Color(0xFF121A21),
+                        shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                ],
+              )
+            ],
+          );
+        });
+  }
+
+  _dismissDialog({BuildContext context}) {
+    Navigator.pop(context);
   }
 }

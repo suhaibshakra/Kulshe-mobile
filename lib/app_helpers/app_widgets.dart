@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
@@ -347,6 +348,7 @@ buildTxt(
 
 buildTextField({
   String hintTxt,
+  bool fromDialog = false,
   @required String label,
   TextInputType textInputType,
   bool fromPhone = false,
@@ -357,7 +359,7 @@ buildTextField({
   bool isPassword = false,
 }) {
   return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 4),
+    padding: fromDialog?EdgeInsets.symmetric(vertical: 8):const EdgeInsets.symmetric(vertical: 8,horizontal: 4),
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -515,9 +517,11 @@ buildDialog(
     String desc,
     String yes,
     String no,
+      Widget content,
     Function action}) {
   return Alert(
     context: context,
+    content: content,
     // type: AlertType.error,
     // style: AlertStyle(
     //   buttonAreaPadding: EdgeInsets.all(12)
@@ -528,20 +532,20 @@ buildDialog(
       DialogButton(
         child: Text(
           no,
-          style: appStyle(color: Colors.red, fontSize: 16),
+          style: appStyle(color: Colors.white, fontSize: 16),
         ),
         onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-        color: AppColors.whiteColor.withOpacity(0.1),
-        // gradient: LinearGradient(colors: [Colors.redAccent, Colors.red]),
+        // color: AppColors.whiteColor.withOpacity(0.1),
+        gradient: LinearGradient(colors: [Colors.redAccent, Colors.red]),
       ),
-      DialogButton(
+      DialogButton(width: MediaQuery.of(context).size.width*1,
         child: Text(
           yes,
-          style: appStyle(color: Colors.green, fontSize: 16),
+          style: appStyle(color: Colors.white, fontSize: 16),
         ),
         onPressed: action,
-        color: AppColors.whiteColor.withOpacity(0.1),
-        // color: Color.fromRGBO(0, 179, 134, 1.0),
+        // color: AppColors.whiteColor.withOpacity(0.1),
+        color: Color.fromRGBO(0, 179, 134, 1.0),
       ),
     ],
   ).show();
@@ -559,7 +563,7 @@ Widget listItem(BuildContext context, LinearGradient gradient, String title,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PrivateAdsListScreen(
+              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,):PrivateAdsListScreen(
                 actionTitle: actionTitle,
               ),
             ),

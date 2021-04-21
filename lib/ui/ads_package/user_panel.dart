@@ -5,6 +5,7 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/models/profile.dart';
 import 'package:kulshe/services_api/services.dart';
 
+import '../../showImg.dart';
 import '../edit_profile_screen.dart';
 
 class UserPanel extends StatefulWidget {
@@ -62,7 +63,7 @@ class _UserPanelState extends State<UserPanel> {
             _profileData.adsSummary.favoriteAdsCount,
             null,
             null,
-            actionTitle: "fav",hasList:false),
+            actionTitle: "fav",hasList:true),
         listItem(
           context,
           LinearGradient(colors: [
@@ -193,7 +194,8 @@ class _UserPanelState extends State<UserPanel> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Divider(thickness: 1,color: AppColors.blue,),
+                                SizedBox(height: 4,),
+                                Divider(thickness: 0,color: AppColors.whiteColor,),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
@@ -206,12 +208,15 @@ class _UserPanelState extends State<UserPanel> {
                                         Text(_profileData.email,style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
                                       ],
                                     ),
-                                    CircleAvatar(
-                                      radius: 40.0,
-                                      child: Container(
-                                      decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
-                                      image: DecorationImage(image: NetworkImage("${_profileData.profileImage}"),fit: BoxFit.cover)),),
-                                      backgroundColor: Colors.transparent,
+                                    InkWell(
+                                      onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData.profileImage,),)),
+                                      child: CircleAvatar(
+                                        radius: 40.0,
+                                        child: Container(
+                                        decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
+                                        image: DecorationImage(image: NetworkImage("${_profileData.profileImage}"),fit: BoxFit.cover)),),
+                                        backgroundColor: Colors.transparent,
+                                      ),
                                     )
                                   ],
                                 ),
@@ -229,11 +234,13 @@ class _UserPanelState extends State<UserPanel> {
                               // image: DecorationImage(image: NetworkImage(_profileData.profileImage)),
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.lightBlueAccent.shade400,
-                                  Colors.lightBlueAccent.shade200,
-                                  Colors.blue.shade200,
-                                  Colors.lightBlue.shade200,
-                                  Colors.lightBlueAccent.shade400,
+                                  // Colors.lightBlueAccent.shade400,
+                                  // Colors.lightBlueAccent.shade200,
+                                  Colors.blue.shade400,
+                                  Colors.blue.shade400,
+                                  Colors.blue.shade400,
+                                  // Colors.lightBlue.shade200,
+                                  // Colors.lightBlueAccent.shade400,
                                 ],
                               )),
                         ),
