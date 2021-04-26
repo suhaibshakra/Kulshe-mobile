@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kulshe/ui/ads_package/play_video.dart';
+import 'package:kulshe/ui/ads_package/uplaod_images.dart';
 import 'package:kulshe/ui/auth/social_media/facebook.dart';
 import 'package:kulshe/ui/splash_screen.dart';
 import './services_api/services.dart';

@@ -905,75 +905,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                               _listAttributes[index]['label'][_lang].toString(),
                           textInputType: TextInputType.text),
                     ),
-                    Text("${_listAttributes[index]['units'].length}"),
-                    Container(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: ClampingScrollPhysics(),
-                        itemCount: 1,
-                        itemBuilder: (context, newIndex) {
-
-                          return Column(
-                            children: [
-                              Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(4)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 1,
-                                        child: DropdownButtonHideUnderline(
-                                          child: ButtonTheme(
-                                            alignedDropdown: true,
-                                            child: DropdownButton<String>(
-                                              isExpanded: false,
-                                              value: _listAttributes[index]['units'][newIndex]['unit_id'].toString(),
-                                              // value: '1',
-                                              iconSize: 30,
-                                              // icon: (null),
-                                              style: appStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                              ),
-                                              hint: Text(
-                                                _listAttributes[index]['units'][newIndex]['label'][_lang].toString(),
-                                                style: appStyle(
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  // myAdAttributes[_listAttributes[index]['id']] = value;
-                                                  print(
-                                                      "select:  ${value}");
-                                                  // test(listOfAttributeName[index]['id'], value);
-                                                  // testID = value;
-                                                  // print("$myAdAttributesArray");
-                                                });
-                                              },
-                                              items: _options
-                                                  .map<DropdownMenuItem<String>>((list) {
-                                                // print('LIST  :$list');
-                                                return new DropdownMenuItem(
-                                                  child:
-                                                  new Text("${list['label'][_lang]}"),
-                                                  value: list['id'].toString(),
-                                                );
-                                              })?.toList() ??
-                                                  [],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          );
-                        },
-                      ),),
+                    // Text("${_listAttributes[index]['units']}")
                     // if (_listAttributes[index]['has_unit'] == 1)
                     //   Column(
                     //     children: [
