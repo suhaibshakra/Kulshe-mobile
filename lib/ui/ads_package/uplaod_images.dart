@@ -1,134 +1,69 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'dart:async';
 
-class SingleImageUpload extends StatefulWidget {
+class SelectMultiImage extends StatefulWidget {
   @override
-  _SingleImageUploadState createState() {
-    return _SingleImageUploadState();
-  }
+  _SelectMultiImageState createState() => _SelectMultiImageState();
 }
 
-class _SingleImageUploadState extends State<SingleImageUpload> {
-  List<Object> images = List<Object>();
-  Future<File> _imageFile;
+class _SelectMultiImageState extends State<SelectMultiImage> {
+  List<Asset> images = List<Asset>();
+
   @override
   void initState() {
-    // TODO: implement initState
+    pickImages();
     super.initState();
+  }
+
+  Future<void> pickImages() async {
+    List<Asset> resultList = List<Asset>();
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 20,
+        enableCamera: true,
+        selectedAssets: images,
+        materialOptions: MaterialOptions(
+          actionBarTitle: "FlutterCorner.com",
+        ),
+      );
+    } on Exception catch (e) {
+      print(e);
+    }
+
     setState(() {
-      images.add("Add Image");
+      images = resultList;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
-          centerTitle: true,
-          title: const Text('Plugin example app'),
+          title: const Text('Multi Image Picker - FlutterCorner.com'),
         ),
         body: Column(
           children: <Widget>[
+
             Expanded(
-              child: buildGridView(),
-            ),
+              child: GridView.count(
+                crossAxisCount: 3,
+                children: List.generate(images.length, (index) {
+                  Asset asset = images[index];
+                  return AssetThumb(
+                    asset: asset,
+                    width: 300,
+                    height: 300,
+                  );
+                }),
+              ),
+            )
           ],
         ),
       ),
     );
   }
-
-  Widget buildGridView() {
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 3,
-      childAspectRatio: 1,
-      children: List.generate(images.length, (index) {
-        if (images[index] is ImageUploadModel) {
-          ImageUploadModel uploadModel = images[index];
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              children: <Widget>[
-                Image.file(
-                  uploadModel.imageFile,
-                  width: 300,
-                  height: 300,
-                ),
-                Positioned(
-                  right: 5,
-                  top: 5,
-                  child: InkWell(
-                    child: Icon(
-                      Icons.remove_circle,
-                      size: 20,
-                      color: Colors.red,
-                    ),
-                    onTap: () {
-                      setState(() {
-                        images.replaceRange(index, index + 1, ['Add Image']);
-                        if(images.length>1)
-                        images.removeAt(index);
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return Card(
-            child: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                _onAddImageClick(index);
-              },
-            ),
-          );
-        }
-      }),
-    );
-  }
-
-  Future _onAddImageClick(int index) async {
-    setState(() {
-      _imageFile = ImagePicker.pickImage(source: ImageSource.gallery);
-      print(_imageFile);
-      getFileImage(index);
-    });
-  }
-
-  void getFileImage(int index) async {
-//    var dir = await path_provider.getTemporaryDirectory();
-    _imageFile.then((file) async {
-      if(file!=null)
-      setState(() {
-        ImageUploadModel imageUpload = new ImageUploadModel();
-        imageUpload.isUploaded = false;
-        imageUpload.uploading = false;
-        imageUpload.imageFile = file;
-        imageUpload.imageUrl = '';
-        images.replaceRange(index, index + 1, [imageUpload]);
-
-        if(images.length<20)
-          images.add("Add Image");
-      });
-    });
-  }
-}
-class ImageUploadModel {
-  bool isUploaded;
-  bool uploading;
-  File imageFile;
-  String imageUrl;
-
-  ImageUploadModel({
-    this.isUploaded,
-    this.uploading,
-    this.imageFile,
-    this.imageUrl,
-  });
 }
