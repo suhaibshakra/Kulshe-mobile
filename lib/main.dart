@@ -51,6 +51,43 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+// class MyPets extends StatefulWidget {
+//   @override
+//   _MyPetsState createState() => _MyPetsState();
+// }
+//
+// class _MyPetsState extends State<MyPets> {
+//   List<Widget> _children = [];
+//   List<TextEditingController> controllers = [];  //the controllers list
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Title"),
+//         actions: <Widget>[IconButton(icon: Icon(Icons.add), onPressed: _add)],
+//       ),
+//       body: ListView(children: _children),
+//     );
+//   }
+//
+//   void _add() {
+//     TextEditingController controller = TextEditingController();
+//     controllers.add(controller);      //adding the current controller to the list
+//     for(int i = 0; i < controllers.length; i++){
+//       print(controllers[i].text);     //printing the values to show that it's working
+//     }
+//    }
+//
+//   @override
+//   void dispose() {
+//     controllers.clear();
+//     super.dispose();
+//   }
+//
+// }
+
+
 
 // import 'package:flutter/material.dart';
 // void main() => runApp(MyApp());
@@ -124,6 +161,116 @@ class _MyAppState extends State<MyApp> {
 //
 //           }
 //       ),
+//     );
+//   }
+// }
+//  import 'package:flutter/material.dart';
+//
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         title: 'Flutter Demo',
+//         theme: ThemeData(
+//             primarySwatch: Colors.blue,
+//             visualDensity: VisualDensity.adaptivePlatformDensity),
+//         home: MyHomePage());
+//   }
+// }
+//
+// class MyHomePage extends StatefulWidget {
+//   @override
+//   _MyHomePageState createState() => _MyHomePageState();
+// }
+//
+// class _MyHomePageState extends State<MyHomePage> {
+//   List<Problem> problemList = List();
+//   final List<TextEditingController> _controllers = List();
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//
+//     problemList.add(Problem(id: '1', problemName: 'Display'));
+//     problemList.add(Problem(id: '2', problemName: 'Bluetooth'));
+//     problemList.add(Problem(id: '3', problemName: 'Speaker'));
+//     problemList.add(Problem(id: '4', problemName: 'PCB'));
+//     problemList.add(Problem(id: '5', problemName: 'Camera'));
+//     problemList.add(Problem(id: '6', problemName: 'Glass'));
+//     problemList.add(Problem(id: '7', problemName: 'Press button'));
+//     problemList.add(Problem(id: '8', problemName: 'Charging'));
+//     problemList.add(Problem(id: '9', problemName: 'Battery'));
+//     problemList.add(Problem(id: '10', problemName: 'Storage'));
+//     problemList.add(Problem(id: '11', problemName: 'Overheating'));
+//     problemList.add(Problem(id: '12', problemName: 'Restart Problem'));
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(title: Text('ListView Dynamic Create TextField')),
+//         body: _bodyList(problemList));
+//   }
+//
+//   _bodyList(List<Problem> problemList) => ListView.builder(
+//       physics: const BouncingScrollPhysics(),
+//       itemCount: problemList.length,
+//       shrinkWrap: true,
+//       itemBuilder: (BuildContext context, int index) {
+//         // _controllers.add(new TextEditingController());
+//         // _controllers[index].text = problemList[index].enterValue;
+//
+//         return Container(
+//             padding: EdgeInsets.only(top: 0, right: 10, left: 10),
+//             child: Row(children: <Widget>[
+//               expandStyle(
+//                   1,
+//                   Container(
+//                       margin: EdgeInsets.only(top: 35),
+//                       child: Text(problemList[index].problemName))),
+//               expandStyle(
+//                   2,
+//                   TextFormField(
+//                       controller: TextEditingController.fromValue(
+//                           TextEditingValue(
+//                               text: problemList[index].enterValue,
+//                               )),
+//                       keyboardType: TextInputType.number,
+//                       onChanged: (String str) {
+//                         problemList[index].enterValue = str;
+//                         var total = problemList.fold(
+//                             0,
+//                                 (t, e) =>t +
+//                                 double.parse(
+//                                     e.enterValue.isEmpty ? '0' : e.enterValue));
+//                         print(total);
+//                       }))
+//             ]));
+//       });
+// }
+//
+// expandStyle(int flex, Widget child) => Expanded(flex: flex, child: child);
+//
+// class Problem {
+//   String id;
+//   String problemName;
+//
+//   String enterValue;
+//
+//   Problem({this.id, this.problemName, this.enterValue = ''});
+//
+//   Problem.fromJson(Map<String, dynamic> json) {
+//     id = json['ID'];
+//     problemName = json['DISPNAME'];
+//   }
+//
+//   Problem copyWith({double enterValue}) {
+//     return Problem(
+//       enterValue: enterValue ?? this.enterValue,
 //     );
 //   }
 // }

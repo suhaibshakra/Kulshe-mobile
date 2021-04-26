@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
@@ -182,7 +183,18 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                   leading: Container(
                     width: 28,
                     height: 28,
-                    child: Icon(Icons.camera),
+                    child: Container(
+                        width: 35,
+                        height: 35,
+                        child:
+                        // _data[index]['icon']!=null?
+                        SvgPicture.network(
+                          _data['icon']!=null?_data['icon']:"https://cdn.worldvectorlogo.com/logos/angular-icon.svg",fit: BoxFit.fill,)
+//                     :SvgPicture.string(
+//                     ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+//   <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+// </svg> ''',color: AppColors.grey),
+                    ),
                   ),
                   children: [
                     GridView.count(

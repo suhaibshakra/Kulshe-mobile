@@ -32,31 +32,49 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   bool _isFree = false;
   bool _isDelivery = false;
   bool _loading = true;
+  bool hasSubBrands = false;
+  final _strController = AppController.strings;
   TextEditingController _titleController = TextEditingController()..text;
   TextEditingController _priceController = TextEditingController()..text;
   TextEditingController _videoController = TextEditingController()..text;
-  TextEditingController _addBody = TextEditingController()..text;
+  TextEditingController _bodyController = TextEditingController()..text;
   TextEditingController _birthDateController = TextEditingController()..text;
+  TextEditingController _test = TextEditingController()..text;
+  String _dropDownButtonValue = 'No Value Chosen';
+
+  // final Map<String,TextEditingController> mapController = {};
+  // List<TextEditingController> controllers = [];
+  final List<TextEditingController> _controllers = List();
+
   List _adForm;
   List _countryData;
   List _citiesData;
-  String _cityId;
   List _currenciesData;
   List _listAttributes;
+  List _listBrands;
+  List _listSubBrands;
   SimpleLocationResult _selectedLocation;
-  String cityID;
-  String currencyID;
+  String _cityId;
+  String _currencyId;
+  String _brandId;
+  String _subBrandId;
   String testID;
-  double value = 50.0;
+  double filterValue = 50.0;
   DateTime _selectedDate;
-
+  Map myAdAttributes = {};
+  List<dynamic> myAdAttributesArray = [];
   var attributes = [];
   List<dynamic> checkboxDetails = [];
-  void _pickDateDialog() {
+
+  // _addController(var index){
+  //   index = TextEditingController()..text;
+  //   controllers.add(index);
+  // }
+  void _pickDateDialog(id) {
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),
-            firstDate: DateTime(1950),
+            firstDate: DateTime(1920),
             lastDate: DateTime.now())
         .then((pickedDate) {
       if (pickedDate == null) {
@@ -64,10 +82,12 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
       }
       setState(() {
         _selectedDate = pickedDate;
-        _birthDateController.text = DateFormat.yMMMd().format(pickedDate);
+        _birthDateController.text = DateFormat("yyyy-MM-dd").format(pickedDate);
+        test(id, _birthDateController.text);
       });
     });
   }
+
   _getCountries() async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
     final List countries = jsonDecode(_gp.getString("allCountriesData"));
@@ -93,10 +113,29 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
     });
   }
 
+  List listOfAttributeName;
+
+  // void _add() {
+  //
+  //   TextEditingController controller = TextEditingController();
+  //   controllers.add(controller);      //adding the current controller to the list
+  //
+  //   for(int i = 0; i < controllers.length; i++){
+  //     print(controllers[i].text);     //printing the values to show that it's working
+  //   }
+  //
+  //   // print('index:$index');
+  // }
+
+  bool hasBrand;
+  List _unitList;
+
   @override
   void initState() {
     getLang();
     _getCountries();
+    myAdAttributesArray = [];
+    myAdAttributes = {};
     print(widget.section);
     AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
         .then((value) {
@@ -104,29 +143,42 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
         _adForm = value;
         _currenciesData = value[0]['responseData']['currencies'];
         _listAttributes = value[0]['responseData']['attributes'];
+        _unitList = _listAttributes
+            .where((element) => element['has_unit'] == 1)
+            .toList();
+        print(_unitList);
+        _listBrands = value[0]['responseData']['brands'];
+        // print(
+        //     '_listBrands[17] :${_listBrands.where((element) => element['id'] == 17)}');
+        // _listSubBrands = _listBrands.where((element) => element['sub_brands']!=[] || element['sub_brands']!=null).toList();
         _showContactInfo = value[0]['responseData']['show_my_contact'];
         _negotiable = value[0]['responseData']['negotiable'];
         _isFree = value[0]['responseData']['if_free'];
         _loading = false;
+
+        listOfAttributeName = _listAttributes
+            .where((element) => element['config']['type'] == 'select')
+            .toList();
+        // print('List: $listOfAttributeName');
         var _dataCurrency = _currenciesData
             .where((element) => element['default'] == true)
             .toList();
-        currencyID = _dataCurrency[0]['id'].toString();
-        // print('_listAttributes  : $_listAttributes');
+        _currencyId = _dataCurrency[0]['id'].toString();
+        // print('response  : $_listSubBrands');
         // print('_AD  : $_dataCurrency');
         // print('_AD  : $_dataCurrency');
-
       });
     });
     super.initState();
   }
 
-  Map<String,bool> _map ;
+  Map<String, bool> _map;
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     return Scaffold(
+      appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Directionality(
@@ -163,13 +215,14 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "المدينة",
+                      _strController.city,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: 1,
+                      physics: ClampingScrollPhysics(),
                       itemBuilder: (BuildContext context, index) {
                         // print(_adForm[0]['responseData']['attributes'][0]['name']);
                         return Container(
@@ -186,7 +239,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                     alignedDropdown: true,
                                     child: DropdownButton<String>(
                                       isExpanded: false,
-                                      value: cityID,
+                                      value: _cityId,
                                       iconSize: 30,
                                       icon: (null),
                                       style: TextStyle(
@@ -194,19 +247,27 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                         fontSize: 16,
                                       ),
                                       hint: Text(
-                                        cityID.toString(),
-                                        style: appStyle(fontSize: 18),
+                                        _cityId != null
+                                            ? _cityId.toString()
+                                            : _strController.selectCity,
+                                        style: appStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
                                       ),
                                       onChanged: (String value) {
                                         setState(() {
-                                          cityID = value;
-                                          print('Value:$value');
+                                          _cityId = value;
+                                          // print('Value:$value');
                                         });
                                       },
                                       items: _citiesData.map((listCity) {
                                             return new DropdownMenuItem(
                                               child: new Text(
-                                                  listCity['label'][_lang]),
+                                                listCity['label'][_lang],
+                                                style: appStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
                                               value: listCity['id'].toString(),
                                             );
                                           })?.toList() ??
@@ -229,13 +290,13 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "عنوان الإعلان",
+                      _strController.adTitle,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Container(
                       child: buildTextField(
-                          label: "عنوان الإعلان",
+                          label: _strController.adTitle,
                           controller: _titleController,
                           textInputType: TextInputType.text),
                     ),
@@ -252,13 +313,13 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "السعر",
-                            style: TextStyle(
+                            _strController.price,
+                            style: appStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           Container(
                             child: buildTextField(
-                                label: "السعر",
+                                label: _strController.price,
                                 controller: _priceController,
                                 textInputType: TextInputType.number),
                           ),
@@ -268,12 +329,13 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "العملة",
-                            style: TextStyle(
+                            _strController.currencies,
+                            style: appStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18),
                           ),
                           ListView.builder(
                             shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
                             itemCount: 1,
                             itemBuilder: (BuildContext context, index) {
                               return Container(
@@ -291,7 +353,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                           alignedDropdown: true,
                                           child: DropdownButton<String>(
                                             isExpanded: false,
-                                            value: currencyID,
+                                            value: _currencyId,
                                             iconSize: 30,
                                             icon: (null),
                                             style: TextStyle(
@@ -299,22 +361,28 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                               fontSize: 16,
                                             ),
                                             hint: Text(
-                                              currencyID.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontFamily: 'Anton'),
+                                              _currencyId.toString(),
+                                              style: appStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18),
                                             ),
                                             onChanged: (String value) {
                                               setState(() {
-                                                currencyID = value;
+                                                _currencyId = value;
                                               });
                                             },
                                             items: _currenciesData
                                                     .map((listCurrency) {
                                                   return new DropdownMenuItem(
-                                                    child: new Text(listCurrency[
-                                                            'currency_label']
-                                                        [_lang]),
+                                                    child: new Text(
+                                                      listCurrency[
+                                                              'currency_label']
+                                                          [_lang],
+                                                      style: appStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16),
+                                                    ),
                                                     value: listCurrency['id']
                                                         .toString(),
                                                   );
@@ -331,6 +399,187 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                           ),
                         ],
                       ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      if (_adForm[0]['responseData']['has_brand'])
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "النوع",
+                              style: appStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemCount: 1,
+                              itemBuilder: (BuildContext context, index) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Expanded(
+                                        flex: 1,
+                                        child: DropdownButtonHideUnderline(
+                                          child: ButtonTheme(
+                                            alignedDropdown: true,
+                                            child: DropdownButton<String>(
+                                              isExpanded: false,
+                                              value: _brandId,
+                                              iconSize: 30,
+                                              icon: (null),
+                                              style: appStyle(
+                                                color: Colors.black54,
+                                                fontSize: 16,
+                                              ),
+                                              hint: Text(
+                                                // _brandId!=null?_brandId.toString():"choose type",
+                                                _listBrands[0]['label'][_lang],
+                                                style: appStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18),
+                                              ),
+                                              onChanged: (String value) {
+                                                setState(() {
+                                                  _subBrandId = null;
+                                                  _brandId = value;
+                                                  _listSubBrands = _listBrands
+                                                      .where((element) =>
+                                                          element['id']
+                                                              .toString() ==
+                                                          value.toString())
+                                                      .toList();
+                                                  _listSubBrands =
+                                                      _listSubBrands[0]
+                                                          ['sub_brands'];
+                                                  if (_listSubBrands != [] &&
+                                                      _listSubBrands != null &&
+                                                      _listSubBrands
+                                                          .isNotEmpty) {
+                                                    setState(() {
+                                                      hasSubBrands = true;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      hasSubBrands = false;
+                                                    });
+                                                  }
+                                                  print(
+                                                      " typeee ${hasSubBrands}");
+                                                });
+                                              },
+                                              items: _listBrands
+                                                      .map((listBrand) {
+                                                    // print("LIST BRAND ${listBrand['id']}");
+                                                    return new DropdownMenuItem(
+                                                      child: new Text(
+                                                        listBrand['label']
+                                                            [_lang],
+                                                        style: appStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
+                                                      ),
+                                                      value: listBrand['id']
+                                                          .toString(),
+                                                    );
+                                                  })?.toList() ??
+                                                  [],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            if (hasSubBrands == true)
+                              SizedBox(
+                                height: 20,
+                              ),
+                            if (hasSubBrands == true)
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemCount: 1,
+                                itemBuilder: (BuildContext context, index) {
+                                  return Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        borderRadius: BorderRadius.circular(4)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 1,
+                                          child: DropdownButtonHideUnderline(
+                                            child: ButtonTheme(
+                                              alignedDropdown: true,
+                                              child: DropdownButton<String>(
+                                                isExpanded: false,
+                                                value: _subBrandId,
+                                                iconSize: 30,
+                                                icon: (null),
+                                                style: appStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                ),
+                                                hint: Text(
+                                                  // _subBrandId!=null?_subBrandId.toString():"choose sub type",
+                                                  _listSubBrands[0]['label']
+                                                      [_lang],
+                                                  style: appStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18),
+                                                ),
+                                                onChanged: (String value) {
+                                                  setState(() {
+                                                    _subBrandId = value;
+                                                    // myAdAttributes[_listSubBrands[index]['name']] = value;
+                                                    // test(_listSubBrands[index]['id'], value);
+
+                                                    // print(" typeee ${value}");
+                                                  });
+                                                },
+                                                items: _listSubBrands
+                                                        .map((listSubBrand) {
+                                                      // print("LIST BRAND ${listSubBrand['id']}");
+                                                      return new DropdownMenuItem(
+                                                        child: new Text(
+                                                          listSubBrand['label']
+                                                              [_lang],
+                                                          style: appStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16),
+                                                        ),
+                                                        value:
+                                                            listSubBrand['id']
+                                                                .toString(),
+                                                      );
+                                                    })?.toList() ??
+                                                    [],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
                       SizedBox(
                         height: 20,
                       ),
@@ -351,7 +600,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    buildTxt(txt: "قابل للتفاوض"),
+                                    buildTxt(txt: _strController.negotiable),
                                     Transform.scale(
                                       scale: 1.2,
                                       child: Checkbox(
@@ -407,8 +656,29 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                       physics: ClampingScrollPhysics(),
                       itemCount: _listAttributes.length,
                       itemBuilder: (BuildContext context, index) {
-                        var _options = _listAttributes[index]['options'];
+                        // print("LISTAT: $_listAttributes");
+                        List _options = _listAttributes[index]['options'];
                         var _type = _listAttributes[index]['config']['type'];
+                        // if (_type == 'string' || _type == 'number' || _type == 'year')
+                        //   _addController(index);
+                        // List<String> _optionsString = ['a','b','c'];
+                        // print(' OPTIONS :${_listAttributes[index]['name']}');
+                        // _optionsString.add(_listAttributes[index]['name']);
+                        // print(_optionsString);
+                        // _optionsString.forEach((String str) {
+                        //   var textEditingController = TextEditingController(text: str);
+                        //   controllers.add(textEditingController);
+                        // });
+                        // controllers[0] = _titleController;
+
+                        // print('CONTROLLERS : ${controllers[0].text.toString()}');
+                        // if (_type == 'string' || _type == 'number' || _type == 'year')
+                        //   controllers.add(TextEditingController(text: "$index"));
+                        //
+                        // print('controllerd: $controllers');
+                        _controllers.add(new TextEditingController());
+                        // _controllers[index].text = _listAttributes[index]['label'][_lang];
+                        // print('_c1:${_controllers[0].text}');
                         return _buildNumTxt(index, _type, _options, mq);
                       },
                     ),
@@ -425,7 +695,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              buildTxt(txt: "مع توصيل ؟"),
+                              buildTxt(txt: _strController.withDelivery),
                               Transform.scale(
                                 scale: 1.2,
                                 child: Checkbox(
@@ -450,9 +720,9 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "فيديو",
+                      _strController.video,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Container(
                       child: buildTextField(
@@ -462,7 +732,7 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                             size: 16,
                           ),
                           fromPhone: true,
-                          label: "فيديو",
+                          label: _strController.video,
                           controller: _videoController,
                           textInputType: TextInputType.text),
                     ),
@@ -475,14 +745,14 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "وصف الإعلان",
+                      _strController.adDescription,
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     Container(
                       child: buildTextField(
-                          label: "وصف الإعلان",
-                          controller: _addBody,
+                          label: _strController.adDescription,
+                          controller: _bodyController,
                           textInputType: TextInputType.text),
                     ),
                   ],
@@ -500,9 +770,9 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                           child: MergeSemantics(
                             child: ListTile(
                               title: Text(
-                                "إظهار معلومات الإتصال",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18),
+                                _strController.showContactInfo,
+                                style: appStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
                               ),
                               trailing: CupertinoSwitch(
                                 value: _showContactInfo,
@@ -524,9 +794,13 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                     ),
                   ],
                 ),
-                if (!_adForm[0]['responseData']['has_map'])
+                if (_adForm[0]['responseData']['has_map'])
                   RaisedButton(
-                    child: Text("Pick a Location"),
+                    child: Text(
+                      "Pick a Location",
+                      style:
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
                     onPressed: () {
                       double latitude = _selectedLocation != null
                           ? _selectedLocation.latitude
@@ -568,6 +842,17 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   }
 
   Padding _buildNumTxt(int index, _type, _options, MediaQueryData mq) {
+    List<dynamic> selectedValues = [];
+    String selectedValues2 = "";
+    // print(_listAttributes[index]["name"]);
+    if (_type != 'checkbox' ||
+        _type != 'radio') if (myAdAttributes[_listAttributes[index]["name"]]
+            ?.isEmpty ??
+        true) myAdAttributes[_listAttributes[index]["name"]] = selectedValues2;
+    if (_type == 'checkbox' ||
+        _type == 'radio') if (myAdAttributes[_listAttributes[index]["name"]]
+            ?.isEmpty ??
+        true) myAdAttributes[_listAttributes[index]["name"]] = selectedValues;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -580,67 +865,143 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
           children: [
             Text(
               _listAttributes[index]['label'][_lang].toString(),
-              style: TextStyle(
-                  color: AppColors.blackColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+              style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text(
               _type.toString(),
-              style: TextStyle(
-                  color: AppColors.blackColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+              style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Text(
               _options.length.toString(),
-              style: TextStyle(
-                  color: AppColors.blackColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+              style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             if (_options.length == 0)
-              if (_type == 'string')
-                Container(
-                  height: 45,
-                  child: buildTextField(
-                      label: _listAttributes[index]['label'][_lang].toString(),
-                      controller: _titleController,
-                      textInputType: TextInputType.text),
-                ),
-            if (_type == 'number')
-                 Container(
-                height: 60,
-                child: buildTextField(
-                    label: _listAttributes[index]['label'][_lang].toString(),
-                    controller: _titleController,
-                    textInputType: TextInputType.number),
-              ),
-            if (_type == 'year')
-                 Container(
-                height: 60,
-                child: buildTextField(
-                    label: _listAttributes[index]['label'][_lang].toString(),
-                    controller: _titleController,
-                    textInputType: TextInputType.number),
-              ),
+              if (_type == 'string' || _type == 'number' || _type == 'year')
+                Column(
+                  children: [
+                    Container(
+                      height: 60,
+                      child: buildTextField(
+                          // controller:
+                          // _controllers[index] ,
+                          // TextEditingController.fromValue(
+                          //     TextEditingValue(
+                          //       text: "",
+                          //     ),
+                          // ),
+                          onChanged: (val) {
+                            // print(_options.toString());
+                            // print('${_listAttributes[index]['name'].toString()} : ${val}');
+                            // myCategoryDynamic[_listAttributes[index]['name']].add(val.toString());
+                            myAdAttributes[_listAttributes[index]['id']] = val;
+                            test(_listAttributes[index]['id'], val);
+                            print("s-n-y:  ${_listAttributes[index]['id']}");
 
+                            // print("sss");
+                            print(myAdAttributesArray);
+                            // print('MYCAT:$myAdAttributes');
+                          },
+                          label:
+                              _listAttributes[index]['label'][_lang].toString(),
+                          textInputType: TextInputType.text),
+                    ),
+                    Text("${_listAttributes[index]['units'].length}"),
+                    Container(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                        itemCount: 1,
+                        itemBuilder: (context, newIndex) {
+
+                          return Column(
+                            children: [
+                              Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Expanded(
+                                        flex: 1,
+                                        child: DropdownButtonHideUnderline(
+                                          child: ButtonTheme(
+                                            alignedDropdown: true,
+                                            child: DropdownButton<String>(
+                                              isExpanded: false,
+                                              value: _listAttributes[index]['units'][newIndex]['unit_id'].toString(),
+                                              // value: '1',
+                                              iconSize: 30,
+                                              // icon: (null),
+                                              style: appStyle(
+                                                color: Colors.black54,
+                                                fontSize: 16,
+                                              ),
+                                              hint: Text(
+                                                _listAttributes[index]['units'][newIndex]['label'][_lang].toString(),
+                                                style: appStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  // myAdAttributes[_listAttributes[index]['id']] = value;
+                                                  print(
+                                                      "select:  ${value}");
+                                                  // test(listOfAttributeName[index]['id'], value);
+                                                  // testID = value;
+                                                  // print("$myAdAttributesArray");
+                                                });
+                                              },
+                                              items: _options
+                                                  .map<DropdownMenuItem<String>>((list) {
+                                                // print('LIST  :$list');
+                                                return new DropdownMenuItem(
+                                                  child:
+                                                  new Text("${list['label'][_lang]}"),
+                                                  value: list['id'].toString(),
+                                                );
+                                              })?.toList() ??
+                                                  [],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),),
+                    // if (_listAttributes[index]['has_unit'] == 1)
+                    //   Column(
+                    //     children: [
+                    //       ListView.builder(
+                    //           shrinkWrap: true,
+                    //           physics: ClampingScrollPhysics(),
+                    //           itemCount: _unitList.length,
+                    //           itemBuilder: (BuildContext context, index) {
+                    //             print();
+                    //             return Text();
+                    //           }),
+                    //     ],
+                    //   )
+                  ],
+                ),
             if (_type == 'dob')
               myButton(
                   fontSize: 16,
                   width: mq.size.width * 0.5,
                   height: 45,
-                  onPressed: () => _pickDateDialog(),
+                  onPressed: () =>
+                      _pickDateDialog(_listAttributes[index]['id']),
                   radius: 10,
-                  btnTxt: "Choose Date",
+                  btnTxt: _strController.chooseDate,
                   txtColor: Colors.black54,
                   btnColor: Colors.white),
-
-
             if (_options.length != 0)
-                _buildSelectRadioCheckBox(_type, _options,_listAttributes[index])
-
-
+              _buildSelectRadioCheckBox(_type, _options, _listAttributes[index])
           ],
         ),
       ),
@@ -648,12 +1009,13 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   }
 
   Container _buildButton(BuildContext context) {
+    // print("AT:$myAdAttributes");
     return Container(
       child: myButton(
         context: context,
         height: 50,
         width: double.infinity,
-        btnTxt: "نشر الإعلان",
+        btnTxt: _strController.postAd,
         fontSize: 20,
         txtColor: AppColors.whiteColor,
         radius: 10,
@@ -664,22 +1026,28 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
               sectionId: widget.sectionId.toString(),
               subSectionId: '${widget.subSectionId.toString()}',
               title: _titleController.text.toString(),
-              bodyAd: _addBody.text.toLowerCase(),
-              cityId: '8',
-              price:  _priceController.text.toString().isNotEmpty?double.parse(_priceController.text.toString()):0,
+              bodyAd: _bodyController.text.toLowerCase(),
+              cityId: _cityId,
+              price: _priceController.text.toString().isNotEmpty
+                  ? double.parse(_priceController.text.toString())
+                  : 0,
               localityId: '1',
-              lat: '${_selectedLocation.latitude}',
-              lag: '${_selectedLocation.longitude}',
-              brandId: '1',
-              subBrandId: '1',
+              lat: _selectedLocation != null
+                  ? '${_selectedLocation.latitude}'
+                  : "",
+              lag: _selectedLocation != null
+                  ? '${_selectedLocation.longitude}'
+                  : "",
+              brandId: _brandId != null ? _brandId : "",
+              subBrandId: _subBrandId != null ? _subBrandId : "",
               isDelivery: true,
               isFree: _isFree,
               showContact: _showContactInfo,
               negotiable: _negotiable,
               zoom: 14,
-              adAttributes: [],
+              adAttributes: myAdAttributesArray,
               images: [],
-              currencyId: '110');
+              currencyId: _currencyId);
           // _validateAndSubmit();
         },
       ),
@@ -687,57 +1055,40 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
   }
 
   int groupValue = -1;
-  Container _buildSelectRadioCheckBox(_type, _options,var list) {
+
+  Container _buildSelectRadioCheckBox(_type, _options, var list) {
+    // List<dynamic> selectedValues = [];
+    // // // print(_listAttributes[index]["name"]);
+    // if(_type == 'checkbox' || _type == 'radio')
+    //   if(myCategoryDynamic[list["name"]]?.isEmpty ?? true)
+    //     myCategoryDynamic[list["name"]] = selectedValues;
+
     return Container(
       child: ListView.builder(
         shrinkWrap: true,
         physics: ClampingScrollPhysics(),
         itemCount: _type == 'select' ? 1 : _options.length,
         itemBuilder: (context, index) {
+          // print(' OP $_options');
 
-          if(_type == 'checkbox')
-            print (index);
-
-
-
-            return Column(
+          return Column(
             children: [
-              // for (int i=0;i<_options.length;i++)
               if (_type == 'radio')
-              //  Row(
-              //    children: [
-              //      Row(
-              //       children: List<Widget>.generate(
-              //         1,
-              //             (int i) => Radio<int>(
-              //           value: i,
-              //
-              //           groupValue: groupValue,
-              //           onChanged: (int value) {
-              //             setState(() {
-              //               groupValue = value;
-              //             });
-              //           }
-              //         ),
-              //       ),
-              //
-              // ),
-              //      Text(
-              //        _options[index]['label'][_lang],
-              //        style: TextStyle(fontWeight: FontWeight.bold),
-              //      ),
-              //    ],
-              //  ),
-
                 Row(
                   children: <Widget>[
                     Radio<dynamic>(
                       focusColor: Colors.white,
                       groupValue: list['name'],
                       onChanged: (dynamic newValue) {
+                        test(list["id"], newValue);
                         setState(() {
                           list['name'] = newValue;
-                        });},
+                          test(list['id'], newValue);
+                          print("radio:  ${list['id']}");
+                          // print(_options[index]['label'][_lang]);
+                          // print(list['name']);
+                        });
+                      },
                       value: _options[index]['id'],
                     ),
                     Text(
@@ -746,52 +1097,34 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                     ),
                   ],
                 ),
+
+              //DATA
               if (_type == 'checkbox')
-
-              Container(
-                    color: AppColors.whiteColor,
-                    child: Padding(
+                Container(
+                  color: AppColors.whiteColor,
+                  child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child:
-                      // Row(
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // children: [
-                        //   buildTxt(txt: "${_options[index]['label'][_lang]}"),
-                          Column(
-                            children: <Widget>[
-                              new CheckboxListTile(
-                                  value: checkboxDetails.contains(_options[index]['id']),
-                                  title: new Text("${_options[index]['label'][_lang]}"),
-                                  controlAffinity: ListTileControlAffinity.leading,
-                                  tristate: true,
-                                  onChanged:(bool val){
-                                    setState(() {
-                                      checkboxDetails.contains(_options[index]['id']) ? checkboxDetails.remove(_options[index]['id']):  checkboxDetails.add(_options[index]['id']);
+                      child: new CheckboxListTile(
+                          value: myAdAttributes[list['name']]
+                              .contains(_options[index]['id']),
+                          title: new Text("${_options[index]['label'][_lang]}"),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          tristate: true,
+                          onChanged: (bool val) {
+                            setState(() {
+                              myAdAttributes[list['name']]
+                                      .contains(_options[index]['id'])
+                                  ? myAdAttributes[list['name']]
+                                      .remove(_options[index]['id'])
+                                  : myAdAttributes[list['name']]
+                                      .add(_options[index]['id']);
+                              test(list['id'], myAdAttributes[list['name']]);
+                              print(myAdAttributesArray);
+                            });
+                          })),
+                ),
+              //TODO SELECT STATUS
 
-                              });
-                                  }
-                              )
-                            ],
-                          ),
-                        //   Transform.scale(
-                        //     scale: 1.2,
-                        //     child: Checkbox(
-                        //       value: _isChecked = true,
-                        //       onChanged: (val) {
-                        //         setState(() {
-                        //           _isChecked = val;
-                        //
-                        //         });
-                        //       },
-                        //       activeColor: Colors.green,
-                        //       checkColor: Colors.white,
-                        //       tristate: false,
-                        //     ),
-                        //   ),
-                        // ],
-                      // ),
-                    ),
-                  ),
               if (_type == 'select')
                 Container(
                   decoration: BoxDecoration(
@@ -807,37 +1140,47 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
                             alignedDropdown: true,
                             child: DropdownButton<String>(
                               isExpanded: false,
-                              value: testID,
+                              value: _options[index]['id'].toString(),
+                              // value: '1',
                               iconSize: 30,
-                              icon: (null),
-                              style: TextStyle(
+                              // icon: (null),
+                              style: appStyle(
                                 color: Colors.black54,
                                 fontSize: 16,
                               ),
                               hint: Text(
-                                testID.toString(),
-                                style: TextStyle(
-                                    fontSize: 18, fontFamily: 'Anton'),
+                                _options[index]['label'][_lang].toString(),
+                                style: appStyle(
+                                  fontSize: 16,
+                                ),
                               ),
-                              onChanged: (String value) {
+                              onChanged: (value) {
                                 setState(() {
-                                  testID = value;
+                                  // myAdAttributes[_listAttributes[index]['id']] = value;
+                                  print(
+                                      "select:  ${listOfAttributeName[index]['id']}");
+                                  test(listOfAttributeName[index]['id'], value);
+                                  // testID = value;
+                                  print("$myAdAttributesArray");
                                 });
                               },
-                              items:_options.map<DropdownMenuItem<String>>((list) {
+                              items: _options
+                                      .map<DropdownMenuItem<String>>((list) {
+                                    // print('LIST  :$list');
                                     return new DropdownMenuItem(
                                       child:
-                                          new Text( list['label'][_lang] ),
-                                      value: list ['id'].toString(),
+                                          new Text("${list['label'][_lang]}"),
+                                      value: list['id'].toString(),
                                     );
-                                  })?.toList()??[] ,
+                                  })?.toList() ??
+                                  [],
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
             ],
           );
         },
@@ -878,28 +1221,16 @@ class _AddAdDataScreenState extends State<AddAdDataScreen> {
     );
   }
 
-  int _selectiona = 0;
-  int _selectionb = 0;
-
-  selectTime(dynamic timeSelected) {
-    setState(() {
-      _selectiona = timeSelected;
-    });
+  test(id, value) {
+    int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
+    // print(trendIndex);
+    print(id);
+    if (trendIndex == -1) {
+      Map<dynamic, dynamic> test = {"id": id, "value": value};
+      myAdAttributesArray.add(test);
+    } else {
+      myAdAttributesArray[trendIndex]["value"] = value;
+    }
+    print(myAdAttributesArray);
   }
 }
-
-class CheckBoxModel{
-  final String title;
-  final bool isChecked;
-
-  CheckBoxModel({this.title,this.isChecked});
-
-}
-
-// class AllData {
-//   static dataType(String type, label) {
-//     if (type == 'number') {
-//       return buildTextField(label: 'test Label');
-//     }
-//   }
-// }

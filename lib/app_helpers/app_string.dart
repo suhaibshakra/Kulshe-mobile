@@ -96,7 +96,18 @@ abstract class Strings {
   String active;
   String edit;
   String free;
+  String negotiable;
 
+  //Add Ad
+  String city;
+  String adTitle;
+  String price;
+  String currencies;
+  String video;
+  String adDescription;
+  String postAd;
+  String withDelivery;
+  String chooseDate;
 
   //Filter
   String fPrice;
@@ -204,6 +215,18 @@ class EnglishString extends Strings {
     active = "Active";
     edit = "Edit";
     free = "Free";
+    negotiable = "Negotiable";
+
+    //Add Ad
+    city = "City";
+    adTitle = "Ad Title";
+    price = "Price";
+    currencies = "Currencies";
+    video = "Video";
+    adDescription = "Ad Description";
+    postAd = "Post Ad";
+    withDelivery = "With Delivery";
+    chooseDate = "Choose Date";
 
     //Filter
     fPrice = 'Price';
@@ -311,6 +334,18 @@ class ArabicString extends Strings {
     active = "تنشيط";
     edit = "تعديل";
     free = "مجانا";
+    negotiable = "قابل للتفاوض";
+
+    //Add Ad
+    city = "المدينة";
+    adTitle = "عنوان الإعلان";
+    price = "السعر";
+    currencies = "العملة";
+    video = "الفيديو";
+    adDescription = "وصف الإعلان";
+    postAd = "نشر الإعلان";
+    withDelivery = "مع توصيل ؟";
+    chooseDate = "إختر التاريخ";
 
     //Filter
     fPrice = 'السعر';

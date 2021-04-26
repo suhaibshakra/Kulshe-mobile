@@ -355,6 +355,7 @@ buildTextField({
   TextEditingController controller,
   Function validator,
   Function onChanged,
+  Function onSubmit,
   Widget suffix,
   bool isPassword = false,
 }) {
@@ -367,6 +368,7 @@ buildTextField({
       ),
       child: TextFormField(
         showCursor: true,
+        onFieldSubmitted: onSubmit,
         controller: controller,
         validator: validator,
         onChanged: onChanged,

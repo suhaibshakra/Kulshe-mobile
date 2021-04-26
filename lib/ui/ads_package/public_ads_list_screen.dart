@@ -479,7 +479,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                       radius: 20,
                                       backgroundImage: _data['user_contact']
                                                   ['user_image'] !=
-                                              ""
+                                              null
                                           ? NetworkImage(_data['user_contact']
                                               ['user_image'])
                                           : AssetImage(
@@ -793,7 +793,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                         radius: 20,
                                         backgroundImage: _data['user_contact']
                                                     ['user_image'] !=
-                                                ""
+                                                null
                                             ? NetworkImage(_data['user_contact']
                                                 ['user_image'])
                                             : AssetImage(

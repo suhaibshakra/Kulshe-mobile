@@ -200,20 +200,20 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                           ),
                           child: Column(
                             children: [
-                              if (_data['status'] == 'deleted')
-                                Container(
-                                  height: mq.size.height * 0.2,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.whiteColor,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage(
-                                          "assets/images/deleted.png"),
-                                    ),
-                                  ),
-                                ),
-                              if (_data['status'] != 'deleted')
+                              // if (_data['status'] == 'deleted')
+                                // Container(
+                                //   height: mq.size.height * 0.2,
+                                //   decoration: BoxDecoration(
+                                //     color: AppColors.whiteColor,
+                                //     borderRadius: BorderRadius.circular(10),
+                                //     image: DecorationImage(
+                                //       fit: BoxFit.cover,
+                                //       image: AssetImage(
+                                //           "assets/images/deleted.png"),
+                                //     ),
+                                //   ),
+                                // ),
+                              // if (_data['status'] != 'deleted')
                                 Container(
                                   height: mq.size.height * 0.22,
                                   decoration: BoxDecoration(
@@ -406,7 +406,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                 ),
                               ),
                               if (_data['has_price'] &&
-                                  _data['currency'] != null)
+                                  _data['currency'] != null&&_data['price'] != 0)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16,vertical: 12),
@@ -627,7 +627,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                             ),
                             if (_data['has_price'] &&
                                 _data['currency'] != null &&
-                                _data['currency'] != 0)
+                                _data['price'] != 0)
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),

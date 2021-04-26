@@ -204,7 +204,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       itemBuilder: (ctx, index) {
         var _data = _sectionData[index];
         var _subSections = _sectionData[index]['sub_sections'] as List;
-
+        // print(_data['icon']);
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           child: Container(
@@ -226,12 +226,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               style: appStyle(
                 fontSize: 18, color: AppColors.blackColor2,fontWeight: FontWeight.w500,),),
               leading: Container(
-                width: 28,
-                height: 28,
-                child: SvgPicture.string(
-                    ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-  <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
-</svg> ''',color: AppColors.grey),
+                width: 35,
+                height: 35,
+                child:
+                // _data[index]['icon']!=null?
+                SvgPicture.network(
+                    _data['icon']!=null?_data['icon']:"https://cdn.worldvectorlogo.com/logos/angular-icon.svg",fit: BoxFit.fill,)
+//                     :SvgPicture.string(
+//                     ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+//   <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+// </svg> ''',color: AppColors.grey),
               ),
               children: [
                 GridView.count(

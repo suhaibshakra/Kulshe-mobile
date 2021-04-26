@@ -52,7 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   var appController = AppController.strings;
   String _selectedCountry = "Select country";
-  List<Profile> lastProfileData;
+  List lastProfileData;
   final ImagePicker _picker = ImagePicker();
   List _countryData;
   File _userImageFile;
@@ -102,28 +102,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     _getCountries();
-    ProfileServices.getProfileData().then((profileData) {
+    ProfileServicesNew.getProfileData().then((profileData) {
       setState(() {
         lastProfileData = profileData;
-        _myCountry = profileData[0].responseData.countryId;
-        _selectedCountry = profileData[0].responseData.country.name;
-        _nickName.text = profileData[0].responseData.nickName;
-        _fullName.text = profileData[0].responseData.fullName;
-        _email.text = profileData[0].responseData.email;
-        _mobile.text = profileData[0].responseData.mobileNumber;
-        _mobileCountryCode.text = profileData[0].responseData.mobileCountryCode;
+        _myCountry = profileData[0]['responseData']['country_id'];
+        _selectedCountry = profileData[0]['responseData']['country']['name'];
+        _nickName.text = profileData[0]['responseData']['nick_name'];
+        _fullName.text = profileData[0]['responseData']['full_name'];
+        _email.text = profileData[0]['responseData']['email'];
+        _mobile.text = profileData[0]['responseData']['mobile_number'];
+        _mobileCountryCode.text = profileData[0]['responseData']['mobile_country_code'];
         mobileCountryIsoCode.text =
-            profileData[0].responseData.mobileCountryIsoCode;
-        _newsletter = profileData[0].responseData.newsletter;
-        _promotion = profileData[0].responseData.promotions;
-        _showContactInfo = profileData[0].responseData.showContactInfo;
-        _imgURL = profileData[0].responseData.profileImage;
+            profileData[0]['responseData']['mobile_country_iso_code'];
+        _newsletter = profileData[0]['responseData']['newsletter'];
+        _promotion = profileData[0]['responseData']['promotions'];
+        _showContactInfo = profileData[0]['responseData']['show_contact_info'];
+        _imgURL = profileData[0]['responseData']['profile_image'];
         additionalPhoneNumber.text =
-            profileData[0].responseData.additionalPhoneNumber;
+            profileData[0]['responseData']['additional_phone_number'];
         additionalPhoneCountryIsoCode.text =
-            profileData[0].responseData.additionalPhoneCountryIsoCode;
+            profileData[0]['responseData']['additional_phone_country_iso_code'];
         additionalPhoneCountryCode.text =
-            profileData[0].responseData.additionalPhoneCountryCode;
+            profileData[0]['responseData']['additional_phone_country_code'];
 
         _loading = false;
 
