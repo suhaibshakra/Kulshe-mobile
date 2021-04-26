@@ -98,6 +98,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEXuRby1OzuqA3POVcC0wvtrgDgRCkpNqzbuTatWzOTSTUBDKLa2S2FjD5z_WfpH2jRHw&usqp=CAU')
         // ],
         autoplay: true,
+        dotSize: 0.2,
         dotIncreasedColor: Colors.grey,
         dotBgColor: Colors.grey.withOpacity(0.2),
         overlayShadowColors: Colors.black,
@@ -245,7 +246,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                if (_details['show_contact'])
+                                if (_details['show_contact'] && _details['user_contact'] != null && _details['user_contact']['user_image']!=null)
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -310,6 +311,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                     var _myAttributes = _attributes[position];
                                     var _selectedValue =
                                         _myAttributes['selected_value'];
+
                                     var _anotherData;
 
                                     // print('SELECTED: ${_myAttributes}');

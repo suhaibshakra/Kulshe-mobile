@@ -20,16 +20,17 @@ class _UserPanelState extends State<UserPanel> {
   bool _loading = true;
   List<Widget> listOfAdsTypes = [];
 
-  ResponseProfileData _profileData;
+  var _profileData;
 
   @override
   void initState() {
-      ProfileServices.getProfileData().then((profileData) {
-        setState(() {
-          _profileData = profileData[0].responseData;
-          _buildList();
-          _loading = false;
-        });
+    ProfileServicesNew.getProfileData()
+        .then((value) {
+      setState(() {
+        _profileData = value[0]['responseData'];
+        _buildList();
+        _loading = false;
+      });
     });
     super.initState();
   }
@@ -46,7 +47,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.blueGrey.shade400,
             ]),
             _strController.myAds,
-            _profileData.adsSummary.allAdsCount,
+            _profileData['ads_summary']['all_ads_count'],
             null,
             null,
             actionTitle: ""),
@@ -60,7 +61,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.red.shade400,
             ]),
             _strController.myFavAds,
-            _profileData.adsSummary.favoriteAdsCount,
+            _profileData['ads_summary']['favorite_ads_count'],
             null,
             null,
             actionTitle: "fav",hasList:true),
@@ -74,7 +75,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.greenAccent.shade400,
           ]),
           _strController.postedAds,
-          _profileData.adsSummary.approvedAdsCount,
+          _profileData['ads_summary']['approved_ads_count'],
           null,
           null,
           actionTitle: "approved",
@@ -89,7 +90,8 @@ class _UserPanelState extends State<UserPanel> {
             Colors.lightBlueAccent.shade400,
           ]),
           _strController.waitingAds,
-          _profileData.adsSummary.waitingApprovalAdsCount,
+          _profileData['ads_summary']['waiting_approval_ads_count'],
+
           null,
           null,
           actionTitle: "new",
@@ -104,7 +106,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.orange.shade400,
           ]),
           _strController.pausedAds,
-          _profileData.adsSummary.pausedAdsCount,
+          _profileData['ads_summary']['paused_ads_count'],
           null,
           null,
           actionTitle: "paused",
@@ -119,7 +121,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.blueGrey.shade400,
           ]),
           _strController.expiredAds,
-          _profileData.adsSummary.expiredAdsCount,
+          _profileData['ads_summary']['expired_ads_count'],
           null,
           null,
           actionTitle: "expired",
@@ -134,7 +136,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.redAccent.shade400,
           ]),
           _strController.rejectedAds,
-          _profileData.adsSummary.rejectedAdsCount,
+          _profileData['ads_summary']['rejected_ads_count'],
           null,
           null,
           actionTitle: "rejected",
@@ -149,7 +151,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.pinkAccent.shade400,
             ]),
             _strController.deletedAds,
-            _profileData.adsSummary.deletedAdsCount,
+            _profileData['ads_summary']['deleted_ads_count'],
             null,
             null,
             actionTitle: "deleted",hasList: false),
@@ -203,18 +205,18 @@ class _UserPanelState extends State<UserPanel> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Text(_profileData.nickName,style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
+                                        Text(_profileData['nick_name'],style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
                                         SizedBox(height: 5,),
-                                        Text(_profileData.email,style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
+                                        Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
                                       ],
                                     ),
                                     InkWell(
-                                      onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData.profileImage,),)),
+                                      onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
                                       child: CircleAvatar(
                                         radius: 40.0,
                                         child: Container(
                                         decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
-                                        image: DecorationImage(image: NetworkImage("${_profileData.profileImage}"),fit: BoxFit.cover)),),
+                                        image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
                                         backgroundColor: Colors.transparent,
                                       ),
                                     )
@@ -263,5 +265,5 @@ class _UserPanelState extends State<UserPanel> {
         ),
       ),
     );
-  }
+   }
 }

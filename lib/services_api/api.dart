@@ -471,6 +471,8 @@ Future addAdFunction({
         Toast.BOTTOM);
   } else {
     print(decodeData['custom_message']);
+    print(body);
+    print(decodeData);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
   }

@@ -6,11 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
 
 class SectionServicesNew {
-  static const String url = '$baseURL'+'$sections';
+  static const String url = '$baseURL' + '$sections';
+
   static Future<List> getSections() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get(url, );
+      final response = await http.get(
+        url,headers: {'lang':_pref.getString('lang')}
+      );
       // print(response.statusCode);
       if (200 == response.statusCode) {
         // print(response.body);
@@ -26,14 +29,16 @@ class SectionServicesNew {
     }
   }
 }
+
 class CountriesServices {
   static Future<List> getCountries({double isClassified = 0}) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get('${baseURL}countries?classified=$isClassified');
+      final response =
+          await http.get('${baseURL}countries?classified=$isClassified',headers: {'lang':_pref.getString('lang')});
       // print(response.statusCode);
       if (200 == response.statusCode) {
-        final List _countries =
-        jsonDecode('[${response.body}]');
+        final List _countries = jsonDecode('[${response.body}]');
         SharedPreferences _p = await SharedPreferences.getInstance();
         _p.setString("allCountriesData", jsonEncode(_countries).toString());
         return _countries;
@@ -45,9 +50,10 @@ class CountriesServices {
     }
   }
 }
+
 class MyAdsServicesNew {
   static Future<List> getMyAdsData({
-     String status,
+    String status,
     String limit,
     String offset,
   }) async {
@@ -59,10 +65,8 @@ class MyAdsServicesNew {
           headers: {
             'lang': '${_pref.getString('lang')}',
             'Accept': 'application/json',
-            'token':
-            '${_pref.getString('token')}',
-            'Authorization':
-            'bearer ${_pref.getString('token')}',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -77,7 +81,8 @@ class MyAdsServicesNew {
       return List();
     }
   }
-}//private
+} //private
+
 class PublicAdsServicesNew {
   static Future<List> getPublicAdsData({
     int sectionId,
@@ -92,13 +97,17 @@ class PublicAdsServicesNew {
     String limit,
     String offset,
     String txt = "",
-
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=$limit&offset=$offset',
-          headers: {'lang': '${_pref.getString('lang')}', 'Accept': 'application/json','token':'${_pref.getString('token')}','Authorization':'bearer ${_pref.getString('token')}'});
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
       print(response.statusCode);
       if (200 == response.statusCode) {
         print(response.statusCode);
@@ -116,6 +125,7 @@ class PublicAdsServicesNew {
     }
   }
 }
+
 class SearchAdsServices {
   static Future<List> getSearchedAdsData({
     String txt,
@@ -128,9 +138,13 @@ class SearchAdsServices {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
-
           '${baseURL}classifieds?text=$txt&hasImage=$hasImage&sort=$sort&offset=$offset&limit=$limit&countryId=${_pref.getString('countryId')}',
-          headers: {'lang': '${_pref.getString('lang')}', 'Accept': 'application/json','token':'${_pref.getString('token')}','Authorization':'bearer ${_pref.getString('token')}'});
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
       print(response.statusCode);
       if (200 == response.statusCode) {
         print(response.statusCode);
@@ -148,6 +162,7 @@ class SearchAdsServices {
     }
   }
 }
+
 class AdAddForm {
   static Future<List> getAdsForm({
     String sectionId,
@@ -158,7 +173,12 @@ class AdAddForm {
     try {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/$subSectionId/classified?iso=JO',
-          headers: {'lang': '${_pref.getString('lang')}', 'Accept': 'application/json','token':'${_pref.getString('token')}','Authorization':'bearer ${_pref.getString('token')}'});
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
       print(response.statusCode);
       if (200 == response.statusCode) {
         // print(response.statusCode);
@@ -173,6 +193,7 @@ class AdAddForm {
     }
   }
 }
+
 class FavoriteAdsServices {
   static Future<List> getFavData({
     String limit,
@@ -183,13 +204,11 @@ class FavoriteAdsServices {
       final response = await http.get(
           '${baseURL}user/classifieds/favorite?limit=$limit&offset=$offset',
           headers: {
-      'lang': '${_pref.getString('lang')}',
-      'Accept': 'application/json',
-      'token':
-      '${_pref.getString('token')}',
-      'Authorization':
-      'bearer ${_pref.getString('token')}',
-      });
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}',
+          });
       print(response.statusCode);
       if (200 == response.statusCode) {
         print(response.statusCode);
@@ -203,8 +222,57 @@ class FavoriteAdsServices {
     }
   }
 }
+
+// class ProfileServices {
+//   static const String url = '${baseURL}profile/';
+//
+//   static Future<List<Profile>> getProfileData() async {
+//     SharedPreferences _pref = await SharedPreferences.getInstance();
+//
+//     try {
+//       final response = await http.get(url, headers: {
+//         'accept': 'application/json',
+//         'token': "${_pref.getString('token')}",
+//         'Authorization': 'bearer ${_pref.getString('token')}'
+//       });
+//       print(response.statusCode);
+//       if (200 == response.statusCode) {
+//         // print(response.body);
+//         List<Profile> profile = profileFromJson('[${response.body}]');
+//         return profile;
+//       } else {
+//         return List<Profile>();
+//       }
+//     } catch (e) {
+//       return List<Profile>();
+//     }
+//   }
+// }
+class ProfileServicesNew {
+  static Future<List> getProfileData() async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get('${baseURL}profile', headers: {
+        'accept': 'application/json',
+        'token': "${_pref.getString('token')}",
+        'Authorization': 'bearer ${_pref.getString('token')}',
+        'lang': '${_pref.getString('lang')}',
+      });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        final List profile = jsonDecode('[${response.body}]');
+        return profile;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
+
 class ProfileServices {
-  static const String url = '${baseURL}profile/';
+  static const String url = '${baseURL}profile';
 
   static Future<List<Profile>> getProfileData() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
@@ -217,8 +285,10 @@ class ProfileServices {
       });
       print(response.statusCode);
       if (200 == response.statusCode) {
-        // print(response.body);
-        List<Profile> profile = profileFromJson('[${response.body}]');
+        print(response.statusCode);
+        print(response.body);
+        List<Profile> profile = jsonDecode('[${response.body}]');
+        print('profileLLL: $profile');
         return profile;
       } else {
         return List<Profile>();
@@ -228,9 +298,10 @@ class ProfileServices {
     }
   }
 }
+
 class AdDetailsServicesNew {
   static Future<List> getAdData({
-     int adId,
+    int adId,
     String slug,
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
@@ -241,11 +312,9 @@ class AdDetailsServicesNew {
           headers: {
             'lang': '${_pref.getString('lang')}',
             'Accept': 'application/json',
-            'Country-id':'${_pref.getString('countryId')}',
-            'token':
-            '${_pref.getString('token')}',
-            'Authorization':
-            'bearer ${_pref.getString('token')}',
+            'Country-id': '${_pref.getString('countryId')}',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -262,4 +331,3 @@ class AdDetailsServicesNew {
     }
   }
 }
-
