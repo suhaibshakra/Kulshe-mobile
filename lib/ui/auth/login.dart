@@ -173,6 +173,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         TextInputType.visiblePassword,
                                     label: _strController.password,
                                     isPassword: true,
+                                    maxLines: 1,
+                                    minLines: 1,
                                     hintTxt: _strController.password),
                               ],
                             ),

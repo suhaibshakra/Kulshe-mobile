@@ -5,6 +5,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/ads_package/add_ad/add_ad_form.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -818,7 +819,10 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                       child: buildIcons(
                         // label: Text(_strController.edit,style: appStyle(fontSize: 14),),
                           iconData: Icons.edit,
-                          action: () {},
+                          action: () {
+                            print('DT:${_data}');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => AddAdForm(comeFrom: 'edit',sectionId: _data['section_id'].toString(),subSectionId: _data['sub_section_id'],),));
+                          },
                           size: 30,
                           color: AppColors.blue),
                     ),

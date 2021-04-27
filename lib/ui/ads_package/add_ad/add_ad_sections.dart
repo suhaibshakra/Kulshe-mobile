@@ -6,6 +6,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ad_add_last.dart';
+import 'add_ad_form.dart';
 
 class AddAdSectionsScreen extends StatefulWidget {
   @override
@@ -107,10 +108,11 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          AddAdDataScreen(
+                                          AddAdForm(
                                             section: _data['label']['ar'],
                                             sectionId: _data['id'],
                                             subSectionId: data['id'],
+                                            comeFrom: 'add',
                                           ),
                                     ),
                                   );
@@ -189,7 +191,8 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                         child:
                         // _data[index]['icon']!=null?
                         SvgPicture.network(
-                          _data['icon']!=null?_data['icon']:"https://cdn.worldvectorlogo.com/logos/angular-icon.svg",fit: BoxFit.fill,)
+                          // _data['icon']!=null?_data['icon']:
+                          "https://svgsilh.com/svg/296742.svg",fit: BoxFit.fill,)
 //                     :SvgPicture.string(
 //                     ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
 //   <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
@@ -218,10 +221,11 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    AddAdDataScreen(
+                                    AddAdForm(
                                       section: _data['label']['ar'],
                                       sectionId: _data['id'],
                                       subSectionId: data['id'],
+                                      comeFrom: 'add',
                                     ),
                               ),
                             );

@@ -357,6 +357,8 @@ buildTextField({
   Function onChanged,
   Function onSubmit,
   Widget suffix,
+  int minLines,
+  int maxLines,
   bool isPassword = false,
 }) {
   return Padding(
@@ -368,6 +370,8 @@ buildTextField({
       ),
       child: TextFormField(
         showCursor: true,
+        maxLines: maxLines,
+        minLines: minLines,
         onFieldSubmitted: onSubmit,
         controller: controller,
         validator: validator,
