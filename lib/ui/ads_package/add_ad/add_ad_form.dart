@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
@@ -55,11 +57,41 @@ class _AddAdFormState extends State<AddAdForm> {
   List _listSubBrands;
   List _listUnits;
   List _options;
+  List _images;
   String _type;
   List<dynamic> myAdAttributesArray = []; //edit
   List<dynamic> myAdAttributesMulti = []; //edit
   Map myAdAttributes = {}; //edit
   DateTime _selectedDate;
+  final ImagePicker _picker = ImagePicker();
+  File _userImageFile;
+  var bytes;
+  File _pickedImage;
+  var _userImage;
+  var _imgURL;
+
+  void _pickImageLast(ImageSource src) async {
+    final pickedImageFile =
+        await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+    print('PC:$_picker');
+    if (pickedImageFile != null) {
+      setState(() {
+        _pickedImage = File(pickedImageFile.path);
+      });
+      _userImageFile = _pickedImage;
+      bytes = File(_userImageFile.path).readAsBytesSync();
+
+      String fileName = _userImageFile.path.split('/').last;
+      fileName = fileName.split('.').last;
+
+      print(fileName);
+      print("data:image/$fileName;base64,${base64Encode(bytes)}");
+      _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
+      _images.add({"image": _userImage != null ? _userImage : "sss"});
+    } else {
+      print('No Image Selected');
+    }
+  }
 
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -87,12 +119,12 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   _buildMap(id, value, {unitID}) {
-    print(id);
-    print( unitID);
-    print(  unitID != null);
+    // print(id);
+    print(unitID);
+    // print(unitID != null);
     int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
     // print(trendIndex);
-    print(id);
+    // print(id);
     if (trendIndex == -1) {
       Map<dynamic, dynamic> mapData = unitID != null
           ? {"id": id, "value": value, "unit_id": unitID}
@@ -100,8 +132,7 @@ class _AddAdFormState extends State<AddAdForm> {
       myAdAttributesArray.add(mapData);
     } else {
       myAdAttributesArray[trendIndex]["value"] = value;
-      if(unitID != null) myAdAttributesArray[trendIndex]["unit_id"] = unitID;
-
+      if (unitID != null) myAdAttributesArray[trendIndex]["unit_id"] = unitID;
     }
     print(myAdAttributesArray);
   }
@@ -131,6 +162,7 @@ class _AddAdFormState extends State<AddAdForm> {
     _getCountries();
     myAdAttributesArray = [];
     myAdAttributes = {};
+    myAdAttributesMulti = [];
     AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
         .then((value) {
       setState(() {
@@ -174,595 +206,23 @@ class _AddAdFormState extends State<AddAdForm> {
                       children: [
                         if (widget.comeFrom == 'add') _buildPath(mq),
                         _buildConstData(),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
-                              itemCount: _listAttributes.length,
-                              itemBuilder: (ctx, mainIndex) {
-                                _listUnits =
-                                    _listAttributes[mainIndex]['units'];
-                                _options =
-                                    _listAttributes[mainIndex]['options'];
-                                _type = _listAttributes[mainIndex]['config']
-                                    ['type'];
-                                List<dynamic> selectedValues = [];
-                                String selectedValues2 = "";
-                                if (_type != 'checkbox' ||
-                                    _type != 'radio') if (myAdAttributes[
-                                            _listAttributes[mainIndex]["name"]]
-                                        ?.isEmpty ??
-                                    true)
-                                  myAdAttributes[_listAttributes[mainIndex]
-                                      ["name"]] = selectedValues2;
-                                if (_type == 'checkbox' ||
-                                    _type == 'radio') if (myAdAttributes[
-                                            _listAttributes[mainIndex]["name"]]
-                                        ?.isEmpty ??
-                                    true)
-                                  myAdAttributes[_listAttributes[mainIndex]
-                                      ["name"]] = selectedValues;
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8, horizontal: 8),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        _listAttributes[mainIndex]['label']
-                                                [_lang]
-                                            .toString(),
-                                        style: appStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      if (_options.length == 0)
-                                        if (_type == 'string' ||
-                                            _type == 'number' ||
-                                            _type == 'year')
-                                          buildTextField(
-                                              onChanged: (val) {
-                                                myAdAttributes[
-                                                    _listAttributes[mainIndex]
-                                                        ['id']] = val;
-                                                if (_listAttributes[mainIndex]
-                                                        ['has_unit'] ==
-                                                    1) {
-                                                  _buildMap(
-                                                      _listAttributes[mainIndex]
-                                                          ['id'],
-                                                      val,
-                                                      unitID: "");
-                                                } else {
-                                                  _buildMap(
-                                                      _listAttributes[mainIndex]
-                                                          ['id'],
-                                                      val,
-                                                      unitID: "");
-                                                }
-                                                print(
-                                                    "s-n-y:  ${_listAttributes[mainIndex]['id']}");
-
-                                                // print("sss");
-                                                print(myAdAttributesArray);
-                                                // print('MYCAT:$myAdAttributes');
-                                              },
-                                              label: _listAttributes[mainIndex]
-                                                      ['label'][_lang]
-                                                  .toString(),
-                                              textInputType:
-                                                  TextInputType.text),
-                                      if (_listAttributes[mainIndex]
-                                              ['has_unit'] ==
-                                          1)
-                                        // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
-                                        ListView.builder(
-                                            itemCount: 1,
-                                            physics: ClampingScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemBuilder: (_, unitIndex) {
-                                              return Column(
-                                                children: [
-                                                  if (_listAttributes[mainIndex]
-                                                          ['id'] ==
-                                                      _listUnits[unitIndex]
-                                                          ['attribute_id'])
-                                                    Text(
-                                                        "${_listAttributes[mainIndex]['units'][unitIndex]['label']}"),
-                                                  if (_listAttributes[mainIndex]
-                                                          ['id'] ==
-                                                      _listUnits[unitIndex]
-                                                          ['attribute_id'])
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                          color: AppColors.grey
-                                                              .withOpacity(0.2),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8)),
-                                                      child: Column(
-                                                        children: [
-                                                          DropdownButtonHideUnderline(
-                                                            child: ButtonTheme(
-                                                              alignedDropdown:
-                                                                  true,
-                                                              child:
-                                                                  DropdownButton<
-                                                                      String>(
-                                                                isExpanded:
-                                                                    true,
-                                                                // value: _listAttributes[mainIndex]['units'][unitIndex]['unit_id'].toString(),
-                                                                // value: '1',
-                                                                iconSize: 30,
-                                                                // icon: (null),
-                                                                style: appStyle(
-                                                                  color: Colors
-                                                                      .black54,
-                                                                  fontSize: 16,
-                                                                ),
-                                                                hint: Text(
-                                                                  _listUnits[unitIndex]
-                                                                              [
-                                                                              'label']
-                                                                          [
-                                                                          _lang]
-                                                                      .toString(),
-                                                                  style:
-                                                                      appStyle(
-                                                                    fontSize:
-                                                                        16,
-                                                                  ),
-                                                                ),
-                                                                onChanged:
-                                                                    (value) {
-
-                                                                  print( _listAttributes[mainIndex]['units'][unitIndex].toString());
-                                                                  setState(() {
-                                                                    // testID = value;
-                                                                    int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-                                                                    //
-                                                                    _buildMap(_listAttributes[mainIndex]['id'],myAdAttributesArray[trendIndex]['value'], unitID: value);
-                                                                    // print(
-                                                                    //     "${myAdAttributesArray[trendIndex]}");
-                                                                  });
-                                                                },
-                                                                items: _listUnits
-                                                                        .map<DropdownMenuItem<String>>(
-                                                                            (listUnits) {
-                                                                      // print('LIST  :$list');
-                                                                      return new DropdownMenuItem(
-                                                                        child: new Text(
-                                                                            "${listUnits['label'][_lang]}"),
-                                                                        value: _listUnits[unitIndex]['unit_id']
-                                                                            .toString(),
-                                                                      );
-                                                                    })?.toList() ??
-                                                                    [],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                ],
-                                              );
-                                            }),
-                                      if (_type == 'dob')
-                                        myButton(
-                                            fontSize: 16,
-                                            width: mq.size.width * 0.5,
-                                            height: 45,
-                                            onPressed: () => _pickDateDialog(
-                                                _listAttributes[mainIndex]
-                                                    ['id']),
-                                            radius: 10,
-                                            btnTxt: chosenDate,
-                                            txtColor: Colors.black54,
-                                            btnColor: Colors.white),
-                                      if (_options.length != 0)
-                                        GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                    childAspectRatio: _type ==
-                                                                'select' ||
-                                                            _type ==
-                                                                'multiple_select'
-                                                        ? 7
-                                                        : 1,
-                                                    crossAxisCount: _type ==
-                                                                'select' ||
-                                                            _type ==
-                                                                'multiple_select'
-                                                        ? 1
-                                                        : 3),
-                                            shrinkWrap: true,
-                                            physics: ClampingScrollPhysics(),
-                                            itemCount: _type == 'select' ||
-                                                    _type == 'multiple_select'
-                                                ? 1
-                                                : _options.length,
-                                            itemBuilder: (context, rcsIndex) {
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                    color: AppColors.grey
-                                                        .withOpacity(0.2),
-                                                    borderRadius: _type ==
-                                                            'select'
-                                                        ? BorderRadius.circular(
-                                                            8)
-                                                        : BorderRadius.circular(
-                                                            0)),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    if (_type == 'radio')
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: <Widget>[
-                                                          Radio<dynamic>(
-                                                            focusColor:
-                                                                Colors.white,
-                                                            groupValue:
-                                                                _listAttributes[
-                                                                        mainIndex]
-                                                                    ['name'],
-                                                            onChanged: (dynamic
-                                                                newValue) {
-                                                              _buildMap(
-                                                                  _listAttributes[
-                                                                          mainIndex]
-                                                                      ["id"],
-                                                                  newValue);
-                                                              setState(() {
-                                                                _listAttributes[
-                                                                            mainIndex]
-                                                                        [
-                                                                        'name'] =
-                                                                    newValue;
-                                                                _buildMap(
-                                                                    _listAttributes[
-                                                                            mainIndex]
-                                                                        ['id'],
-                                                                    newValue);
-                                                                print(
-                                                                    "radio:  ${_listAttributes[mainIndex]['id']}");
-                                                                // print(_options[index]['label'][_lang]);
-                                                                // print(list['name']);
-                                                              });
-                                                            },
-                                                            value: _options[
-                                                                rcsIndex]['id'],
-                                                          ),
-                                                          Text(
-                                                            _options[rcsIndex]
-                                                                    ['label']
-                                                                [_lang],
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                fontSize: 13),
-                                                          ),
-                                                        ],
-                                                      ),
-
-                                                    if (_type == 'checkbox')
-                                                      CheckboxListTile(
-                                                          value: myAdAttributes[
-                                                                  _listAttributes[
-                                                                          mainIndex]
-                                                                      ['name']]
-                                                              .contains(_options[
-                                                                      rcsIndex]
-                                                                  ['id']),
-                                                          title: new Text(
-                                                              "${_options[rcsIndex]['label'][_lang]}"),
-                                                          controlAffinity:
-                                                              ListTileControlAffinity
-                                                                  .leading,
-                                                          tristate: true,
-                                                          onChanged:
-                                                              (bool val) {
-                                                            setState(() {
-                                                              myAdAttributes[_listAttributes[mainIndex]['name']]
-                                                                      .contains(
-                                                                          _options[rcsIndex][
-                                                                              'id'])
-                                                                  ? myAdAttributes[
-                                                                          _listAttributes[mainIndex][
-                                                                              'name']]
-                                                                      .remove(_options[rcsIndex][
-                                                                          'id'])
-                                                                  : myAdAttributes[
-                                                                          _listAttributes[mainIndex]
-                                                                              [
-                                                                              'name']]
-                                                                      .add(_options[rcsIndex]
-                                                                          ['id']);
-                                                              _buildMap(
-                                                                  _listAttributes[
-                                                                          mainIndex]
-                                                                      ['id'],
-                                                                  myAdAttributes[
-                                                                      _listAttributes[
-                                                                              mainIndex]
-                                                                          [
-                                                                          'name']]);
-                                                              print(
-                                                                  myAdAttributesArray);
-                                                            });
-                                                          }),
-
-                                                    if (_type == 'select')
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        8)),
-                                                        child: Column(
-                                                          children: [
-                                                            DropdownButtonHideUnderline(
-                                                              child:
-                                                                  ButtonTheme(
-                                                                alignedDropdown:
-                                                                    true,
-                                                                child:
-                                                                    DropdownButton<
-                                                                        String>(
-                                                                  isExpanded:
-                                                                      true,
-                                                                  value: _options[
-                                                                              rcsIndex]
-                                                                          ['id']
-                                                                      .toString(),
-                                                                  // value: '1',
-                                                                  iconSize: 30,
-                                                                  // icon: (null),
-                                                                  style:
-                                                                      appStyle(
-                                                                    color: Colors
-                                                                        .black54,
-                                                                    fontSize:
-                                                                        16,
-                                                                  ),
-                                                                  hint: Text(
-                                                                    _options[rcsIndex]['label']
-                                                                            [
-                                                                            _lang]
-                                                                        .toString(),
-                                                                    style:
-                                                                        appStyle(
-                                                                      fontSize:
-                                                                          16,
-                                                                    ),
-                                                                  ),
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      print(
-                                                                          "select:  ${_listAttributes[mainIndex]['id']}");
-                                                                      _buildMap(
-                                                                          _listAttributes[mainIndex]
-                                                                              [
-                                                                              'id'],
-                                                                          value);
-                                                                      // testID = value;
-                                                                      print(
-                                                                          "$myAdAttributesArray");
-                                                                    });
-                                                                  },
-                                                                  items: _options
-                                                                          .map<DropdownMenuItem<String>>(
-                                                                              (listOptions) {
-                                                                        // print('LIST  :$list');
-                                                                        return new DropdownMenuItem(
-                                                                          child:
-                                                                              new Text("${listOptions['label'][_lang]}"),
-                                                                          value:
-                                                                              listOptions['id'].toString(),
-                                                                        );
-                                                                      })?.toList() ??
-                                                                      [],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-
-                                                    if (_type ==
-                                                        'multiple_select')
-                                                      AlertDialog(
-                                                        title: Text(
-                                                            'Select animals'),
-                                                        contentPadding:
-                                                            EdgeInsets.only(
-                                                                top: 12.0),
-                                                        content:
-                                                            SingleChildScrollView(
-                                                          child: ListTileTheme(
-                                                            contentPadding:
-                                                                EdgeInsets
-                                                                    .fromLTRB(
-                                                                        14.0,
-                                                                        0.0,
-                                                                        24.0,
-                                                                        0.0),
-                                                            child: ListBody(
-                                                              children: _options
-                                                                  .map(
-                                                                      _buildItem)
-                                                                  .toList(),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        actions: <Widget>[
-                                                          FlatButton(
-                                                            child:
-                                                                Text('CANCEL'),
-                                                            onPressed:
-                                                                _onCancelTap,
-                                                          ),
-                                                          FlatButton(
-                                                            child: Text('OK'),
-                                                            onPressed:
-                                                                _onSubmitTap,
-                                                          )
-                                                        ],
-                                                      ),
-                                                    // Container(
-                                                    //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                                                    //   child: Column(
-                                                    //     children: [
-                                                    //       DropdownButtonHideUnderline(
-                                                    //         child: ButtonTheme(
-                                                    //           alignedDropdown: true,
-                                                    //           child: DropdownButton<dynamic>(
-                                                    //             isExpanded: true,
-                                                    //             value: _options[rcsIndex]['id'].toString(),
-                                                    //             // value: '1',
-                                                    //             iconSize: 30,
-                                                    //             // icon: (null),
-                                                    //             style: appStyle(
-                                                    //               color: Colors.black54,
-                                                    //               fontSize: 16,
-                                                    //             ),
-                                                    //             hint: Text(
-                                                    //               _options[rcsIndex]['label'][_lang].toString(),
-                                                    //               style: appStyle(
-                                                    //                 fontSize: 16,
-                                                    //               ),
-                                                    //             ),
-                                                    //             onChanged: (value) {
-                                                    //               setState(() {
-                                                    //                 print("ss");
-                                                    //                 print(
-                                                    //                     "select:  ${_listAttributes[mainIndex]['id']}");
-                                                    //                 _buildMap(_listAttributes[mainIndex]['id'], value);
-                                                    //                 // testID = value;
-                                                    //                 print("$myAdAttributesArray");
-                                                    //               });
-                                                    //             },
-                                                    //
-                                                    //             items: _options .map<DropdownMenuItem<dynamic>>((listOptions) {
-                                                    //                 print('LIST  :${myAdAttributesMulti}');
-                                                    //                 print('LIST  :${myAdAttributesMulti.contains(listOptions['id'])}');
-                                                    //
-                                                    //                 final checked = myAdAttributesMulti.contains(listOptions['id']);
-                                                    //                 // print('LIST  :${myAdAttributes[_listAttributes[mainIndex]['name']]}');
-                                                    //                 // print('LIST  :${myAdAttributes[_listAttributes[mainIndex]['name']].contains(listOptions['id'])}');
-                                                    //                 var checkedValue=true;
-                                                    //
-                                                    //                 return new AlertDialog(
-                                                    //                     title: Text('Select animals'),
-                                                    //                     contentPadding: EdgeInsets.only(top: 12.0),
-                                                    //                     content: SingleChildScrollView(
-                                                    //                       child: ListTileTheme(
-                                                    //                         contentPadding: EdgeInsets.fromLTRB(14.0, 0.0, 24.0, 0.0),
-                                                    //                         child: ListBody(
-                                                    //                           children: widget.items.map(_buildItem).toList(),
-                                                    //                         ),
-                                                    //                       ),
-                                                    //                     ),
-                                                    //                     actions: <Widget>[
-                                                    //                       FlatButton(
-                                                    //                         child: Text('CANCEL'),
-                                                    //                         onPressed: _onCancelTap,
-                                                    //                       ),
-                                                    //                       FlatButton(
-                                                    //                         child: Text('OK'),
-                                                    //                         onPressed: _onSubmitTap,
-                                                    //                       )
-                                                    //                     ]
-                                                    //
-                                                    //                   ,
-                                                    //                 );
-                                                    //               }).toList(),
-                                                    //             // _options
-                                                    //             //     .map<DropdownMenuItem<dynamic>>((listOptions) {
-                                                    //             //   print('LIST  :${myAdAttributesMulti}');
-                                                    //             //   print('LIST  :${myAdAttributesMulti.contains(listOptions['id'])}');
-                                                    //             //   // print('LIST  :${myAdAttributes[_listAttributes[mainIndex]['name']]}');
-                                                    //             //   // print('LIST  :${myAdAttributes[_listAttributes[mainIndex]['name']].contains(listOptions['id'])}');
-                                                    //             //   var checkedValue=true;
-                                                    //             //   return new DropdownMenuItem(
-                                                    //             //     child:
-                                                    //             //     new CheckboxListTile(
-                                                    //             //       value: myAdAttributesMulti.contains(listOptions['id']) ? true : false,
-                                                    //             //       title: new Text("${listOptions['label'][_lang]}"),
-                                                    //             //       // value: checkedValue,
-                                                    //             //       onChanged: (dynamic newValue) {
-                                                    //             //         setState(() {
-                                                    //             //           myAdAttributesMulti.contains(listOptions['id'])
-                                                    //             //               ? myAdAttributesMulti.remove(listOptions['id'])
-                                                    //             //               : myAdAttributesMulti.add(listOptions['id']);
-                                                    //             //         });
-                                                    //             //       },
-                                                    //             //       controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
-                                                    //             //     ),
-                                                    //             //     value: listOptions['id'].toString(),
-                                                    //             //
-                                                    //             //   );
-                                                    //             // })?.toList() ??
-                                                    //             //     [],
-                                                    //           ),
-                                                    //         ),
-                                                    //       ),
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
-                                                    // Center(
-                                                    //     child: DropdownButton(
-                                                    //       items: [
-                                                    //         DropdownMenuItem(
-                                                    //           child: Row(
-                                                    //             children: <Widget>[
-                                                    //               Checkbox(
-                                                    //                 onChanged: (bool value) {
-                                                    //
-                                                    //                 },
-                                                    //                 // value: _firstValue,
-                                                    //               ),
-                                                    //               Text('First'),
-                                                    //             ],
-                                                    //           ),
-                                                    //         ),
-                                                    //         DropdownMenuItem(
-                                                    //           child: Row(
-                                                    //             children: <Widget>[
-                                                    //               Checkbox(
-                                                    //                 onChanged: (bool value) {
-                                                    //                 },
-                                                    //                 value: _listAttributes[mainIndex]['label'],
-                                                    //               ),
-                                                    //               Text('Second'),
-                                                    //             ],
-                                                    //           ),
-                                                    //         )
-                                                    //       ],
-                                                    //       onChanged: (value) {
-                                                    //       },
-                                                    //       hint: Text('Select value'),
-                                                    //     )
-                                                    // )
-                                                  ],
-                                                ),
-                                              );
-                                            }),
-                                    ],
-                                  ),
-                                );
-                              }),
+                        _buildDynamicData(mq),
+                        Center(
+                          child: buildIconWithTxt(
+                            iconData: Icons.image_outlined,
+                            iconColor: AppColors.redColor,
+                            label: Text(
+                              _strController.labelGallery,
+                              style: appStyle(
+                                  fontSize: 16,
+                                  color: AppColors.redColor,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            action: () => _pickImageLast(ImageSource.gallery),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                         _buildButton(context),
                       ],
@@ -771,6 +231,351 @@ class _AddAdFormState extends State<AddAdForm> {
                 ),
         ),
       ),
+    );
+  }
+
+  Padding _buildDynamicData(MediaQueryData mq) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: ListView.builder(
+          shrinkWrap: true,
+          physics: ClampingScrollPhysics(),
+          itemCount: _listAttributes.length,
+          itemBuilder: (ctx, mainIndex) {
+            _listUnits = _listAttributes[mainIndex]['units'];
+            _options = _listAttributes[mainIndex]['options'];
+            _type = _listAttributes[mainIndex]['config']['type'];
+            List<dynamic> selectedValues = [];
+            String selectedValues2 = "";
+            if (_type != 'checkbox' || _type != 'radio') if (myAdAttributes[
+                        _listAttributes[mainIndex]["name"]]
+                    ?.isEmpty ??
+                true)
+              myAdAttributes[_listAttributes[mainIndex]["name"]] =
+                  selectedValues2;
+            if (_type == 'checkbox' || _type == 'radio') if (myAdAttributes[
+                        _listAttributes[mainIndex]["name"]]
+                    ?.isEmpty ??
+                true)
+              myAdAttributes[_listAttributes[mainIndex]["name"]] =
+                  selectedValues;
+            return buildMainAttributes(mainIndex, mq);
+          }),
+    );
+  }
+
+  Padding buildMainAttributes(int mainIndex, MediaQueryData mq) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _listAttributes[mainIndex]['label'][_lang].toString(),
+            style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          if (_options.length == 0)
+            if (_type == 'string' || _type == 'number' || _type == 'year')
+              _buildSNY(mainIndex),
+          if (_listAttributes[mainIndex]['has_unit'] == 1)
+            // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
+            ListView.builder(
+                itemCount: 1,
+                physics: ClampingScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (_, unitIndex) {
+                  return Column(
+                    children: [
+                      if (_listAttributes[mainIndex]['id'] ==
+                          _listUnits[unitIndex]['attribute_id'])
+                        Text(
+                            "${_listAttributes[mainIndex]['units'][unitIndex]['label']}"),
+                      if (_listAttributes[mainIndex]['id'] ==
+                          _listUnits[unitIndex]['attribute_id'])
+                        _buildUnits(_listUnits, unitIndex, mainIndex),
+                    ],
+                  );
+                }),
+          if (_type == 'dob')
+            myButton(
+                fontSize: 16,
+                width: mq.size.width * 0.5,
+                height: 45,
+                onPressed: () =>
+                    _pickDateDialog(_listAttributes[mainIndex]['id']),
+                radius: 10,
+                btnTxt: chosenDate,
+                txtColor: Colors.black54,
+                btnColor: Colors.white),
+          if (_options.length != 0)
+            GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: _type == 'select' ? 7 : 1.5,
+                    crossAxisCount:
+                        _type == 'select' || _type == 'multiple_select'
+                            ? 1
+                            : 3),
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemCount: _type == 'select' || _type == 'multiple_select'
+                    ? 1
+                    : _options.length,
+                itemBuilder: (context, rcsIndex) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: AppColors.grey.withOpacity(0.2),
+                        borderRadius: _type == 'select'
+                            ? BorderRadius.circular(8)
+                            : BorderRadius.circular(0)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (_type == 'radio') _buildRadio(mainIndex, rcsIndex),
+                        if (_type == 'checkbox')
+                          _buildCheckbox(mainIndex, rcsIndex),
+                        if (_type == 'select')
+                          _buildSelect(rcsIndex, mainIndex),
+                        if (_type == 'multiple_select') buildMultiAlertDialog(mainIndex),
+                      ],
+                    ),
+                  );
+                }),
+        ],
+      ),
+    );
+  }
+
+  Container _buildUnits(List _listUnits, int unitIndex, int mainIndex) {
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    if(trendIndex == -1){
+      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['options'][0]['id'],unitID:_listUnits[0]);
+    }
+    return Container(
+      decoration: BoxDecoration(
+          color: AppColors.grey.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        children: [
+          DropdownButtonHideUnderline(
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: myAdAttributesArray[trendIndex]['unit_id'],
+                iconSize: 30,
+                style: appStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                ),
+                hint: Text(
+                  _listUnits[unitIndex]['label'][_lang].toString(),
+                  style: appStyle(
+                    fontSize: 16,
+                  ),
+                ),
+                onChanged: (value) {
+                  // print(_listAttributes[mainIndex]['units'][unitIndex].toString());
+                  setState(() {
+                    // testID = value;
+                    print(_listAttributes[mainIndex]['id']);
+                    print(_listAttributes[mainIndex]);
+                    int trendIndex = myAdAttributesArray
+                        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+                    // print('op:${_listAttributes[mainIndex]}');
+                    // if(trendIndex!= -1)
+                    if(trendIndex == -1){
+                      _buildMap(_listAttributes[mainIndex]['id'],'',unitID: value);
+                    }else{
+                      _buildMap(_listAttributes[mainIndex]['id'],
+                          myAdAttributesArray[trendIndex]['value'],
+                          unitID: value);
+                    }
+
+                  });
+                },
+                items: _listUnits.map<DropdownMenuItem<String>>((listUnits) {
+                      // print('LIST  :$list');
+                      return new DropdownMenuItem(
+                        child: new Text("${listUnits['label'][_lang]}"),
+                        value: listUnits['unit_id'].toString(),
+                      );
+                    })?.toList() ??
+                    [],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildSNY(int mainIndex) {
+    return Container(
+      child: buildTextField(
+          onChanged: (val) {
+            myAdAttributes[_listAttributes[mainIndex]['id']] = val;
+            if (_listAttributes[mainIndex]['has_unit'] == 1) {
+              _buildMap(_listAttributes[mainIndex]['id'], val, unitID: "");
+            } else {
+              _buildMap(
+                _listAttributes[mainIndex]['id'],
+                val,
+              );
+            }
+            print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
+
+            // print("sss");
+            print(myAdAttributesArray);
+            // print('MYCAT:$myAdAttributes');
+          },
+          label: _listAttributes[mainIndex]['label'][_lang].toString(),
+          textInputType: TextInputType.text),
+    );
+  }
+
+  buildMultiAlertDialog(mainIndex) {
+    return SingleChildScrollView(
+      child:
+           Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  height: MediaQuery.of(context).size.height*0.3,
+                  child: ListView(
+                    // physics: ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
+                  ),
+                ),
+              ),
+              Expanded(
+                  flex: 1,
+                  child: Text('down')
+              ),
+            ],
+          ),
+
+    );
+  }
+
+  Container _buildSelect(int rcsIndex, int mainIndex) {
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    if(trendIndex == -1){
+      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['options'][0]['id']);
+    }
+
+    var val = "";
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      child: Column(
+        children: [
+          DropdownButtonHideUnderline(
+            child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value:myAdAttributesArray[trendIndex]['value']
+                    .toString(),
+                // value: '1',
+                iconSize: 30,
+                // icon: (null),
+                style: appStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                ),
+                // hint: Text(
+                //   "_options[rcsIndex]['label'][_lang].toString()",
+                //   style: appStyle(
+                //     fontSize: 16,
+                //   ),
+                // ),
+                onChanged: (value) {
+                  setState(() {
+                    // myAdAttributesArray[_listAttributes[mainIndex]['id']]['value'] = value;
+                    print("select:  ${_listAttributes[mainIndex]['id']}");
+                    print(value);
+                    // List newOp = _listAttributes[mainIndex]['options'];
+                    // newOp = newOp
+                    //     .where((element) => element['id'].toString() == value)
+                    //     .toList();
+
+                    // print(newOp[rcsIndex]['id']);
+                    // print(_listAttributes[mainIndex]['options'] );
+                    // val = newOp[rcsIndex]['label'][_lang];
+                    _buildMap(_listAttributes[mainIndex]['id'], value);
+                    // testID = value;
+                    print("$myAdAttributesArray");
+                  });
+                },
+                items: _listAttributes[mainIndex]['options']
+                        .map<DropdownMenuItem<String>>((listOptions) {
+                      // print('LIST  :$list');
+                      return new DropdownMenuItem(
+                        child: new Text(
+                            val == "" ? "${listOptions['label'][_lang]}" : val),
+                        value: listOptions['id'].toString(),
+                      );
+                    })?.toList() ??
+                    [],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  CheckboxListTile _buildCheckbox(int mainIndex, int rcsIndex) {
+    return CheckboxListTile(
+        value: myAdAttributes[_listAttributes[mainIndex]['name']]
+            .contains(_options[rcsIndex]['id']),
+        title: new Text("${_options[rcsIndex]['label'][_lang]}"),
+        controlAffinity: ListTileControlAffinity.leading,
+        tristate: true,
+        onChanged: (bool val) {
+          setState(() {
+            myAdAttributes[_listAttributes[mainIndex]['name']]
+                    .contains(_options[rcsIndex]['id'])
+                ? myAdAttributes[_listAttributes[mainIndex]['name']]
+                    .remove(_options[rcsIndex]['id'])
+                : myAdAttributes[_listAttributes[mainIndex]['name']]
+                    .add(_options[rcsIndex]['id']);
+            _buildMap(_listAttributes[mainIndex]['id'],
+                myAdAttributes[_listAttributes[mainIndex]['name']]);
+            print(myAdAttributesArray);
+          });
+        });
+  }
+
+  Row _buildRadio(int mainIndex, int rcsIndex) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Radio<dynamic>(
+          focusColor: Colors.white,
+          groupValue: _listAttributes[mainIndex]['name'],
+          onChanged: (dynamic newValue) {
+            _buildMap(_listAttributes[mainIndex]["id"], newValue);
+            setState(() {
+              _listAttributes[mainIndex]['name'] = newValue;
+              _buildMap(_listAttributes[mainIndex]['id'], newValue);
+              print("radio:  ${_listAttributes[mainIndex]['id']}");
+              // print(_options[index]['label'][_lang]);
+              // print(list['name']);
+            });
+          },
+          value: _options[rcsIndex]['id'],
+        ),
+        Text(
+          _options[rcsIndex]['label'][_lang],
+          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+        ),
+      ],
     );
   }
 
@@ -845,7 +650,7 @@ class _AddAdFormState extends State<AddAdForm> {
               negotiable: _negotiable,
               zoom: 14,
               adAttributes: myAdAttributesArray,
-              images: [],
+              images: _images != null ? _images : [],
               currencyId: _currencyId);
           // _validateAndSubmit();
         },
@@ -1097,7 +902,7 @@ class _AddAdFormState extends State<AddAdForm> {
                                       hasSubBrands = false;
                                     });
                                   }
-                                  print(" typeee ${hasSubBrands}");
+                                  // print(" typeee ${hasSubBrands}");
                                 });
                               },
                               items: _listBrands.map((listBrand) {
@@ -1334,36 +1139,32 @@ class _AddAdFormState extends State<AddAdForm> {
 
   void _onSubmitTap() {}
 
-   unitSelectValue(id,unit_id){
-     print(id);
-     print(id);
 
-     int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
-     var value = unit_id;
-     if(trendIndex != -1){
-        // value = myAdAttributesArray[trendIndex]["unit_id"]?? '';
-        // print('dddd ${myAdAttributesArray[trendIndex]["unit_id"]}');
-
-     }
-     print('ssss ${value}');
-     return value.toString();
-  }
-  void _onItemCheckedChange( itemValue, bool checked) {
+  void _onItemCheckedChange(itemValue, bool checked,attributeId) {
     setState(() {
+      print(attributeId);
+      print(  checked);
       if (checked) {
         myAdAttributesMulti.add(itemValue);
       } else {
         myAdAttributesMulti.remove(itemValue);
       }
+
+      _buildMap(attributeId,myAdAttributesMulti);
+
     });
   }
-  Widget _buildItem(item) {
+
+  Widget _buildItem(item,mainIndex) {
     final checked = myAdAttributesMulti.contains(item['id']);
     return CheckboxListTile(
       value: checked,
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
-      onChanged: (checked) => _onItemCheckedChange(item['id'], checked),
+      onChanged: (checked) {
+        _onItemCheckedChange(item['id'], checked,_listAttributes[mainIndex]['id']);
+
+      },
     );
   }
 }

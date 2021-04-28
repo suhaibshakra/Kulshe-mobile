@@ -66,6 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _pickImageLast(ImageSource src) async {
     final pickedImageFile =
     await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+    print('PC:$_picker');
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = File(pickedImageFile.path);
