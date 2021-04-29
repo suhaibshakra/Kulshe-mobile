@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
 import '../services_api/api.dart';
 import '../ui/ads_package/private_ads_list_screen.dart';
-import '../ui/edit_profile_screen.dart';
+import '../ui/profile/edit_profile_screen.dart';
 import 'package:toast/toast.dart';
 
 import 'app_colors.dart';

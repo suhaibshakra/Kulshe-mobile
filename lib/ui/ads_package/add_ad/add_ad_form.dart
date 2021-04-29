@@ -337,7 +337,7 @@ class _AddAdFormState extends State<AddAdForm> {
                           _buildCheckbox(mainIndex, rcsIndex),
                         if (_type == 'select')
                           _buildSelect(rcsIndex, mainIndex),
-                        if (_type == 'multiple_select') buildMultiAlertDialog(mainIndex),
+                        if (_type == 'multiple_select') buildMultiSelected(mainIndex),
                       ],
                     ),
                   );
@@ -436,7 +436,7 @@ class _AddAdFormState extends State<AddAdForm> {
     );
   }
 
-  buildMultiAlertDialog(mainIndex) {
+  buildMultiSelected(mainIndex) {
     return SingleChildScrollView(
       child:
            Row(

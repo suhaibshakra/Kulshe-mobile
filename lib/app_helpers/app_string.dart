@@ -91,6 +91,7 @@ abstract class Strings {
   String callAdvPrice;
 
   //Ads
+  String ads;
   String adDetails;
   String warning;
   String active;
@@ -210,6 +211,7 @@ class EnglishString extends Strings {
     callAdvPrice = "Communicate advertiser for details";
 
     //Ads
+    ads = "Ads";
     adDetails = "Ad Details";
     warning = "Warning against theft and fraud";
     active = "Active";
@@ -329,6 +331,7 @@ class ArabicString extends Strings {
     callAdvPrice = "تواصل مع المعلن لمعرفة السعر";
 
     //Ads
+    ads = "الإعلانات";
     adDetails = "تفاصيل الإعلان";
     warning = "تحذير من الإحتيال و السكام";
     active = "تنشيط";

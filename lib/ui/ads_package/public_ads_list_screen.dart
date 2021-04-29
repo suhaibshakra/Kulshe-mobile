@@ -8,6 +8,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/profile/advertiser_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ad_details_screen.dart';
@@ -475,15 +476,22 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   if (_data['show_contact'] != false)
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: _data['user_contact']
-                                                  ['user_image'] !=
-                                              null
-                                          ? NetworkImage(_data['user_contact']
-                                              ['user_image'])
-                                          : AssetImage(
-                                              "assets/images/no_img.png"),
+                                    InkWell(
+
+                                      onTap: (){
+
+                                        return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: _data['user_contact']
+                                                    ['user_image'] !=
+                                                null
+                                            ? NetworkImage(_data['user_contact']
+                                                ['user_image'])
+                                            : AssetImage(
+                                                "assets/images/no_img.png"),
+                                      ),
                                     ),
                                   Padding(
                                     padding: const EdgeInsets.only(
@@ -789,15 +797,21 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                   children: [
                                     if (_data['show_contact'] != false &&
                                         _data['user_contact'] != null)
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundImage: _data['user_contact']
-                                                    ['user_image'] !=
-                                                null
-                                            ? NetworkImage(_data['user_contact']
-                                                ['user_image'])
-                                            : AssetImage(
-                                                "assets/images/no_img.png"),
+                                      InkWell(
+                                        onTap: (){
+
+                                          return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: _data['user_contact']
+                                                      ['user_image'] !=
+                                                  null
+                                              ? NetworkImage(_data['user_contact']
+                                                  ['user_image'])
+                                              : AssetImage(
+                                                  "assets/images/no_img.png"),
+                                        ),
                                       ),
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -924,7 +938,6 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               if(!widget.isFav)
-
                 Container(
                 width: MediaQuery.of(context).size.width * 0.3,
                 color: AppColors.whiteColor,
@@ -947,7 +960,6 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               if(!widget.isFav)
-
                 Container(
                 width: MediaQuery.of(context).size.width * 0.4,
                 color: AppColors.whiteColor,

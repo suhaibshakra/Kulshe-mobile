@@ -155,19 +155,25 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(_details['title'].toString(),
-                                          style: appStyle(
-                                          fontSize: 14,
-                                          color: AppColors.blackColor2,
-                                          fontWeight: FontWeight.w700,
+                                          Expanded(
+                                            flex:3,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Text(_details['title'].toString(),
+                                              style: appStyle(
+                                              fontSize: 14,
+                                              color: AppColors.blackColor2,
+                                              fontWeight: FontWeight.w700,
 
-                                          ),overflow: TextOverflow.visible,),
-                                          buildIcons(
+                                              ),overflow: TextOverflow.visible,),
+                                            ),
+                                          ),
+                                          Expanded(flex: 1,child: buildIcons(
                                               iconData:
-                                                  _details['is_favorite_ad'] ==
-                                                          false
-                                                      ? Icons.favorite_border
-                                                      : Icons.favorite,
+                                              _details['is_favorite_ad'] ==
+                                                  false
+                                                  ? Icons.favorite_border
+                                                  : Icons.favorite,
                                               color: Colors.red,
                                               size: 30,
                                               action: () {
@@ -175,18 +181,18 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                                   context: context,
                                                   adId: _details['id'],
                                                   state: _details[
-                                                              'is_favorite_ad'] ==
-                                                          true
+                                                  'is_favorite_ad'] ==
+                                                      true
                                                       ? "delete"
                                                       : "add",
                                                 ).then((value) {
                                                   setState(() {
                                                     AdDetailsServicesNew
-                                                            .getAdData(
-                                                                adId:
-                                                                    widget.adID,
-                                                                slug:
-                                                                    widget.slug)
+                                                        .getAdData(
+                                                        adId:
+                                                        widget.adID,
+                                                        slug:
+                                                        widget.slug)
                                                         .then((value) {
                                                       setState(() {
                                                         _adDetails = value;
@@ -197,7 +203,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                                     });
                                                   });
                                                 });
-                                              }),
+                                              }),)
                                         ],
                                       ),
                                     ),
