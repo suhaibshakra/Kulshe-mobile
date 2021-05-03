@@ -65,6 +65,9 @@ abstract class Strings {
 
   //bottom navigation
   String addAd;
+  String home;
+  String more;
+  String fav;
 
   //choices
   String delete;
@@ -185,6 +188,10 @@ class EnglishString extends Strings {
 
     //bottom navigation
     addAd = "Add Ad";
+    home = "Home";
+    more = "more";
+    fav = "Favorite";
+
 
     //choices
     deleteAd = "Delete Ad!";
@@ -305,6 +312,9 @@ class ArabicString extends Strings {
 
     //bottom navigation
     addAd = "إضافة إعلان";
+    home = "الرئيسية";
+    more = "المزيد";
+    fav = "المفضلة";
 
     //choices
     deleteAd = "حذف الإعلان!";

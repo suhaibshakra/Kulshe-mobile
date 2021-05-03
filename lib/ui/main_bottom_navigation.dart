@@ -35,6 +35,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
                 : index == 2
                     ? PublicAdsListScreen(
                         isFav: true,
+          isFilter: false,
                       )
                     : buildDrawer(context, () => print('Done'), fromNav: true);
       },
@@ -63,16 +64,16 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     return Scaffold(
       body: _lastSelected,
       bottomNavigationBar: FABBottomAppBar(
-        color: Colors.grey,
+        color: Colors.grey.shade600,
         selectedColor: Colors.red,
         notchedShape: CircularNotchedRectangle(),
         onTabSelected: _selectedTab,
         items: [
-          FABBottomAppBarItem(iconData: Icons.home, text: 'Home'),
-          FABBottomAppBarItem(iconData: Icons.list, text: "categories"),
+          FABBottomAppBarItem(iconData: Icons.home, text: AppController.strings.home),
+          FABBottomAppBarItem(iconData: Icons.list, text: AppController.strings.categories),
           FABBottomAppBarItem(
-              iconData: FontAwesomeIcons.heartbeat, text: 'Favorite'),
-          FABBottomAppBarItem(iconData: Icons.more_horiz, text: 'More'),
+              iconData: FontAwesomeIcons.heartbeat, text: AppController.strings.fav),
+          FABBottomAppBarItem(iconData: Icons.more_horiz, text: AppController.strings.more),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -86,7 +87,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
       backgroundColor: Colors.amber,
       onPressed: () {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => AddAdSectionsScreen()));
+            .push(MaterialPageRoute(builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)));
       },
       tooltip: _strController.addAd,
       // child: Icon(Icons.add),

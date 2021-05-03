@@ -348,6 +348,7 @@ buildTxt(
 
 buildTextField({
   String hintTxt,
+  String initialValue,
   bool fromDialog = false,
   @required String label,
   TextInputType textInputType,
@@ -370,6 +371,7 @@ buildTextField({
       ),
       child: TextFormField(
         showCursor: true,
+        initialValue: initialValue,
         maxLines: maxLines,
         minLines: minLines,
         onFieldSubmitted: onSubmit,
@@ -569,7 +571,7 @@ Widget listItem(BuildContext context, LinearGradient gradient, String title,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,):PrivateAdsListScreen(
+              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,):PrivateAdsListScreen(
                 actionTitle: actionTitle,
               ),
             ),

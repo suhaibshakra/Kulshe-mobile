@@ -478,6 +478,77 @@ Future addAdFunction({
   }
 }
 
+Future updateAdFunction({
+  @required BuildContext context,
+  String adID,
+  String cityId,
+  String localityId,
+  String brandId,
+  String subBrandId,
+  String title,
+  String bodyAd,
+  String currencyId,
+  String lat,
+  String lag,
+  double price,
+  int zoom,
+  bool negotiable,
+  bool isFree,
+  bool isDelivery,
+  bool showContact,
+  String video,
+  List adAttributes,
+  List images,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var headers = {
+    'token': '${_pref.get('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+    'lang': '${_pref.getString('lang')}',
+    'Content-Type': 'application/json'
+  };
+
+  var body = json.encode({
+    "ad_id": adID,
+    "country_id": _pref.getString('countryId'),
+    "city_id": cityId,
+    "locality_id": localityId,
+    "brand_id": brandId,
+    "sub_brand_id": subBrandId,
+    "title": title,
+    "body": bodyAd,
+    "currency_id": currencyId,
+    "lat": lat,
+    "lag": lag,
+    "price": price,
+    "zoom": zoom,
+    "negotiable": negotiable,
+    "is_free": isFree,
+    "is_delivery": isDelivery,
+    "show_contact": showContact,
+    "video": "https://www.youtube.com/watch?v=kSDJZTzCl8k",
+    //https://www.youtube.com/watch?v=kSDJZTzCl8k
+    "ad_attributes": adAttributes,
+    "images": images
+  });
+  var response = await http.post(
+      'https://api.kulshe.nurdevops.com/api/v1/classified/update',
+      headers: headers,
+      body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    print('********************************${decodeData['custom_message']}');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    print(body);
+    print(decodeData);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
+
 Future logoutFunction({BuildContext context}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   String token = _pref.getString("token");

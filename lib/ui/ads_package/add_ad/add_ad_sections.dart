@@ -4,11 +4,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
+import 'package:kulshe/ui/ads_package/fliter_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ad_add_last.dart';
 import 'add_ad_form.dart';
 
 class AddAdSectionsScreen extends StatefulWidget {
+  final comeFrom;
+
+  AddAdSectionsScreen({Key key, this.comeFrom}) : super(key: key);
+
   @override
   _AddAdSectionsScreenState createState() => _AddAdSectionsScreenState();
 }
@@ -112,7 +117,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                             section: _data['label']['ar'],
                                             sectionId: _data['id'],
                                             subSectionId: data['id'],
-                                            comeFrom: 'add',
+                                            fromEdit: false,
                                           ),
                                     ),
                                   );
@@ -152,7 +157,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Ad"),
+        title: Text(widget.comeFrom == 'addAd'?"Add Ad":"Select Section"),
       ),
       body: _loading
           ? buildLoading(color: AppColors.green)
@@ -217,18 +222,8 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                             });
                             print("Sub section id ${data['id']}");
                             print("section id ${_data['id']}");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AddAdForm(
-                                      section: _data['label']['ar'],
-                                      sectionId: _data['id'],
-                                      subSectionId: data['id'],
-                                      comeFrom: 'add',
-                                    ),
-                              ),
-                            );
+                            widget.comeFrom == 'addAd'?Navigator.push(context,MaterialPageRoute(builder: (context) =>AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),):
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterScreen(sectionId: _data['id'],subSectionId: data['id']),));
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(

@@ -187,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () => buildDialog(title: 'استرجاع كلمة السر',
-                              no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailControllerS.text.toString())),
+                              no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
                               child: buildTxt(
                                   txt: _strController.forgetPassword,
                                   txtColor: AppColors.blue,
@@ -341,10 +341,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     textInputType: textInputType,
                     hintTxt: hintTxt,
                     label: _strController.email,
-                    controller: _emailForgetController,
-                    validator: (value) => EmailValidator.validate(value)
-                        ? null
-                        : "Please enter a valid email",
+                    onChanged: (val){
+                      setState(() {
+                        _emailForgetController.text = val;
+                      });
+                    }
+                    // validator: (value) => EmailValidator.validate(value)
+                    //     ? null
+                    //     : "Please enter a valid email",
                   ),
                   SizedBox(
                     height: 7,

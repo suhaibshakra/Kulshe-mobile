@@ -153,7 +153,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   child: SearchWidget(
                                     onSubmit: (String val) {
                                       if(val.isNotEmpty)
-                                      Navigator.push(context,MaterialPageRoute(builder: (context) => PublicAdsListScreen(isFav: false,txt: val,),));
+                                      Navigator.push(context,MaterialPageRoute(builder: (context) => PublicAdsListScreen(isFav: false,isFilter: false,txt: val,),));
                                       print('DONE ...');
                                       print('val:$val');
                                     },
@@ -261,6 +261,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   subSection: data['label'][lang],
                                   txt: "",
                                   isFav: false,
+                                  isFilter: false,
                                  ),
                               ),
                             );

@@ -125,6 +125,47 @@ class PublicAdsServicesNew {
     }
   }
 }
+class FilterAdsServices {
+  static Future<List> getAdsData({
+    var filteredData,
+    int countryId,
+    String cityId,
+    String brand,
+    String subBrand,
+    String hasPrice,
+    int hasImage,
+    String sort,
+    String limit,
+    String offset,
+    String txt = "",
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          '${baseURL}classifieds?${filteredData}',
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        print(response.statusCode);
+        // print(response.body);
+
+        List ads = jsonDecode('[${response.body}]');
+        // AdsResponseData adsData = ads[0].responseData ;
+        // List<Ad> ad = adsData.ads;
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
 
 class SearchAdsServices {
   static Future<List> getSearchedAdsData({
@@ -173,6 +214,34 @@ class AdAddForm {
     try {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/$subSectionId/classified?iso=JO',
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        // print(response.statusCode);
+        List ads = jsonDecode('[${response.body}]');
+        // print('ads : $ads');
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
+class EditAdForm {
+  static Future<List> getAdsForm({
+    String adID,
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          'https://api.kulshe.nurdevops.com/api/v1/classified/$adID',
           headers: {
             'lang': '${_pref.getString('lang')}',
             'Accept': 'application/json',

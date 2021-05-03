@@ -17,12 +17,13 @@ import 'package:simple_location_picker/simple_location_result.dart';
 import 'package:simple_location_picker/utils/slp_constants.dart';
 
 class AddAdForm extends StatefulWidget {
-  final section;
+  final String section;
   final sectionId;
   final subSectionId;
-  final comeFrom;
+  final bool fromEdit;
+  final int adID;
 
-  AddAdForm({this.section, this.sectionId, this.subSectionId, this.comeFrom});
+  AddAdForm({this.section, this.sectionId, this.subSectionId, this.adID,this.fromEdit});
 
   @override
   _AddAdFormState createState() => _AddAdFormState();
@@ -34,6 +35,8 @@ class _AddAdFormState extends State<AddAdForm> {
   String _currencyId;
   String _brandId;
   String _subBrandId;
+  double _lat;
+  double _lng;
   String chosenDate = AppController.strings.chooseDate;
   bool _negotiable = false;
   bool _isFree = false;
@@ -56,6 +59,7 @@ class _AddAdFormState extends State<AddAdForm> {
   List _listBrands;
   List _listSubBrands;
   List _listUnits;
+  String _values;
   List _options;
   List _images;
   String _type;
@@ -72,8 +76,8 @@ class _AddAdFormState extends State<AddAdForm> {
 
   void _pickImageLast(ImageSource src) async {
     final pickedImageFile =
-        await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-    print('PC:$_picker');
+    await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+    // print('PC:$_picker');
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = File(pickedImageFile.path);
@@ -84,8 +88,8 @@ class _AddAdFormState extends State<AddAdForm> {
       String fileName = _userImageFile.path.split('/').last;
       fileName = fileName.split('.').last;
 
-      print(fileName);
-      print("data:image/$fileName;base64,${base64Encode(bytes)}");
+      // print(fileName);
+      // print("data:image/$fileName;base64,${base64Encode(bytes)}");
       _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
       _images.add({"image": _userImage != null ? _userImage : "sss"});
     } else {
@@ -110,7 +114,7 @@ class _AddAdFormState extends State<AddAdForm> {
           .toList();
       _citiesData = _countryData
           .where((element) =>
-              element['id'].toString() == _gp.getString('countryId'))
+      element['id'].toString() == _gp.getString('countryId'))
           .toList();
       _citiesData = _citiesData[0]['cities'];
     });
@@ -120,7 +124,7 @@ class _AddAdFormState extends State<AddAdForm> {
 
   _buildMap(id, value, {unitID}) {
     // print(id);
-    print(unitID);
+    // print(unitID);
     // print(unitID != null);
     int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
     // print(trendIndex);
@@ -134,21 +138,23 @@ class _AddAdFormState extends State<AddAdForm> {
       myAdAttributesArray[trendIndex]["value"] = value;
       if (unitID != null) myAdAttributesArray[trendIndex]["unit_id"] = unitID;
     }
-    print(myAdAttributesArray);
+    // print(myAdAttributesArray);
   }
 
-  void _pickDateDialog(id) {
+  void _pickDateDialog(id,{String value}) {
     showDatePicker(
-            context: context,
-            initialDate: DateTime.now(),
-            firstDate: DateTime(1920),
-            lastDate: DateTime.now())
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1920),
+        lastDate: DateTime.now())
         .then((pickedDate) {
       if (pickedDate == null) {
         return;
       }
       setState(() {
         _selectedDate = pickedDate;
+        if(widget.fromEdit)
+          _birthDateController.text = value;
         _birthDateController.text = DateFormat("yyyy-MM-dd").format(pickedDate);
         chosenDate = _birthDateController.text;
         _buildMap(id, _birthDateController.text);
@@ -158,28 +164,60 @@ class _AddAdFormState extends State<AddAdForm> {
 
   @override
   void initState() {
+    // print('adID : ${widget.adID}');
     getLang();
     _getCountries();
     myAdAttributesArray = [];
     myAdAttributes = {};
     myAdAttributesMulti = [];
-    AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
-        .then((value) {
-      setState(() {
-        _adForm = value;
-        _currenciesData = value[0]['responseData']['currencies'];
-        _listAttributes = value[0]['responseData']['attributes'];
-        _listBrands = value[0]['responseData']['brands'];
-        _showContactInfo = value[0]['responseData']['show_my_contact'];
-        _negotiable = value[0]['responseData']['negotiable'];
-        _isFree = value[0]['responseData']['if_free'];
-        _loading = false;
-        var _dataCurrency = _currenciesData
-            .where((element) => element['default'] == true)
-            .toList();
-        _currencyId = _dataCurrency[0]['id'].toString();
+    if(widget.fromEdit)
+      EditAdForm.getAdsForm(adID: widget.adID.toString())
+          .then((value) {
+        setState(() {
+          _adForm = value;
+          _titleController.text = value[0]['responseData']['title'];
+          _bodyController.text = value[0]['responseData']['body'];
+          _videoController.text = value[0]['responseData']['video'];
+          if(value[0]['responseData']['has_price'] == true)
+            _priceController.text = value[0]['responseData']['price'].toString();
+          _currenciesData = value[0]['responseData']['sub_section']['currencies'];
+          _listAttributes = value[0]['responseData']['attributes'];
+          // print("aaaaaaaaaaaaaaaaaaa ${_listAttributes}");
+
+          _listBrands = value[0]['responseData']['brands'];
+          _showContactInfo = value[0]['responseData']['show_contact'];
+          _negotiable = value[0]['responseData']['negotiable'];
+          _isFree = value[0]['responseData']['if_free'];
+          _loading = false;
+          // var _dataCurrency = _currenciesData
+          //     .where((element) => element['default'] == true)
+          //     .toList();
+          // .where((element) => element['id'] == _adForm[0]['responseData']['currency_id'])
+          _currencyId = _adForm[0]['responseData']['currency_id'].toString();
+          _lat = value[0]['responseData']['lat'];
+          _lng = value[0]['responseData']['lag'];
+
+        });
       });
-    });
+
+    if(!widget.fromEdit)
+      AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
+          .then((value) {
+        setState(() {
+          _adForm = value;
+          _currenciesData = value[0]['responseData']['currencies'];
+          _listAttributes = value[0]['responseData']['attributes'];
+          _listBrands = value[0]['responseData']['brands'];
+          _showContactInfo = value[0]['responseData']['show_my_contact'];
+          _negotiable = value[0]['responseData']['negotiable'];
+          _isFree = value[0]['responseData']['if_free'];
+          _loading = false;
+          var _dataCurrency = _currenciesData
+              .where((element) => element['default'] == true)
+              .toList();
+          _currencyId = _dataCurrency[0]['id'].toString();
+        });
+      });
 
     super.initState();
   }
@@ -198,37 +236,38 @@ class _AddAdFormState extends State<AddAdForm> {
           child: _loading
               ? Center(child: buildLoading(color: AppColors.green))
               : SingleChildScrollView(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.comeFrom == 'add') _buildPath(mq),
-                        _buildConstData(),
-                        _buildDynamicData(mq),
-                        Center(
-                          child: buildIconWithTxt(
-                            iconData: Icons.image_outlined,
-                            iconColor: AppColors.redColor,
-                            label: Text(
-                              _strController.labelGallery,
-                              style: appStyle(
-                                  fontSize: 16,
-                                  color: AppColors.redColor,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            action: () => _pickImageLast(ImageSource.gallery),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        _buildButton(context),
-                      ],
+            child: Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!widget.fromEdit)
+                    _buildPath(mq),
+                  _buildConstData(),
+                  _buildDynamicData(mq),
+                  Center(
+                    child: buildIconWithTxt(
+                      iconData: Icons.image_outlined,
+                      iconColor: AppColors.redColor,
+                      label: Text(
+                        _strController.labelGallery,
+                        style: appStyle(
+                            fontSize: 16,
+                            color: AppColors.redColor,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      action: () => _pickImageLast(ImageSource.gallery),
                     ),
                   ),
-                ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  _buildButton(context),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -242,29 +281,27 @@ class _AddAdFormState extends State<AddAdForm> {
           physics: ClampingScrollPhysics(),
           itemCount: _listAttributes.length,
           itemBuilder: (ctx, mainIndex) {
+            if(widget.fromEdit)
+              _values = _listAttributes[mainIndex]['value'].toString();
+            // print('MY VALUES: $_values');
             _listUnits = _listAttributes[mainIndex]['units'];
             _options = _listAttributes[mainIndex]['options'];
             _type = _listAttributes[mainIndex]['config']['type'];
-            List<dynamic> selectedValues = [];
-            String selectedValues2 = "";
-            if (_type != 'checkbox' || _type != 'radio') if (myAdAttributes[
-                        _listAttributes[mainIndex]["name"]]
-                    ?.isEmpty ??
-                true)
-              myAdAttributes[_listAttributes[mainIndex]["name"]] =
-                  selectedValues2;
-            if (_type == 'checkbox' || _type == 'radio') if (myAdAttributes[
-                        _listAttributes[mainIndex]["name"]]
-                    ?.isEmpty ??
-                true)
-              myAdAttributes[_listAttributes[mainIndex]["name"]] =
-                  selectedValues;
+            // List<dynamic> selectedValues = [];
+            // String selectedValues2 = "";
+            // if (_type != 'checkbox' || _type != 'radio')
+            //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
+            //   myAdAttributes[_listAttributes[mainIndex]["name"]] =selectedValues2;
+            // if (_type == 'checkbox' || _type == 'radio')
+            //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
+            //   myAdAttributes[_listAttributes[mainIndex]["name"]] =selectedValues;
             return buildMainAttributes(mainIndex, mq);
           }),
     );
   }
 
   Padding buildMainAttributes(int mainIndex, MediaQueryData mq) {
+    // print("VAL:$_values");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Column(
@@ -279,7 +316,7 @@ class _AddAdFormState extends State<AddAdForm> {
             if (_type == 'string' || _type == 'number' || _type == 'year')
               _buildSNY(mainIndex),
           if (_listAttributes[mainIndex]['has_unit'] == 1)
-            // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
+          // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
             ListView.builder(
                 itemCount: 1,
                 physics: ClampingScrollPhysics(),
@@ -291,9 +328,8 @@ class _AddAdFormState extends State<AddAdForm> {
                           _listUnits[unitIndex]['attribute_id'])
                         Text(
                             "${_listAttributes[mainIndex]['units'][unitIndex]['label']}"),
-                      if (_listAttributes[mainIndex]['id'] ==
-                          _listUnits[unitIndex]['attribute_id'])
-                        _buildUnits(_listUnits, unitIndex, mainIndex),
+                      // if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
+                      //   _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
                     ],
                   );
                 }),
@@ -302,8 +338,10 @@ class _AddAdFormState extends State<AddAdForm> {
                 fontSize: 16,
                 width: mq.size.width * 0.5,
                 height: 45,
-                onPressed: () =>
-                    _pickDateDialog(_listAttributes[mainIndex]['id']),
+                onPressed: () {
+                  print("${_listAttributes[mainIndex]['value']}");
+                  _pickDateDialog(_listAttributes[mainIndex]['id'],value: widget.fromEdit?_listAttributes[mainIndex]['value']:"");
+                },
                 radius: 10,
                 btnTxt: chosenDate,
                 txtColor: Colors.black54,
@@ -313,9 +351,9 @@ class _AddAdFormState extends State<AddAdForm> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     childAspectRatio: _type == 'select' ? 7 : 1.5,
                     crossAxisCount:
-                        _type == 'select' || _type == 'multiple_select'
-                            ? 1
-                            : 3),
+                    _type == 'select' || _type == 'multiple_select'
+                        ? 1
+                        : 3),
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),
                 itemCount: _type == 'select' || _type == 'multiple_select'
@@ -332,12 +370,14 @@ class _AddAdFormState extends State<AddAdForm> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        if (_type == 'radio') _buildRadio(mainIndex, rcsIndex),
+                        if (_type == 'radio')
+                          _buildRadio(mainIndex, rcsIndex),
                         if (_type == 'checkbox')
                           _buildCheckbox(mainIndex, rcsIndex),
                         if (_type == 'select')
                           _buildSelect(rcsIndex, mainIndex),
-                        if (_type == 'multiple_select') buildMultiSelected(mainIndex),
+                        if (_type == 'multiple_select')
+                          buildMultiSelected(mainIndex),
                       ],
                     ),
                   );
@@ -350,8 +390,13 @@ class _AddAdFormState extends State<AddAdForm> {
   Container _buildUnits(List _listUnits, int unitIndex, int mainIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+
+    // print("_listUnits[0]['unit_id']");
+    // print(_listUnits[0]['unit_id']);
     if(trendIndex == -1){
-      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['options'][0]['id'],unitID:_listUnits[0]);
+      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['units'][0]['id'],unitID:_listUnits[0]['unit_id']);
+      trendIndex = myAdAttributesArray
+          .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
     return Container(
       decoration: BoxDecoration(
@@ -364,7 +409,7 @@ class _AddAdFormState extends State<AddAdForm> {
               alignedDropdown: true,
               child: DropdownButton<String>(
                 isExpanded: true,
-                value: myAdAttributesArray[trendIndex]['unit_id'],
+                value: myAdAttributesArray[trendIndex]['unit_id'].toString(),
                 iconSize: 30,
                 style: appStyle(
                   color: Colors.black54,
@@ -380,8 +425,8 @@ class _AddAdFormState extends State<AddAdForm> {
                   // print(_listAttributes[mainIndex]['units'][unitIndex].toString());
                   setState(() {
                     // testID = value;
-                    print(_listAttributes[mainIndex]['id']);
-                    print(_listAttributes[mainIndex]);
+                    // print(_listAttributes[mainIndex]['id']);
+                    // print(_listAttributes[mainIndex]);
                     int trendIndex = myAdAttributesArray
                         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
                     // print('op:${_listAttributes[mainIndex]}');
@@ -397,12 +442,12 @@ class _AddAdFormState extends State<AddAdForm> {
                   });
                 },
                 items: _listUnits.map<DropdownMenuItem<String>>((listUnits) {
-                      // print('LIST  :$list');
-                      return new DropdownMenuItem(
-                        child: new Text("${listUnits['label'][_lang]}"),
-                        value: listUnits['unit_id'].toString(),
-                      );
-                    })?.toList() ??
+                  // print('LIST  :$list');
+                  return new DropdownMenuItem(
+                    child: new Text("${listUnits['label'][_lang]}"),
+                    value: listUnits['unit_id'].toString(),
+                  );
+                })?.toList() ??
                     [],
               ),
             ),
@@ -413,8 +458,18 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Container _buildSNY(int mainIndex) {
+    var initialValue ='';
+    if(widget.fromEdit && _listAttributes[mainIndex]['has_unit'] == 1) {
+      _listAttributes[mainIndex]['value'] = _listAttributes[mainIndex]['value'];
+      _buildMap(_listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['value']);
+      initialValue = _listAttributes[mainIndex]['value'].toString();
+    }
+
     return Container(
       child: buildTextField(
+
+          initialValue: initialValue,
           onChanged: (val) {
             myAdAttributes[_listAttributes[mainIndex]['id']] = val;
             if (_listAttributes[mainIndex]['has_unit'] == 1) {
@@ -425,13 +480,13 @@ class _AddAdFormState extends State<AddAdForm> {
                 val,
               );
             }
-            print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
+            // print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
 
             // print("sss");
             print(myAdAttributesArray);
             // print('MYCAT:$myAdAttributes');
           },
-          label: _listAttributes[mainIndex]['label'][_lang].toString(),
+          label:  _listAttributes[mainIndex]['label'][_lang].toString(),
           textInputType: TextInputType.text),
     );
   }
@@ -439,25 +494,21 @@ class _AddAdFormState extends State<AddAdForm> {
   buildMultiSelected(mainIndex) {
     return SingleChildScrollView(
       child:
-           Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Container(
-                  height: MediaQuery.of(context).size.height*0.3,
-                  child: ListView(
-                    // physics: ClampingScrollPhysics(),
-                    shrinkWrap: true,
-                    children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
-                  ),
-                ),
+      Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Container(
+              height: MediaQuery.of(context).size.height*0.3,
+              child: ListView(
+                // physics: ClampingScrollPhysics(),
+                shrinkWrap: true,
+                children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
               ),
-              Expanded(
-                  flex: 1,
-                  child: Text('down')
-              ),
-            ],
+            ),
           ),
+        ],
+      ),
 
     );
   }
@@ -467,6 +518,20 @@ class _AddAdFormState extends State<AddAdForm> {
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     if(trendIndex == -1){
       _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['options'][0]['id']);
+      trendIndex = myAdAttributesArray
+          .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    }
+
+    if(widget.fromEdit) {
+      // print(_listAttributes[mainIndex]['value']);
+      // print(myAdAttributesArray[trendIndex]['value']);
+      myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
+    //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
+    //   if( _listAttributes[mainIndex]['value'] != null){
+    //     var value = _listAttributes[mainIndex]['value'];
+    //   }
+    //   _buildMap( myAdAttributesArray[trendIndex]['id'],
+    //       value);
     }
 
     var val = "";
@@ -479,8 +544,7 @@ class _AddAdFormState extends State<AddAdForm> {
               alignedDropdown: true,
               child: DropdownButton<String>(
                 isExpanded: true,
-                value:myAdAttributesArray[trendIndex]['value']
-                    .toString(),
+                value:myAdAttributesArray[trendIndex]['value'].toString(),
                 // value: '1',
                 iconSize: 30,
                 // icon: (null),
@@ -497,7 +561,8 @@ class _AddAdFormState extends State<AddAdForm> {
                 onChanged: (value) {
                   setState(() {
                     // myAdAttributesArray[_listAttributes[mainIndex]['id']]['value'] = value;
-                    print("select:  ${_listAttributes[mainIndex]['id']}");
+                    _listAttributes[mainIndex]['value'] = value;
+                    // print("select:  ${_listAttributes[mainIndex]['id']}");
                     print(value);
                     // List newOp = _listAttributes[mainIndex]['options'];
                     // newOp = newOp
@@ -513,14 +578,14 @@ class _AddAdFormState extends State<AddAdForm> {
                   });
                 },
                 items: _listAttributes[mainIndex]['options']
-                        .map<DropdownMenuItem<String>>((listOptions) {
-                      // print('LIST  :$list');
-                      return new DropdownMenuItem(
-                        child: new Text(
-                            val == "" ? "${listOptions['label'][_lang]}" : val),
-                        value: listOptions['id'].toString(),
-                      );
-                    })?.toList() ??
+                    .map<DropdownMenuItem<String>>((listOptions) {
+                  // print('LIST  :$list');
+                  return new DropdownMenuItem(
+                    child: new Text(
+                        val == "" ? "${listOptions['label'][_lang]}" : val),
+                    value: listOptions['id'].toString(),
+                  );
+                })?.toList() ??
                     [],
               ),
             ),
@@ -531,6 +596,12 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   CheckboxListTile _buildCheckbox(int mainIndex, int rcsIndex) {
+    if(widget.fromEdit) {
+      myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
+      // print("dddd ${myAdAttributes[_listAttributes[mainIndex]['name']]}");
+      _buildMap(_listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['value']);
+    }
     return CheckboxListTile(
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
             .contains(_options[rcsIndex]['id']),
@@ -540,11 +611,11 @@ class _AddAdFormState extends State<AddAdForm> {
         onChanged: (bool val) {
           setState(() {
             myAdAttributes[_listAttributes[mainIndex]['name']]
-                    .contains(_options[rcsIndex]['id'])
+                .contains(_options[rcsIndex]['id'])
                 ? myAdAttributes[_listAttributes[mainIndex]['name']]
-                    .remove(_options[rcsIndex]['id'])
+                .remove(_options[rcsIndex]['id'])
                 : myAdAttributes[_listAttributes[mainIndex]['name']]
-                    .add(_options[rcsIndex]['id']);
+                .add(_options[rcsIndex]['id']);
             _buildMap(_listAttributes[mainIndex]['id'],
                 myAdAttributes[_listAttributes[mainIndex]['name']]);
             print(myAdAttributesArray);
@@ -553,18 +624,37 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Row _buildRadio(int mainIndex, int rcsIndex) {
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    if(trendIndex == -1){
+      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['options'][0]['id']);
+      trendIndex = myAdAttributesArray
+          .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    }
+    if(widget.fromEdit) {
+      myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
+      //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
+      //   if( _listAttributes[mainIndex]['value'] != null){
+      //     var value = _listAttributes[mainIndex]['value'];
+      //   }
+      //   _buildMap( myAdAttributesArray[trendIndex]['id'],
+      //       _listAttributes[mainIndex]['value']);
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Radio<dynamic>(
           focusColor: Colors.white,
-          groupValue: _listAttributes[mainIndex]['name'],
+          groupValue: myAdAttributesArray[trendIndex]['value'],
           onChanged: (dynamic newValue) {
-            _buildMap(_listAttributes[mainIndex]["id"], newValue);
+            // _buildMap(_listAttributes[mainIndex]["id"], newValue);
             setState(() {
-              _listAttributes[mainIndex]['name'] = newValue;
+              _listAttributes[mainIndex]['value'] = newValue;
+
+              // _listAttributes[mainIndex]['name'] = newValue;
               _buildMap(_listAttributes[mainIndex]['id'], newValue);
-              print("radio:  ${_listAttributes[mainIndex]['id']}");
+              // print("radio:  ${_listAttributes[mainIndex]['id']}");
+              // print("radio:  ${myAdAttributesArray}");
               // print(_options[index]['label'][_lang]);
               // print(list['name']);
             });
@@ -625,6 +715,7 @@ class _AddAdFormState extends State<AddAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
+          !widget.fromEdit?
           addAdFunction(
               context: context,
               sectionId: widget.sectionId.toString(),
@@ -651,7 +742,34 @@ class _AddAdFormState extends State<AddAdForm> {
               zoom: 14,
               adAttributes: myAdAttributesArray,
               images: _images != null ? _images : [],
-              currencyId: _currencyId);
+              currencyId: _currencyId):
+          updateAdFunction(
+              context: context,
+              adID: widget.adID.toString(),
+              title: _titleController.text.toString(),
+              bodyAd: _bodyController.text.toLowerCase(),
+              cityId: _cityId,
+              price: _priceController.text.toString().isNotEmpty
+                  ? double.parse(_priceController.text.toString())
+                  : 0,
+              localityId: '1',
+              lat: _selectedLocation != null
+                  ? '${_selectedLocation.latitude}'
+                  : "",
+              lag: _selectedLocation != null
+                  ? '${_selectedLocation.longitude}'
+                  : "",
+              brandId: _brandId != null ? _brandId : "",
+              subBrandId: _subBrandId != null ? _subBrandId : "",
+              isDelivery: true,
+              isFree: _isFree,
+              showContact: _showContactInfo,
+              negotiable: _negotiable,
+              zoom: 14,
+              adAttributes: myAdAttributesArray,
+              images: _images != null ? _images : [],
+              currencyId: _currencyId)
+          ;
           // _validateAndSubmit();
         },
       ),
@@ -698,16 +816,16 @@ class _AddAdFormState extends State<AddAdForm> {
                           });
                         },
                         items: _citiesData.map((listCity) {
-                              return new DropdownMenuItem(
-                                child: new Text(
-                                  listCity['label'][_lang],
-                                  style: appStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                                value: listCity['id'].toString(),
-                              );
-                            })?.toList() ??
+                          return new DropdownMenuItem(
+                            child: new Text(
+                              listCity['label'][_lang],
+                              style: appStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
+                            ),
+                            value: listCity['id'].toString(),
+                          );
+                        })?.toList() ??
                             [],
                       ),
                     ),
@@ -768,7 +886,7 @@ class _AddAdFormState extends State<AddAdForm> {
                     Text(
                       _strController.price,
                       style:
-                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
                       child: buildTextField(
@@ -784,7 +902,7 @@ class _AddAdFormState extends State<AddAdForm> {
                     Text(
                       _strController.currencies,
                       style:
-                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
                       decoration: BoxDecoration(
@@ -819,17 +937,17 @@ class _AddAdFormState extends State<AddAdForm> {
                                     });
                                   },
                                   items: _currenciesData.map((listCurrency) {
-                                        return new DropdownMenuItem(
-                                          child: new Text(
-                                            listCurrency['currency_label']
-                                                [_lang],
-                                            style: appStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          value: listCurrency['id'].toString(),
-                                        );
-                                      })?.toList() ??
+                                    return new DropdownMenuItem(
+                                      child: new Text(
+                                        listCurrency['currency_label']
+                                        [_lang],
+                                        style: appStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      value: listCurrency['id'].toString(),
+                                    );
+                                  })?.toList() ??
                                       [],
                                 ),
                               ),
@@ -843,7 +961,7 @@ class _AddAdFormState extends State<AddAdForm> {
               ],
             ),
           ),
-        if (_adForm[0]['responseData']['has_brand'])
+        if (!widget.fromEdit&&_adForm[0]['responseData']['has_brand'])
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
@@ -886,11 +1004,11 @@ class _AddAdFormState extends State<AddAdForm> {
                                   _brandId = value;
                                   _listSubBrands = _listBrands
                                       .where((element) =>
-                                          element['id'].toString() ==
-                                          value.toString())
+                                  element['id'].toString() ==
+                                      value.toString())
                                       .toList();
                                   _listSubBrands =
-                                      _listSubBrands[0]['sub_brands'];
+                                  _listSubBrands[0]['sub_brands'];
                                   if (_listSubBrands != [] &&
                                       _listSubBrands != null &&
                                       _listSubBrands.isNotEmpty) {
@@ -906,17 +1024,17 @@ class _AddAdFormState extends State<AddAdForm> {
                                 });
                               },
                               items: _listBrands.map((listBrand) {
-                                    // print("LIST BRAND ${listBrand['id']}");
-                                    return new DropdownMenuItem(
-                                      child: new Text(
-                                        listBrand['label'][_lang],
-                                        style: appStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      value: listBrand['id'].toString(),
-                                    );
-                                  })?.toList() ??
+                                // print("LIST BRAND ${listBrand['id']}");
+                                return new DropdownMenuItem(
+                                  child: new Text(
+                                    listBrand['label'][_lang],
+                                    style: appStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                  value: listBrand['id'].toString(),
+                                );
+                              })?.toList() ??
                                   [],
                             ),
                           ),
@@ -966,17 +1084,17 @@ class _AddAdFormState extends State<AddAdForm> {
                                     });
                                   },
                                   items: _listSubBrands.map((listSubBrand) {
-                                        // print("LIST BRAND ${listSubBrand['id']}");
-                                        return new DropdownMenuItem(
-                                          child: new Text(
-                                            listSubBrand['label'][_lang],
-                                            style: appStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          value: listSubBrand['id'].toString(),
-                                        );
-                                      })?.toList() ??
+                                    // print("LIST BRAND ${listSubBrand['id']}");
+                                    return new DropdownMenuItem(
+                                      child: new Text(
+                                        listSubBrand['label'][_lang],
+                                        style: appStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                      value: listSubBrand['id'].toString(),
+                                    );
+                                  })?.toList() ??
                                       [],
                                 ),
                               ),
@@ -1091,46 +1209,89 @@ class _AddAdFormState extends State<AddAdForm> {
             ],
           ),
         ),
-        if (_adForm[0]['responseData']['has_map'])
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Container(
-              alignment: Alignment.center,
-              child: RaisedButton(
-                child: Text(
-                  "Pick a Location",
-                  style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        if(!widget.fromEdit)
+          if (_adForm[0]['responseData']['has_map'])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Container(
+                alignment: Alignment.center,
+                child: RaisedButton(
+                  child: Text(
+                    "Pick a Location",
+                    style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  onPressed: () {
+                    double latitude = _selectedLocation != null
+                        ? _selectedLocation.latitude
+                        : SLPConstants.DEFAULT_LATITUDE;
+                    double longitude = _selectedLocation != null
+                        ? _selectedLocation.longitude
+                        : SLPConstants.DEFAULT_LONGITUDE;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SimpleLocationPicker(
+                              zoomLevel: 18,
+                              markerColor: AppColors.grey,
+                              displayOnly: false,
+                              appBarTextColor: AppColors.blackColor,
+                              appBarColor: AppColors.whiteColor,
+                              initialLatitude: latitude,
+                              initialLongitude: longitude,
+                              appBarTitle: "Select Location",
+                            ))).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedLocation = value;
+                        });
+                      }
+                    });
+                  },
                 ),
-                onPressed: () {
-                  double latitude = _selectedLocation != null
-                      ? _selectedLocation.latitude
-                      : SLPConstants.DEFAULT_LATITUDE;
-                  double longitude = _selectedLocation != null
-                      ? _selectedLocation.longitude
-                      : SLPConstants.DEFAULT_LONGITUDE;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SimpleLocationPicker(
-                                zoomLevel: 18,
-                                markerColor: AppColors.grey,
-                                displayOnly: false,
-                                appBarTextColor: AppColors.blackColor,
-                                appBarColor: AppColors.whiteColor,
-                                initialLatitude: latitude,
-                                initialLongitude: longitude,
-                                appBarTitle: "Select Location",
-                              ))).then((value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedLocation = value;
-                      });
-                    }
-                  });
-                },
               ),
             ),
-          ),
+
+        if(widget.fromEdit)
+          if (_adForm[0]['responseData']['sub_section']['has_map'])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Container(
+                alignment: Alignment.center,
+                child: RaisedButton(
+                  child: Text(
+                    "Pick a Location",
+                    style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  onPressed: () {
+                    double latitude = _selectedLocation != null
+                        ? _selectedLocation.latitude
+                        : SLPConstants.DEFAULT_LATITUDE;
+                    double longitude = _selectedLocation != null
+                        ? _selectedLocation.longitude
+                        : SLPConstants.DEFAULT_LONGITUDE;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SimpleLocationPicker(
+                              zoomLevel: 18,
+                              markerColor: AppColors.grey,
+                              displayOnly: false,
+                              appBarTextColor: AppColors.blackColor,
+                              appBarColor: AppColors.whiteColor,
+                              initialLatitude: latitude,
+                              initialLongitude: longitude,
+                              appBarTitle: "Select Location",
+                            ))).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedLocation = value;
+                        });
+                      }
+                    });
+                  },
+                ),
+              ),
+            ),
       ],
     );
   }
@@ -1142,28 +1303,42 @@ class _AddAdFormState extends State<AddAdForm> {
 
   void _onItemCheckedChange(itemValue, bool checked,attributeId) {
     setState(() {
-      print(attributeId);
-      print(  checked);
-      if (checked) {
+      // print(myAdAttributesMulti);
+       if (checked) {
+
         myAdAttributesMulti.add(itemValue);
       } else {
         myAdAttributesMulti.remove(itemValue);
       }
 
       _buildMap(attributeId,myAdAttributesMulti);
+      print(myAdAttributesArray);
+
 
     });
   }
 
   Widget _buildItem(item,mainIndex) {
-    final checked = myAdAttributesMulti.contains(item['id']);
+    var checked = myAdAttributesMulti.contains(item['id']);
+    print('TEST:${_listAttributes[mainIndex]['value']}');
+    // print('checked: $checked');
+    if(widget.fromEdit) {
+      checked = _listAttributes[mainIndex]['value'].contains(item['id']);
+      _buildMap(_listAttributes[mainIndex]['id'],myAdAttributesMulti);
+    }
+    // if(widget.fromEdit) {
+    //   myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
+    //   // print("dddd ${myAdAttributes[_listAttributes[mainIndex]['name']]}");
+    //   _buildMap(_listAttributes[mainIndex]['id'],
+    //       _listAttributes[mainIndex]['value']);
+    // }
     return CheckboxListTile(
       value: checked,
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
+        print('id : ${item['id']}');
         _onItemCheckedChange(item['id'], checked,_listAttributes[mainIndex]['id']);
-
       },
     );
   }

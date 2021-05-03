@@ -20,6 +20,8 @@ class PublicAdsListScreen extends StatefulWidget {
   final txt;
   final section;
   final isFav;
+  final isFilter;
+  final filteredData;
 
   PublicAdsListScreen(
       {this.sectionId,
@@ -27,7 +29,7 @@ class PublicAdsListScreen extends StatefulWidget {
       this.subSection,
       this.txt,
       this.section,
-      this.isFav});
+      this.isFav,this.isFilter,this.filteredData});
 
   @override
   _PublicAdsListScreenState createState() => _PublicAdsListScreenState();
@@ -113,7 +115,19 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
         });
       });
 
-    if (!widget.isFav)
+   if (widget.isFilter)
+      FilterAdsServices.getAdsData(filteredData: widget.filteredData,offset: '$offset', limit: '$limit')
+          .then((value) {
+        setState(() {
+          _publicAd = value[0]['responseData']['ads'];
+          countOfAds = (value[0]['responseData']['total']).toString();
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
+          _loading = false;
+        });
+      });
+
+    if (!widget.isFav && !widget.isFilter)
       PublicAdsServicesNew.getPublicAdsData(
               sectionId: widget.sectionId,
               subSectionId: widget.subSectionId,
