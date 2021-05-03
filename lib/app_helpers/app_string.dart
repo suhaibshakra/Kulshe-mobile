@@ -65,6 +65,9 @@ abstract class Strings {
 
   //bottom navigation
   String addAd;
+  String home;
+  String more;
+  String fav;
 
   //choices
   String delete;
@@ -91,6 +94,7 @@ abstract class Strings {
   String callAdvPrice;
 
   //Ads
+  String ads;
   String adDetails;
   String warning;
   String active;
@@ -184,6 +188,10 @@ class EnglishString extends Strings {
 
     //bottom navigation
     addAd = "Add Ad";
+    home = "Home";
+    more = "more";
+    fav = "Favorite";
+
 
     //choices
     deleteAd = "Delete Ad!";
@@ -210,6 +218,7 @@ class EnglishString extends Strings {
     callAdvPrice = "Communicate advertiser for details";
 
     //Ads
+    ads = "Ads";
     adDetails = "Ad Details";
     warning = "Warning against theft and fraud";
     active = "Active";
@@ -303,6 +312,9 @@ class ArabicString extends Strings {
 
     //bottom navigation
     addAd = "إضافة إعلان";
+    home = "الرئيسية";
+    more = "المزيد";
+    fav = "المفضلة";
 
     //choices
     deleteAd = "حذف الإعلان!";
@@ -329,6 +341,7 @@ class ArabicString extends Strings {
     callAdvPrice = "تواصل مع المعلن لمعرفة السعر";
 
     //Ads
+    ads = "الإعلانات";
     adDetails = "تفاصيل الإعلان";
     warning = "تحذير من الإحتيال و السكام";
     active = "تنشيط";

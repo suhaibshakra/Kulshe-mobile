@@ -6,7 +6,7 @@ import 'package:kulshe/models/profile.dart';
 import 'package:kulshe/services_api/services.dart';
 
 import '../../showImg.dart';
-import '../edit_profile_screen.dart';
+import '../profile/edit_profile_screen.dart';
 
 class UserPanel extends StatefulWidget {
   @override

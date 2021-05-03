@@ -133,23 +133,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               buildTextField(
                                 label: _strController.nickName,
-                                hintTxt: "Enter Name",
+                                hintTxt: "إدخال اسم المستخدم",
                                 controller: _nickNameController,
                                 textInputType: TextInputType.name,
                                 validator: (value) =>
                                     (value.length < 3 || value.isEmpty)
-                                        ? "Enter Valid Name"
+                                        ? "الحد الأدنى 3 احرف"
                                         : null,
                               ),
                               buildTextField(
                                 label: _strController.email,
-                                hintTxt: "Email Address",
+                                hintTxt: "البريد الإلكتروني",
                                 textInputType: TextInputType.emailAddress,
                                 controller: _emailController,
                                 validator: (value) =>
                                     EmailValidator.validate(value)
                                         ? null
-                                        : "Please enter a valid email",
+                                        : "يرجى إدخال بريد الكتروني صالح",
                               ),
                               Container(
                                 child: Column(
@@ -185,7 +185,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                     backgroundColor:
                                                         Colors.grey,
                                                     title: Text(
-                                                      "Country",
+                                                      "الدولة",
                                                       style: TextStyle(
                                                           color: AppColors
                                                               .blackColor),
@@ -232,7 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 textInputType:
                                                     TextInputType.phone,
                                                 label: _strController.mobile,
-                                                hintTxt: "Enter phone number"),
+                                                hintTxt: "أدخل رقم الهاتف"),
                                           ),
                                         ],
                                       ),
@@ -243,23 +243,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               buildTextField(
                                   validator: (value) =>
                                       (value.length < 8 || value.isEmpty)
-                                          ? "Password must match"
+                                          ? "يجب تطابق كلمتي السر"
                                           : null,
                                   controller: _passwordController,
                                   textInputType: TextInputType.visiblePassword,
                                   label: _strController.password,
+                                  isPassword: true,
                                   hintTxt: "Password"),
                               buildTextField(
                                   validator: (value) => (value !=
                                               _passwordController.text
                                                   .toString() ||
                                           value.isEmpty)
-                                      ? "Password must match"
+                                      ? "يجب تطابق كلمتي السر"
                                       : null,
+                                  isPassword: true,
                                   controller: _confirmPasswordController,
                                   textInputType: TextInputType.visiblePassword,
                                   label: _strController.confirmPassword,
-                                  hintTxt: "Confirm Password"),
+                                  hintTxt: _strController.confirmPassword),
                             ],
                           ),
                         ),

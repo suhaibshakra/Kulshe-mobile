@@ -51,7 +51,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _showContactInfo;
 
   var appController = AppController.strings;
-  String _selectedCountry = "Select country";
+  String _selectedCountry = "إختر الدولة";
   List lastProfileData;
   final ImagePicker _picker = ImagePicker();
   List _countryData;
@@ -66,6 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _pickImageLast(ImageSource src) async {
     final pickedImageFile =
     await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+    print('PC:$_picker');
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = File(pickedImageFile.path);
@@ -476,6 +477,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   TextInputType.visiblePassword,
                                   controller: _oldPassword,
                                   fromPhone: true,
+                                  isPassword: true,
                                   label: _strController.oldPassword),
                             ),
                           ),
@@ -489,6 +491,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   TextInputType.visiblePassword,
                                   controller: _newPassword,
                                   fromPhone: true,
+                                   isPassword: true,
                                   label: _strController.newPassword),
                             ),
                           ),
@@ -499,7 +502,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                child: buildTextField(
                                   hintTxt: _strController.conPassword,
                                   fromPhone: true,
-                                  textInputType:
+                                   isPassword: true,
+                                   textInputType:
                                   TextInputType.visiblePassword,
                                   label: _strController.conPassword,
                                   controller: _confirmPassword),

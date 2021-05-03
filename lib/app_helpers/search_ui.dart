@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
+import 'package:kulshe/ui/ads_package/add_ad/add_ad_sections.dart';
 import 'package:kulshe/ui/ads_package/fliter_screen.dart';
 import 'package:kulshe/ui/splash_screen.dart';
 
@@ -44,7 +45,7 @@ class SearchWidget extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => FilterScreen()));
+                    builder: (context) => AddAdSectionsScreen()));
               },
               child: Icon(
                 FontAwesomeIcons.slidersH,

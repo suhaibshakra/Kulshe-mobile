@@ -125,6 +125,47 @@ class PublicAdsServicesNew {
     }
   }
 }
+class FilterAdsServices {
+  static Future<List> getAdsData({
+    var filteredData,
+    int countryId,
+    String cityId,
+    String brand,
+    String subBrand,
+    String hasPrice,
+    int hasImage,
+    String sort,
+    String limit,
+    String offset,
+    String txt = "",
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          '${baseURL}classifieds?${filteredData}',
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        print(response.statusCode);
+        // print(response.body);
+
+        List ads = jsonDecode('[${response.body}]');
+        // AdsResponseData adsData = ads[0].responseData ;
+        // List<Ad> ad = adsData.ads;
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
 
 class SearchAdsServices {
   static Future<List> getSearchedAdsData({
@@ -193,6 +234,34 @@ class AdAddForm {
     }
   }
 }
+class EditAdForm {
+  static Future<List> getAdsForm({
+    String adID,
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          'https://api.kulshe.nurdevops.com/api/v1/classified/$adID',
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}'
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        // print(response.statusCode);
+        List ads = jsonDecode('[${response.body}]');
+        // print('ads : $ads');
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
 
 class FavoriteAdsServices {
   static Future<List> getFavData({
@@ -223,31 +292,6 @@ class FavoriteAdsServices {
   }
 }
 
-// class ProfileServices {
-//   static const String url = '${baseURL}profile/';
-//
-//   static Future<List<Profile>> getProfileData() async {
-//     SharedPreferences _pref = await SharedPreferences.getInstance();
-//
-//     try {
-//       final response = await http.get(url, headers: {
-//         'accept': 'application/json',
-//         'token': "${_pref.getString('token')}",
-//         'Authorization': 'bearer ${_pref.getString('token')}'
-//       });
-//       print(response.statusCode);
-//       if (200 == response.statusCode) {
-//         // print(response.body);
-//         List<Profile> profile = profileFromJson('[${response.body}]');
-//         return profile;
-//       } else {
-//         return List<Profile>();
-//       }
-//     } catch (e) {
-//       return List<Profile>();
-//     }
-//   }
-// }
 class ProfileServicesNew {
   static Future<List> getProfileData() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
@@ -257,6 +301,30 @@ class ProfileServicesNew {
         'token': "${_pref.getString('token')}",
         'Authorization': 'bearer ${_pref.getString('token')}',
         'lang': '${_pref.getString('lang')}',
+      });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        final List profile = jsonDecode('[${response.body}]');
+        return profile;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
+class AdvertiserProfileServices {
+  static Future<List> advertiserProfile({
+    String limit,
+    String offset,
+    String idHash,
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get('${baseURL}user-profile/$idHash?limit=$limit&offset=$offset', headers: {
+        'accept': 'application/json',
+        'lang': 'ar',
       });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -298,6 +366,7 @@ class ProfileServices {
     }
   }
 }
+
 
 class AdDetailsServicesNew {
   static Future<List> getAdData({

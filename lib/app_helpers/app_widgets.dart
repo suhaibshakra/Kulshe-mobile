@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
 import '../services_api/api.dart';
 import '../ui/ads_package/private_ads_list_screen.dart';
-import '../ui/edit_profile_screen.dart';
+import '../ui/profile/edit_profile_screen.dart';
 import 'package:toast/toast.dart';
 
 import 'app_colors.dart';
@@ -348,6 +348,7 @@ buildTxt(
 
 buildTextField({
   String hintTxt,
+  String initialValue,
   bool fromDialog = false,
   @required String label,
   TextInputType textInputType,
@@ -357,6 +358,8 @@ buildTextField({
   Function onChanged,
   Function onSubmit,
   Widget suffix,
+  int minLines,
+  int maxLines,
   bool isPassword = false,
 }) {
   return Padding(
@@ -368,6 +371,9 @@ buildTextField({
       ),
       child: TextFormField(
         showCursor: true,
+        initialValue: initialValue,
+        maxLines: isPassword?1:maxLines,
+        minLines: isPassword?1:minLines,
         onFieldSubmitted: onSubmit,
         controller: controller,
         validator: validator,
@@ -565,7 +571,7 @@ Widget listItem(BuildContext context, LinearGradient gradient, String title,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,):PrivateAdsListScreen(
+              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,):PrivateAdsListScreen(
                 actionTitle: actionTitle,
               ),
             ),

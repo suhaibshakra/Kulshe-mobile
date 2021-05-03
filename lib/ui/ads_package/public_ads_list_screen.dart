@@ -8,6 +8,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/profile/advertiser_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ad_details_screen.dart';
@@ -19,6 +20,8 @@ class PublicAdsListScreen extends StatefulWidget {
   final txt;
   final section;
   final isFav;
+  final isFilter;
+  final filteredData;
 
   PublicAdsListScreen(
       {this.sectionId,
@@ -26,7 +29,7 @@ class PublicAdsListScreen extends StatefulWidget {
       this.subSection,
       this.txt,
       this.section,
-      this.isFav});
+      this.isFav,this.isFilter,this.filteredData});
 
   @override
   _PublicAdsListScreenState createState() => _PublicAdsListScreenState();
@@ -112,7 +115,19 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
         });
       });
 
-    if (!widget.isFav)
+   if (widget.isFilter)
+      FilterAdsServices.getAdsData(filteredData: widget.filteredData,offset: '$offset', limit: '$limit')
+          .then((value) {
+        setState(() {
+          _publicAd = value[0]['responseData']['ads'];
+          countOfAds = (value[0]['responseData']['total']).toString();
+          countOfPager = (double.parse(countOfAds) / 10);
+          countOfPager = countOfPager.ceil().toDouble();
+          _loading = false;
+        });
+      });
+
+    if (!widget.isFav && !widget.isFilter)
       PublicAdsServicesNew.getPublicAdsData(
               sectionId: widget.sectionId,
               subSectionId: widget.subSectionId,
@@ -475,15 +490,22 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   if (_data['show_contact'] != false)
-                                    CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: _data['user_contact']
-                                                  ['user_image'] !=
-                                              null
-                                          ? NetworkImage(_data['user_contact']
-                                              ['user_image'])
-                                          : AssetImage(
-                                              "assets/images/no_img.png"),
+                                    InkWell(
+
+                                      onTap: (){
+
+                                        return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: _data['user_contact']
+                                                    ['user_image'] !=
+                                                null
+                                            ? NetworkImage(_data['user_contact']
+                                                ['user_image'])
+                                            : AssetImage(
+                                                "assets/images/no_img.png"),
+                                      ),
                                     ),
                                   Padding(
                                     padding: const EdgeInsets.only(
@@ -532,7 +554,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
                                     style: appStyle(
                                         fontSize: 16, color: AppColors.green),
-                                    maxLines: 3,
+                                    maxLines: 2,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -789,15 +811,21 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                   children: [
                                     if (_data['show_contact'] != false &&
                                         _data['user_contact'] != null)
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundImage: _data['user_contact']
-                                                    ['user_image'] !=
-                                                null
-                                            ? NetworkImage(_data['user_contact']
-                                                ['user_image'])
-                                            : AssetImage(
-                                                "assets/images/no_img.png"),
+                                      InkWell(
+                                        onTap: (){
+
+                                          return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: _data['user_contact']
+                                                      ['user_image'] !=
+                                                  null
+                                              ? NetworkImage(_data['user_contact']
+                                                  ['user_image'])
+                                              : AssetImage(
+                                                  "assets/images/no_img.png"),
+                                        ),
                                       ),
                                     Padding(
                                       padding: const EdgeInsets.only(
@@ -830,7 +858,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     style: appStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade700),
-                                    maxLines: 3,
+                                    maxLines: 2,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -848,7 +876,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                       '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
                                       style: appStyle(
                                           fontSize: 18, color: AppColors.green),
-                                      maxLines: 3,
+                                      maxLines: 2,
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -924,7 +952,6 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               if(!widget.isFav)
-
                 Container(
                 width: MediaQuery.of(context).size.width * 0.3,
                 color: AppColors.whiteColor,
@@ -947,7 +974,6 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                 ),
               ),
               if(!widget.isFav)
-
                 Container(
                 width: MediaQuery.of(context).size.width * 0.4,
                 color: AppColors.whiteColor,

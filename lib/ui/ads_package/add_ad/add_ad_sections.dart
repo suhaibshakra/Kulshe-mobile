@@ -4,10 +4,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
+import 'package:kulshe/ui/ads_package/fliter_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ad_add_last.dart';
+import 'add_ad_form.dart';
 
 class AddAdSectionsScreen extends StatefulWidget {
+  final comeFrom;
+
+  AddAdSectionsScreen({Key key, this.comeFrom}) : super(key: key);
+
   @override
   _AddAdSectionsScreenState createState() => _AddAdSectionsScreenState();
 }
@@ -107,10 +113,11 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          AddAdDataScreen(
+                                          AddAdForm(
                                             section: _data['label']['ar'],
                                             sectionId: _data['id'],
                                             subSectionId: data['id'],
+                                            fromEdit: false,
                                           ),
                                     ),
                                   );
@@ -150,7 +157,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Ad"),
+        title: Text(widget.comeFrom == 'addAd'?"Add Ad":"Select Section"),
       ),
       body: _loading
           ? buildLoading(color: AppColors.green)
@@ -189,7 +196,8 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                         child:
                         // _data[index]['icon']!=null?
                         SvgPicture.network(
-                          _data['icon']!=null?_data['icon']:"https://cdn.worldvectorlogo.com/logos/angular-icon.svg",fit: BoxFit.fill,)
+                          // _data['icon']!=null?_data['icon']:
+                          "https://svgsilh.com/svg/296742.svg",fit: BoxFit.fill,)
 //                     :SvgPicture.string(
 //                     ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
 //   <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
@@ -214,17 +222,8 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                             });
                             print("Sub section id ${data['id']}");
                             print("section id ${_data['id']}");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AddAdDataScreen(
-                                      section: _data['label']['ar'],
-                                      sectionId: _data['id'],
-                                      subSectionId: data['id'],
-                                    ),
-                              ),
-                            );
+                            widget.comeFrom == 'addAd'?Navigator.push(context,MaterialPageRoute(builder: (context) =>AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),):
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterScreen(sectionId: _data['id'],subSectionId: data['id']),));
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(

@@ -98,8 +98,8 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEXuRby1OzuqA3POVcC0wvtrgDgRCkpNqzbuTatWzOTSTUBDKLa2S2FjD5z_WfpH2jRHw&usqp=CAU')
         // ],
         autoplay: true,
-        dotSize: 0.2,
-        dotIncreasedColor: Colors.grey,
+        dotSize: 5,
+        dotIncreasedColor: Colors.yellow,
         dotBgColor: Colors.grey.withOpacity(0.2),
         overlayShadowColors: Colors.black,
 
@@ -155,19 +155,25 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(_details['title'].toString(),
-                                          style: appStyle(
-                                          fontSize: 14,
-                                          color: AppColors.blackColor2,
-                                          fontWeight: FontWeight.w700,
+                                          Expanded(
+                                            flex:3,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(2.0),
+                                              child: Text(_details['title'].toString(),
+                                              style: appStyle(
+                                              fontSize: 14,
+                                              color: AppColors.blackColor2,
+                                              fontWeight: FontWeight.w700,
 
-                                          ),overflow: TextOverflow.visible,),
-                                          buildIcons(
+                                              ),overflow: TextOverflow.visible,),
+                                            ),
+                                          ),
+                                          Expanded(flex: 1,child: buildIcons(
                                               iconData:
-                                                  _details['is_favorite_ad'] ==
-                                                          false
-                                                      ? Icons.favorite_border
-                                                      : Icons.favorite,
+                                              _details['is_favorite_ad'] ==
+                                                  false
+                                                  ? Icons.favorite_border
+                                                  : Icons.favorite,
                                               color: Colors.red,
                                               size: 30,
                                               action: () {
@@ -175,18 +181,18 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                                   context: context,
                                                   adId: _details['id'],
                                                   state: _details[
-                                                              'is_favorite_ad'] ==
-                                                          true
+                                                  'is_favorite_ad'] ==
+                                                      true
                                                       ? "delete"
                                                       : "add",
                                                 ).then((value) {
                                                   setState(() {
                                                     AdDetailsServicesNew
-                                                            .getAdData(
-                                                                adId:
-                                                                    widget.adID,
-                                                                slug:
-                                                                    widget.slug)
+                                                        .getAdData(
+                                                        adId:
+                                                        widget.adID,
+                                                        slug:
+                                                        widget.slug)
                                                         .then((value) {
                                                       setState(() {
                                                         _adDetails = value;
@@ -197,27 +203,45 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                                     });
                                                   });
                                                 });
-                                              }),
+                                              }),)
                                         ],
                                       ),
                                     ),
                                     if(!_details['is_free'])
-                                      Container(
-                                      width: double.infinity,
-                                      child: _details['has_price'] && _details['price']!=0 &&  _details['currency']!=null
-                                          ? Text(
-                                              '${_details['price'].toString()}${_details['currency']['ar'].toString()}',
-                                              style: appStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.w500),
-                                            )
-                                          : Text(_strController.callAdvPrice,
-                                      style: appStyle(
-                                          color: Colors.green,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            flex:2,
+                                            child: Container(
+                                            width: double.infinity,
+                                            child: _details['has_price'] && _details['price']!=0 &&  _details['currency']!=null
+                                                ? Text(
+                                                    '${_details['price'].toString()}${_details['currency']['ar'].toString()}',
+                                                    style: appStyle(
+                                                        color: Colors.green,
+                                                        fontSize: 18,
+                                                        fontWeight: FontWeight.w500),
+                                                  )
+                                                : Text(_strController.callAdvPrice,
+                                            style: appStyle(
+                                                color: Colors.green,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),),
                                     ),
+                                          ),
+                                          if(_details['negotiable'])
+                                            Expanded(
+                                              flex:4,
+                                              child: Text(
+                                                '(قابل للتفاوض)',
+                                                style: appStyle(
+                                                    color: Colors.green,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
                                     if(_details['is_free'])
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
