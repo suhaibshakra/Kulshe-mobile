@@ -372,8 +372,8 @@ buildTextField({
       child: TextFormField(
         showCursor: true,
         initialValue: initialValue,
-        maxLines: maxLines,
-        minLines: minLines,
+        maxLines: isPassword?1:maxLines,
+        minLines: isPassword?1:minLines,
         onFieldSubmitted: onSubmit,
         controller: controller,
         validator: validator,

@@ -328,8 +328,8 @@ class _AddAdFormState extends State<AddAdForm> {
                           _listUnits[unitIndex]['attribute_id'])
                         Text(
                             "${_listAttributes[mainIndex]['units'][unitIndex]['label']}"),
-                      // if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
-                      //   _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
+                      if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
+                        _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
                     ],
                   );
                 }),

@@ -554,7 +554,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
                                     style: appStyle(
                                         fontSize: 16, color: AppColors.green),
-                                    maxLines: 3,
+                                    maxLines: 2,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -858,7 +858,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                     style: appStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade700),
-                                    maxLines: 3,
+                                    maxLines: 2,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -876,7 +876,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                       '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
                                       style: appStyle(
                                           fontSize: 18, color: AppColors.green),
-                                      maxLines: 3,
+                                      maxLines: 2,
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.ellipsis,
                                     ),

@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: _strController.confirmPassword,
                     controller: _confirmPasswordController,
                     textInputType: TextInputType.visiblePassword,
-                      isPassword: true
+                    isPassword: true
                   ),
                 ],
               ),
@@ -157,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 buildTextField(
                                     controller: _emailController,
                                     label: _strController.email,
+
                                     textInputType: TextInputType.emailAddress,
                                     validator: (value) =>
                                         EmailValidator.validate(value)

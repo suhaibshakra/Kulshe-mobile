@@ -396,6 +396,9 @@ Future updateProfile({
     // print(await response.stream.bytesToString());
     print('********************************Done');
     AppSharedPreferences.saveCountryId(countryId);
+    if(newPassword!=null || newPassword.isNotEmpty){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+    }
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
   } else {

@@ -9,8 +9,9 @@ import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FilterScreen extends StatefulWidget {
-  var sectionId ;
-   var subSectionId ;
+  var sectionId;
+
+  var subSectionId;
 
   FilterScreen({Key key, this.sectionId, this.subSectionId}) : super(key: key);
 
@@ -63,7 +64,7 @@ class _FilterScreenState extends State<FilterScreen> {
         // _checkBoxTypeData = _attributes.where((element) =>element['config']['searchType'] == 'checkbox').toList();
 
         _subSectionData = _sectionData[0]['sub_sections'];
-        if(_subSectionData[0]['has_brand'])
+        if (_subSectionData[0]['has_brand'])
           _listBrands = _subSectionData[0]['brands'];
         print("BR: $_listBrands");
         // print(_subSectionData);
@@ -91,8 +92,8 @@ class _FilterScreenState extends State<FilterScreen> {
     // print(id);
     if (trendIndex == -1) {
       Map<dynamic, dynamic> mapData = unitID != null
-          ? {"id": id,"name": name, "value": value, "unit_id": unitID}
-          : {"id": id,"name": name,"value": value};
+          ? {"id": id, "name": name, "value": value, "unit_id": unitID}
+          : {"id": id, "name": name, "value": value};
       myAdAttributesArray.add(mapData);
     } else {
       myAdAttributesArray[trendIndex]["value"] = value;
@@ -113,7 +114,7 @@ class _FilterScreenState extends State<FilterScreen> {
     return Directionality(
       textDirection: AppController.textDirection,
       child: Scaffold(
-         appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
+        appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
         body: Stack(
           children: [
             // buildBg(),
@@ -129,94 +130,100 @@ class _FilterScreenState extends State<FilterScreen> {
                           _buildPath(),
                           if (_subSectionData[0]['has_price'] == true)
                             _buildPrice(),
-                          if(_listAttributes!=null)
-                          Container(
-                            child: ListView.separated(
-                              separatorBuilder: (_, index) => Divider(
-                                color: AppColors.grey,
-                              ),
-                              itemCount: _listAttributes.length,
-                              physics: ClampingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (ctx, mainIndex) {
-                                // List<dynamic> selectedValues = [];
-                                // String selectedValues2 = "";
-                                // if (_type != 'checkbox' ||_type != 'radio'||_type != 'multiple_select')
-                                //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-                                //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues2;
-                                // if (_type == 'checkbox' ||_type == 'radio' || _type == 'multiple_select')
-                                //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-                                //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues;
+                          if (_listAttributes != null)
+                            Container(
+                              child: ListView.separated(
+                                separatorBuilder: (_, index) => Divider(
+                                  color: AppColors.grey,
+                                ),
+                                itemCount: _listAttributes.length,
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemBuilder: (ctx, mainIndex) {
+                                  // List<dynamic> selectedValues = [];
+                                  // String selectedValues2 = "";
+                                  // if (_type != 'checkbox' ||_type != 'radio'||_type != 'multiple_select')
+                                  //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
+                                  //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues2;
+                                  // if (_type == 'checkbox' ||_type == 'radio' || _type == 'multiple_select')
+                                  //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
+                                  //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues;
 
-                                _options = _listAttributes[mainIndex]['options'];
-                                _type = _listAttributes[mainIndex]['config']
-                                    ['searchType'];
-                                // print(
-                                //     'Type: $_type     ${_listAttributes[mainIndex]['name']} ');
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 4),
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 5),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          _listAttributes[mainIndex]['label']
-                                              ['ar'],
-                                          style: appStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.blackColor2),
-                                        ),
-                                        Container(
-                                          child: ListView.builder(
-                                            itemCount: _type == 'select' ||
-                                                    _type == 'multiple_select' ||
-                                                    _type == 'range'
-                                                ? 1
-                                                : _options.length,
-                                            shrinkWrap: true,
-                                            physics: ClampingScrollPhysics(),
-                                            itemBuilder: (context, opIndex) {
-                                              return Card(
-                                                elevation: 1,
-                                                color: Colors.white,
-                                                child: Column(
-                                                  children: [
-                                                    if (_type == 'radio')
-                                                      _buildRadio(
-                                                          mainIndex, opIndex),
-                                                    if (_type == 'checkbox')
-                                                      _buildCheckbox(
-                                                          mainIndex, opIndex),
-                                                    if (_type == 'select')
-                                                      _buildSelect(opIndex, mainIndex),
-                                                    // _buildRange(opIndex, mainIndex),
-                                                    if (_type ==
-                                                        'multiple_select')
-                                                      buildMultiSelected(
-                                                          mainIndex),
-                                                    if (_type == 'range')
-                                                      _buildRange(
-                                                          opIndex, mainIndex),
-                                                  ],
-                                                ),
-                                              );
-                                            },
+                                  _options =
+                                      _listAttributes[mainIndex]['options'];
+                                  _type = _listAttributes[mainIndex]['config']
+                                      ['searchType'];
+
+                                  print("TYPE: $_type");
+                                  // print(
+                                  //     'Type: $_type     ${_listAttributes[mainIndex]['name']} ');
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            _listAttributes[mainIndex]['label']
+                                                ['ar'],
+                                            style: appStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.blackColor2),
                                           ),
-                                        )
-                                      ],
+                                          Container(
+                                            child: ListView.builder(
+                                              itemCount: _type == 'select' ||
+                                                      _type ==
+                                                          'multiple_select' ||
+                                                      _type == 'range'
+                                                  ? 1
+                                                  : _options.length,
+                                              shrinkWrap: true,
+                                              physics: ClampingScrollPhysics(),
+                                              itemBuilder: (context, opIndex) {
+                                                return Card(
+                                                  elevation: 1,
+                                                  color: Colors.white,
+                                                  child: Column(
+                                                    children: [
+                                                      if (_type == 'radio')
+                                                        _buildRadio(
+                                                            mainIndex, opIndex),
+                                                      if (_type == 'checkbox')
+                                                        _buildCheckbox(
+                                                            mainIndex, opIndex),
+                                                      if (_type == 'select')
+                                                        _buildSelect(
+                                                            opIndex, mainIndex),
+                                                      // _buildRange(opIndex, mainIndex),
+                                                      if (_type ==
+                                                          'multiple_select')
+                                                        buildMultiSelected(
+                                                            mainIndex),
+                                                      if (_type == 'range')
+                                                        _buildRange(
+                                                            opIndex, mainIndex),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              },
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          if(_subSectionData[0]['has_brand'])
+                          if (_subSectionData[0]['has_brand'])
                             Padding(
                               padding: const EdgeInsets.only(bottom: 20),
                               child: Column(
@@ -224,14 +231,17 @@ class _FilterScreenState extends State<FilterScreen> {
                                 children: [
                                   Text(
                                     "النوع",
-                                    style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                    style: appStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
                                   ),
                                   Container(
                                     decoration: BoxDecoration(
                                         color: Colors.grey.shade300,
                                         borderRadius: BorderRadius.circular(4)),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
                                       children: <Widget>[
                                         Expanded(
                                           flex: 1,
@@ -249,9 +259,12 @@ class _FilterScreenState extends State<FilterScreen> {
                                                 ),
                                                 hint: Text(
                                                   // _brandId!=null?_brandId.toString():"choose type",
-                                                  _listBrands[0]['label'][_lang],
+                                                  _listBrands[0]['label']
+                                                      [_lang],
                                                   style: appStyle(
-                                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18),
                                                 ),
                                                 onChanged: (String value) {
                                                   setState(() {
@@ -259,14 +272,18 @@ class _FilterScreenState extends State<FilterScreen> {
                                                     _brandId = value;
                                                     _listSubBrands = _listBrands
                                                         .where((element) =>
-                                                    element['id'].toString() ==
-                                                        value.toString())
+                                                            element['id']
+                                                                .toString() ==
+                                                            value.toString())
                                                         .toList();
                                                     _listSubBrands =
-                                                    _listSubBrands[0]['sub_brands'];
+                                                        _listSubBrands[0]
+                                                            ['sub_brands'];
                                                     if (_listSubBrands != [] &&
-                                                        _listSubBrands != null &&
-                                                        _listSubBrands.isNotEmpty) {
+                                                        _listSubBrands !=
+                                                            null &&
+                                                        _listSubBrands
+                                                            .isNotEmpty) {
                                                       setState(() {
                                                         hasSubBrands = true;
                                                       });
@@ -278,18 +295,23 @@ class _FilterScreenState extends State<FilterScreen> {
                                                     // print(" typeee ${hasSubBrands}");
                                                   });
                                                 },
-                                                items: _listBrands.map((listBrand) {
-                                                  // print("LIST BRAND ${listBrand['id']}");
-                                                  return new DropdownMenuItem(
-                                                    child: new Text(
-                                                      listBrand['label'][_lang],
-                                                      style: appStyle(
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 16),
-                                                    ),
-                                                    value: listBrand['id'].toString(),
-                                                  );
-                                                })?.toList() ??
+                                                items: _listBrands
+                                                        .map((listBrand) {
+                                                      // print("LIST BRAND ${listBrand['id']}");
+                                                      return new DropdownMenuItem(
+                                                        child: new Text(
+                                                          listBrand['label']
+                                                              [_lang],
+                                                          style: appStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16),
+                                                        ),
+                                                        value: listBrand['id']
+                                                            .toString(),
+                                                      );
+                                                    })?.toList() ??
                                                     [],
                                               ),
                                             ),
@@ -300,17 +322,21 @@ class _FilterScreenState extends State<FilterScreen> {
                                   ),
                                   if (hasSubBrands == true)
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 20, bottom: 20),
+                                      padding: const EdgeInsets.only(
+                                          top: 20, bottom: 20),
                                       child: Container(
                                         decoration: BoxDecoration(
                                             color: Colors.grey.shade300,
-                                            borderRadius: BorderRadius.circular(4)),
+                                            borderRadius:
+                                                BorderRadius.circular(4)),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
                                           children: <Widget>[
                                             Expanded(
                                               flex: 1,
-                                              child: DropdownButtonHideUnderline(
+                                              child:
+                                                  DropdownButtonHideUnderline(
                                                 child: ButtonTheme(
                                                   alignedDropdown: true,
                                                   child: DropdownButton<String>(
@@ -324,9 +350,11 @@ class _FilterScreenState extends State<FilterScreen> {
                                                     ),
                                                     hint: Text(
                                                       // _subBrandId!=null?_subBrandId.toString():"choose sub type",
-                                                      _listSubBrands[0]['label'][_lang],
+                                                      _listSubBrands[0]['label']
+                                                          [_lang],
                                                       style: appStyle(
-                                                          fontWeight: FontWeight.bold,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                           fontSize: 18),
                                                     ),
                                                     onChanged: (String value) {
@@ -338,18 +366,25 @@ class _FilterScreenState extends State<FilterScreen> {
                                                         // print(" typeee ${value}");
                                                       });
                                                     },
-                                                    items: _listSubBrands.map((listSubBrand) {
-                                                      // print("LIST BRAND ${listSubBrand['id']}");
-                                                      return new DropdownMenuItem(
-                                                        child: new Text(
-                                                          listSubBrand['label'][_lang],
-                                                          style: appStyle(
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 16),
-                                                        ),
-                                                        value: listSubBrand['id'].toString(),
-                                                      );
-                                                    })?.toList() ??
+                                                    items: _listSubBrands.map(
+                                                            (listSubBrand) {
+                                                          // print("LIST BRAND ${listSubBrand['id']}");
+                                                          return new DropdownMenuItem(
+                                                            child: new Text(
+                                                              listSubBrand[
+                                                                      'label']
+                                                                  [_lang],
+                                                              style: appStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 16),
+                                                            ),
+                                                            value: listSubBrand[
+                                                                    'id']
+                                                                .toString(),
+                                                          );
+                                                        })?.toList() ??
                                                         [],
                                                   ),
                                                 ),
@@ -362,8 +397,6 @@ class _FilterScreenState extends State<FilterScreen> {
                                 ],
                               ),
                             ),
-
-
                           _buildButton(context),
                         ],
                       ),
@@ -379,7 +412,9 @@ class _FilterScreenState extends State<FilterScreen> {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     if (trendIndex == -1) {
-      _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
+      _buildMap(
+          _listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['name'],
           _listAttributes[mainIndex]['options'][0]['id']);
     }
 
@@ -408,7 +443,8 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     print("select:  ${_listAttributes[mainIndex]['id']}");
                     print(value);
-                    _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'], value);
+                    _buildMap(_listAttributes[mainIndex]['id'],
+                        _listAttributes[mainIndex]['name'], value);
                     print("$myAdAttributesArray");
                   });
                 },
@@ -458,9 +494,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     if (trendIndex != -1) {
                       valTo = myAdAttributesArray[trendIndex]['value']['to'];
                     }
-                      _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
-                      {'from': valFrom,
-                      'to': valTo},
+                    _buildMap(
+                      _listAttributes[mainIndex]['id'],
+                      _listAttributes[mainIndex]['name'],
+                      {'from': valFrom, 'to': valTo},
                     );
                   });
                   print('val: $myAdAttributesArray');
@@ -475,11 +512,13 @@ class _FilterScreenState extends State<FilterScreen> {
                   setState(() {
                     valTo = val;
                     if (trendIndex != -1) {
-                      valFrom = myAdAttributesArray[trendIndex]['value']['from'];
+                      valFrom =
+                          myAdAttributesArray[trendIndex]['value']['from'];
                     }
-                    _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
-                      {'from': valFrom,
-                      'to': valTo},
+                    _buildMap(
+                      _listAttributes[mainIndex]['id'],
+                      _listAttributes[mainIndex]['name'],
+                      {'from': valFrom, 'to': valTo},
                     );
                   });
                   print('val: $myAdAttributesArray');
@@ -532,31 +571,64 @@ class _FilterScreenState extends State<FilterScreen> {
   CheckboxListTile _buildCheckbox(int mainIndex, opIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-
-    return CheckboxListTile(
+    if (trendIndex == -1) {
+      myAdAttributes[_listAttributes[mainIndex]['name']] = [];
+      _buildMap(
+        _listAttributes[mainIndex]['id'],
+        _listAttributes[mainIndex]['name'],
+        [],
+      );
+    }
+    // return CheckboxListTile(
+    //     // value: null,
+    //     value: myAdAttributes[_listAttributes[mainIndex]['name']]
+    //         .contains(_options[opIndex]['id']),
+    //     title: new Text("${_options[opIndex]['label'][_lang]}"),
+    //     controlAffinity: ListTileControlAffinity.leading,
+    //     tristate: true,
+    //     onChanged: (bool val) {
+    //       setState(() {
+    //         myAdAttributes[_listAttributes[mainIndex]['name']]
+    //                 .contains(_options[opIndex]['id'])
+    //             ? myAdAttributes[_listAttributes[mainIndex]['name']]
+    //                 .remove(_options[opIndex]['id'])
+    //             : myAdAttributes[_listAttributes[mainIndex]['name']]
+    //                 .add(_options[opIndex]['id']);
+    //         _buildMap(
+    //           _listAttributes[mainIndex]['id'],
+    //           _listAttributes[mainIndex]['name'],
+    //           myAdAttributes[_listAttributes[mainIndex]['name']],
+    //         );
+    //         print(myAdAttributesArray);
+    //       });
+    //     });
+    CheckboxListTile _buildCheckbox(int mainIndex, opIndex) {
+      return CheckboxListTile(
         // value: null,
-        value: trendIndex == -1 ? null : true,
-        title: new Text("${_options[opIndex]['label'][_lang]}"),
-        controlAffinity: ListTileControlAffinity.leading,
-        tristate: true,
-        onChanged: (bool val) {
-          setState(() {
-            if(trendIndex == -1){
-              _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
-                  []);
-            }
-            myAdAttributesArray[trendIndex]['value']
-                    .contains(_options[opIndex]['id'])
-                ? myAdAttributesArray[trendIndex]['value']
-                    .remove(_options[opIndex]['id'])
-                : myAdAttributesArray[trendIndex]['value']
-                    .add(_options[opIndex]['id']);
-            _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
-                myAdAttributesArray[trendIndex]['value']);
-            print(myAdAttributesArray);
+          value: myAdAttributes[_listAttributes[mainIndex]['name']]
+              .contains(_options[opIndex]['id'].toString()) ??
+              null,
+          title: new Text("${_options[opIndex]['label'][_lang]}"),
+          controlAffinity: ListTileControlAffinity.leading,
+          tristate: true,
+          onChanged: (bool val) {
+            setState(() {
+              myAdAttributes[_listAttributes[mainIndex]['name']]
+                  .contains(_options[opIndex]['id'])
+                  ? myAdAttributes[_listAttributes[mainIndex]['name']]
+                  .remove(_options[opIndex]['id'])
+                  : myAdAttributes[_listAttributes[mainIndex]['name']]
+                  .add(_options[opIndex]['id']);
+              _buildMap(_listAttributes[mainIndex]['id'],
+                  _listAttributes[mainIndex]['name'],
+                  myAdAttributes[_listAttributes[mainIndex]['name']]);
+              print(myAdAttributesArray);
+            });
           });
-        });
+    }
   }
+
+
 
   Column _buildPrice() {
     return Column(
@@ -669,8 +741,6 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Widget _buildItem(item, mainIndex) {
-
-
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     var checked = false;
@@ -685,11 +755,12 @@ class _FilterScreenState extends State<FilterScreen> {
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
         setState(() {
-          if(trendIndex == -1 ){
+          if (trendIndex == -1) {
             if (checked) {
-              _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['name'], [item['id']]);
+              _buildMap(_listAttributes[mainIndex]['id'],
+                  _listAttributes[mainIndex]['name'], [item['id']]);
             }
-          }else{
+          } else {
             if (checked) {
               print("ssss");
               myAdAttributesArray[trendIndex]['value'].add(item['id']);
@@ -697,15 +768,13 @@ class _FilterScreenState extends State<FilterScreen> {
               myAdAttributesArray[trendIndex]['value'].remove(item['id']);
             }
           }
-
         });
-
-
       },
     );
   }
 
-  void _onItemCheckedChange(itemValue, bool checked, attributeId,attributeName) {
+  void _onItemCheckedChange(
+      itemValue, bool checked, attributeId, attributeName) {
     setState(() {
       print(attributeId);
       print(checked);
@@ -715,7 +784,7 @@ class _FilterScreenState extends State<FilterScreen> {
         myAdAttributesMulti.remove(itemValue);
       }
 
-      _buildMap(attributeId,attributeName, myAdAttributesMulti);
+      _buildMap(attributeId, attributeName, myAdAttributesMulti);
     });
   }
 
@@ -729,7 +798,8 @@ class _FilterScreenState extends State<FilterScreen> {
           onChanged: (dynamic newValue) {
             setState(() {
               _listAttributes[mainIndex]['name'] = newValue;
-              _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'], newValue);
+              _buildMap(_listAttributes[mainIndex]['id'],
+                  _listAttributes[mainIndex]['name'], newValue);
               print("radio:  ${_listAttributes[mainIndex]['id']}");
               // print(_options[index]['label'][_lang]);
               // print(list['name']);
@@ -759,38 +829,59 @@ class _FilterScreenState extends State<FilterScreen> {
         btnColor: AppColors.redColor,
         onPressed: () {
           var urlEncode = [];
-          urlEncode.add("sectionId=${Uri.encodeComponent(widget.sectionId.toString())}");
-          urlEncode.add("subSectionId=${Uri.encodeComponent(widget.subSectionId.toString())}");
-          if(_brandId!=null )
-          urlEncode.add("brand=${Uri.encodeComponent(widget.subSectionId.toString())}");
-          if(_subBrandId!=null )
-          urlEncode.add("subBrand=${Uri.encodeComponent(_brandId.toString())}");
+          urlEncode.add(
+              "sectionId=${Uri.encodeComponent(widget.sectionId.toString())}");
+          urlEncode.add(
+              "subSectionId=${Uri.encodeComponent(widget.subSectionId.toString())}");
+          if (_brandId != null)
+            urlEncode.add(
+                "brand=${Uri.encodeComponent(widget.subSectionId.toString())}");
+          if (_subBrandId != null)
+            urlEncode
+                .add("subBrand=${Uri.encodeComponent(_brandId.toString())}");
 
-          if(_fromController.text.isNotEmpty){
-            urlEncode.add("price[from]=${Uri.encodeComponent(_fromController.text.toString())}");
+          if (_fromController.text.isNotEmpty) {
+            urlEncode.add(
+                "price[from]=${Uri.encodeComponent(_fromController.text.toString())}");
           }
-          if(_toController.text.isNotEmpty){
-            urlEncode.add("price[to]=${Uri.encodeComponent(_toController.text.toString())}");
+          if (_toController.text.isNotEmpty) {
+            urlEncode.add(
+                "price[to]=${Uri.encodeComponent(_toController.text.toString())}");
           }
-          for (var item in myAdAttributesArray){
-            var directEncodeTypes=['String','int','double','float'];
+          for (var item in myAdAttributesArray) {
+            var directEncodeTypes = ['String', 'int', 'double', 'float'];
 
-            if(item['value'] == [] || item['value'] == null)continue;
-            if(directEncodeTypes.contains(item['value'].runtimeType.toString()) ){
-              urlEncode.add("${Uri.encodeComponent(item['name'])}=${Uri.encodeComponent(item['value'])}");
-            }else {
-              var  array = item['value'];
+            if (item['value'] == [] || item['value'] == null) continue;
+            if (directEncodeTypes
+                .contains(item['value'].runtimeType.toString())) {
+              urlEncode.add(
+                  "${Uri.encodeComponent(item['name'])}=${Uri.encodeComponent(item['value'])}");
+            } else {
+              var array = item['value'];
               if (item['value'].runtimeType.toString() == 'List<dynamic>') {
                 array = item['value'].asMap();
               }
-             array.forEach((i, value){
-                var keyName = item['name']+'[${i}]';
-                urlEncode.add("${keyName}=${Uri.encodeComponent(value.toString())}");
+              array.forEach((i, value) {
+                var keyName = item['name'] + '[${i}]';
+                urlEncode
+                    .add("${keyName}=${Uri.encodeComponent(value.toString())}");
               });
             }
           }
 
-          Navigator.push(context, MaterialPageRoute(builder: (context) => PublicAdsListScreen(isFav: false,section: widget.sectionId,subSection: widget.subSectionId,isFilter:true,sectionId: widget.sectionId,subSectionId: widget.subSectionId,filteredData: urlEncode.join('&'),),));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PublicAdsListScreen(
+                  isFav: false,
+                  section: widget.sectionId,
+                  subSection: widget.subSectionId,
+                  isFilter: true,
+                  sectionId: widget.sectionId,
+                  subSectionId: widget.subSectionId,
+                  filteredData: urlEncode.join('&'),
+                ),
+              ));
 
           print(urlEncode.join("&"));
           // return(urlEncode.join("&"));
@@ -798,5 +889,4 @@ class _FilterScreenState extends State<FilterScreen> {
       ),
     );
   }
-
 }
