@@ -1,70 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class PlayVideo extends StatefulWidget {
+class PlayVideoScreen extends StatefulWidget {
 
   final String videoUrl;
-
-  const PlayVideo({Key key, this.videoUrl}) : super(key: key);
+  PlayVideoScreen({Key key, this.videoUrl}) : super(key: key);
 
   @override
-  PlayVideoState createState() => PlayVideoState();
+  _PlayVideoScreenState createState() => _PlayVideoScreenState();
 }
 
-class PlayVideoState extends State<PlayVideo> {
-  //
-  VideoPlayerController _controller;
-  Future<void> _initializeVideoPlayerFuture;
+class _PlayVideoScreenState extends State<PlayVideoScreen> {
+  VideoPlayerController playerController;
+  VoidCallback listener;
 
   @override
   void initState() {
-    _controller = VideoPlayerController.network(
-        widget.videoUrl);
-    //_controller = VideoPlayerController.asset("videos/sample_video.mp4");
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(true);
-    _controller.setVolume(1.0);
     super.initState();
+    listener = () {
+      setState(() {});
+    };
+  }
+
+  void createVideo() {
+    if (playerController == null) {
+      playerController = VideoPlayerController.network(
+          widget.videoUrl)
+        ..addListener(listener)
+        ..setVolume(1.0)
+        ..initialize()
+        ..play();
+    } else {
+      if (playerController.value.isPlaying) {
+        playerController.pause();
+      } else {
+        playerController.initialize();
+        playerController.play();
+      }
+    }
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void deactivate() {
+    playerController.setVolume(0.0);
+    playerController.removeListener(listener);
+    super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+      appBar: AppBar(
+        title: Text('Video Example'),
       ),
+      body: Center(
+          child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Container(
+                child: (playerController != null
+                    ? VideoPlayer(
+                  playerController,
+                )
+                    : Container()),
+              ))),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              _controller.play();
-            }
-          });
+          createVideo();
+          playerController.play();
         },
-        child:
-        Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+        child: Icon(Icons.play_arrow),
       ),
     );
   }

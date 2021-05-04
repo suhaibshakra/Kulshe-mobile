@@ -125,6 +125,34 @@ class PublicAdsServicesNew {
     }
   }
 }
+class LatestAdsServices {
+  static Future<List> getLatestAdsData({
+    String iso,
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          '${baseURL}classifieds/latest?isoCountryCode=$iso',
+          headers: {
+            'lang': '${_pref.getString('lang')}',
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        print(response.statusCode);
+        // print(response.body);
+
+        List ads = jsonDecode('[${response.body}]');
+        // AdsResponseData adsData = ads[0].responseData ;
+        // List<Ad> ad = adsData.ads;
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
 class FilterAdsServices {
   static Future<List> getAdsData({
     var filteredData,

@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +41,39 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
   bool _showOtherReason = false;
   bool _loading = true;
   List _adDetails;
+  List _adBrands;
+  List _adSubBrands;
   int _selection = 0;
+  int _brandId = 0;
+  int _subBrandId = 0;
+  List _sectionData;
+  List _subSectionData;
+  List _listImg = [];
+  List<Widget> imageSliders;
+
+  _getSections({int sec, int subSec, int br, int subBr}) async {
+    SharedPreferences _gp = await SharedPreferences.getInstance();
+
+    final List sections = jsonDecode(_gp.getString("allSectionsData"));
+    setState(() {
+      print('SUBSEC : $subSec');
+      _sectionData = sections[0]['responseData'];
+      // log("AAA : ${_sectionData[0] }");
+      _sectionData =
+          _sectionData.where((element) => element['id'] == sec).toList();
+      // _subSectionData = _sectionData.where((element) => element['sub_sections']['id'] == sec).toList();
+      _subSectionData = _sectionData[0]['sub_sections']
+          .where((element) => (element['id'] == subSec))
+          .toList();
+      _adBrands = _subSectionData[0]['brands']
+          .where((element) => (element['id'] == _brandId))
+          .toList();
+      _adSubBrands = _adBrands[0]['sub_brands']
+          .where((element) => (element['id'] == _subBrandId))
+          .toList();
+      // _adSubBrands = _adBrands[0]['sub_brands'];
+    });
+  }
 
   @override
   void initState() {
@@ -46,9 +82,65 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         .then((value) {
       setState(() {
         _adDetails = value;
-        // print('AD L : $_adDetails');
-        // _adDetailsData = value[0]['responseData'];
-        // _detailsAttribute = value[0]['responseData']['selected_attributes'];
+        if (_adDetails[0]['responseData']['images'] != null)
+          for (var links in _adDetails[0]['responseData']['images']) {
+            _listImg.add(links['medium']);
+          }
+        if (_listImg != null || _listImg != [])
+          imageSliders = _listImg
+              .map((item) => Container(
+                    child: Container(
+                      margin: EdgeInsets.all(5.0),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          child: Stack(
+                            children: <Widget>[
+                              Image.network(item,
+                                  fit: BoxFit.cover, width: 1000.0),
+                              Positioned(
+                                bottom: 0.0,
+                                left: 0.0,
+                                right: 0.0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color.fromARGB(200, 0, 0, 0),
+                                        Color.fromARGB(0, 0, 0, 0)
+                                      ],
+                                      begin: Alignment.bottomCenter,
+                                      end: Alignment.topCenter,
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10.0, horizontal: 10.0),
+                                  child: Text(
+                                    '${_listImg.indexOf(item) + 1} / ${_listImg.length}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
+                    ),
+                  ))
+              .toList();
+        // _sliderImages = _adDetails[0]['responseData']['images'];
+        // print('Ad Details : ${_adDetails}');
+        _brandId = _adDetails[0]['responseData']['brand_id'];
+        _subBrandId = _adDetails[0]['responseData']['sub_brand_id'];
+
+        // log('_sliderImages: $_sliderImages');
+        _getSections(
+          sec: _adDetails[0]['responseData']['section_id'],
+          subSec: _adDetails[0]['responseData']['sub_section_id'],
+          br: _adDetails[0]['responseData']['brand_id'],
+          subBr: _adDetails[0]['responseData']['sub_brand_id'],
+        );
         _loading = false;
       });
     });
@@ -78,80 +170,20 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
-  List _myImages = [];
-
-  Widget adsWidget(List images) {
-    if (_myImages != []) if (images != null) {
-      for (int i = 0; i < images.length; i++) {
-        _myImages.add(
-          NetworkImage('${images[i]['medium']}'),
-        );
-      }
-    } else {
-      _myImages = [(AssetImage("assets/images/no_img.png"))];
-    }
-    Widget imageCarousel = new Container(
-      height: MediaQuery.of(context).size.height * 0.25,
-      child: new Carousel(
-        boxFit: BoxFit.cover,
-        images: _myImages,
-        // [
-        //   NetworkImage(
-        //       'https://i.pinimg.com/originals/e6/14/2e/e6142eacd3e73a4075e959a611e94819.jpg'),
-        //   NetworkImage(
-        //       'https://www.fgdc.gov/img/slider/slider-bg-network.jpg/image'),
-        //   NetworkImage(
-        //       'https://www.fgdc.gov/img/slider/slider-bg-network.jpg/image'),
-        //   NetworkImage(
-        //       'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQEXuRby1OzuqA3POVcC0wvtrgDgRCkpNqzbuTatWzOTSTUBDKLa2S2FjD5z_WfpH2jRHw&usqp=CAU')
-        // ],
-        autoplay: true,
-        dotSize: 5,
-        dotIncreasedColor: Colors.yellow,
-        dotBgColor: Colors.grey.withOpacity(0.2),
-        overlayShadowColors: Colors.black,
-
-        // animationCurve: Curves.fastOutSlowIn,
-        // animationDuration: Duration(milliseconds: 1000),
-      ),
-    );
-    return
-        // _load2 ? buildLoading(color: Colors.amber.shade700) :
-        Stack(
-      children: [
-        imageCarousel,
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: buildIcons(
-            iconData: FontAwesomeIcons.shareAlt,
-            bgColor: Colors.grey,
-            color: AppColors.whiteColor,
-            action: () => shareData(context),
-          ),
-        )
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
-      child: Directionality(
-        textDirection: _drController,
-        child: Scaffold(
-          appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
-          // appBar: buildAppBar(
-          //     centerTitle: true,
-          //     bgColor: AppColors.whiteColor,
-          //     themeColor: Colors.grey),
-          // drawer: buildDrawer(context),
-          backgroundColor: Colors.white,
-          body: _loading
-              ? buildLoading(color: AppColors.green)
-              : Column(
+      child: Scaffold(
+        appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
+        backgroundColor: Colors.white,
+        body: _loading
+            ? buildLoading(color: AppColors.green)
+            : Directionality(
+                textDirection: _drController,
+                child: Column(
                   children: [
                     Expanded(
                       child: Padding(
@@ -301,8 +333,13 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                     ),
                                   ],
                                 ),
-
-                                adsWidget(_details['images']),
+                                if (imageSliders.isNotEmpty)
+                                  Container(
+                                      height: mq.size.height * 0.25,
+                                      child: EnlargeStrategyDemo(
+                                        imageSliders: imageSliders,
+                                      )),
+                                // adsWidget(_details['images']),
                                 SizedBox(
                                   height: 20,
                                 ),
@@ -370,6 +407,91 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
+                                if (_adBrands.isNotEmpty)
+                                  Container(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          flex: 3,
+                                          child: Text(
+                                            "النوع".toString(),
+                                            style: appStyle(
+                                                fontSize: 18,
+                                                color: AppColors.blackColor,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Text(
+                                            _adBrands[0]['label']['ar']
+                                                .toString(),
+                                            style: appStyle(
+                                                fontSize: 18,
+                                                color: AppColors.blackColor,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                Divider(
+                                  thickness: 1,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                if (_adBrands.isNotEmpty)
+                                  if (_adSubBrands.isNotEmpty)
+                                    Column(
+                                      children: [
+                                        Container(
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                flex: 3,
+                                                child: Text(
+                                                  "الفرع".toString(),
+                                                  style: appStyle(
+                                                      fontSize: 18,
+                                                      color:
+                                                          AppColors.blackColor,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Text(
+                                                  _adSubBrands[0]['label']['ar']
+                                                      .toString(),
+                                                  style: appStyle(
+                                                      fontSize: 18,
+                                                      color:
+                                                          AppColors.blackColor,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Divider(
+                                          thickness: 1,
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
                                 ListView.separated(
                                   shrinkWrap: true,
                                   physics: ClampingScrollPhysics(),
@@ -379,12 +501,6 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                     var _myAttributes = _attributes[position];
                                     var _selectedValue =
                                         _myAttributes['selected_value'];
-
-                                    var _anotherData;
-
-                                    // print('SELECTED: ${_myAttributes}');
-                                    print(
-                                        'TYPE: ${_selectedValue.runtimeType}');
                                     var attributeName = (_selectedValue
                                                     .runtimeType ==
                                                 int ||
@@ -503,46 +619,75 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                Column(
                                   children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: myButton(
-                                          btnTxt: _strController.callAdv,
-                                          fontSize: 16,
-                                          btnColor: Colors.lightBlueAccent,
-                                          radius: 8,
-                                          context: context,
-                                          txtColor: AppColors.whiteColor,
-                                          height: 45,
-                                          onPressed: () {
-                                            launch(
-                                                "tel://${_details['user_contact']['mobile_number'].toString()}");
-                                            // print('${_details['video']}');
-                                            //   if(_details['video'] != null)
-                                            //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
-                                          }),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: myButton(
+                                              btnTxt: _strController.callAdv,
+                                              fontSize: 16,
+                                              btnColor: Colors.lightBlueAccent,
+                                              radius: 8,
+                                              context: context,
+                                              txtColor: AppColors.whiteColor,
+                                              height: 45,
+                                              onPressed: () {
+                                                launch(
+                                                    "tel://${_details['user_contact']['mobile_number'].toString()}");
+                                                // print('${_details['video']}');
+                                                //   if(_details['video'] != null)
+                                                //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
+                                              }),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: myButton(
+                                            btnTxt: _strController.sendEmail,
+                                            fontSize: 16,
+                                            btnColor: Colors.lightBlueAccent,
+                                            radius: 8,
+                                            context: context,
+                                            txtColor: AppColors.whiteColor,
+                                            height: 45,
+                                            onPressed: () => launch(
+                                                'mailto:${_details['user_contact']['email'].toString()}'),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(
-                                      width: 10,
+                                      height: 20,
                                     ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: myButton(
-                                        btnTxt: _strController.sendEmail,
+                                    myButton(
+                                        btnTxt: 'عرض الفيديو',
                                         fontSize: 16,
-                                        btnColor: Colors.lightBlueAccent,
+                                        btnColor: Colors.amber,
                                         radius: 8,
                                         context: context,
                                         txtColor: AppColors.whiteColor,
                                         height: 45,
-                                        onPressed: () => launch(
-                                            'mailto:${_details['user_contact']['email'].toString()}'),
-                                      ),
-                                    ),
+                                        onPressed: () {
+                                          print('${_details['video']}');
+                                          if (_details['video'] != null)
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PlayVideoScreen(
+                                                  videoUrl: _details['video'],
+                                                ),
+                                              ),
+                                            );
+                                        }),
                                   ],
                                 ),
                                 SizedBox(
@@ -617,16 +762,15 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                   height: 10,
                                 ),
                                 Container(
-
                                     width: double.infinity,
                                     child: Html(
-                                      customTextAlign: (_)=>TextAlign.start,
+                                      customTextAlign: (_) => TextAlign.start,
                                       data: _details['body'],
                                       defaultTextStyle: appStyle(
                                           color: AppColors.blackColor2,
                                           fontSize: 20,
                                           fontWeight: FontWeight.w500),
-                                     )
+                                    )
 
                                     // Text(
                                     //   _details['body']+'sss',
@@ -695,7 +839,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                     ),
                   ],
                 ),
-        ),
+              ),
       ),
     );
   }
@@ -800,5 +944,30 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
     setState(() {
       _selection = val;
     });
+  }
+}
+
+class EnlargeStrategyDemo extends StatelessWidget {
+  final List imageSliders;
+
+  EnlargeStrategyDemo({Key key, this.imageSliders}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          CarouselSlider(
+            options: CarouselOptions(
+              autoPlay: true,
+              aspectRatio: 2.0,
+              enlargeCenterPage: true,
+              enlargeStrategy: CenterPageEnlargeStrategy.height,
+            ),
+            items: imageSliders.toList(),
+          ),
+        ],
+      ),
+    );
   }
 }
