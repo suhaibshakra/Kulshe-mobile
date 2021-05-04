@@ -24,8 +24,7 @@ class _FilterScreenState extends State<FilterScreen> {
   TextEditingController _toController = TextEditingController()..text;
   final _strController = AppController.strings;
 
-  // int sectionId ;
-  // int subSectionId;
+
   String _brandId;
   String _subBrandId;
   List _sectionData;
@@ -51,23 +50,12 @@ class _FilterScreenState extends State<FilterScreen> {
       _sectionData = sections[0]['responseData'];
       setState(() {
         _lang = _gp.getString("lang");
-
-        _sectionData = _sectionData
-            .where((element) =>
-                element['id'] == widget.sectionId &&
-                element['sub_sections'][0]['id'] == widget.subSectionId)
-            .toList();
-
-        // print(_sectionData.toString());
-
-        _listAttributes = _sectionData[0]['sub_sections'][0]['attributes'];
-        // _checkBoxTypeData = _attributes.where((element) =>element['config']['searchType'] == 'checkbox').toList();
-
-        _subSectionData = _sectionData[0]['sub_sections'];
+        _sectionData = _sectionData.where((element) => element['id'] == widget.sectionId && (element['sub_sections'].where((i) => i['id'] == widget.subSectionId).toList().length > 0)).toList();
+        _subSectionData = _sectionData[0]['sub_sections'].where((element) => (element['id'] == widget.subSectionId)).toList();
+        _listAttributes = _subSectionData[0]['attributes'];
         if (_subSectionData[0]['has_brand'])
           _listBrands = _subSectionData[0]['brands'];
-        print("BR: $_listBrands");
-        // print(_subSectionData);
+
       });
     });
     _loading = false;
@@ -140,15 +128,6 @@ class _FilterScreenState extends State<FilterScreen> {
                                 physics: ClampingScrollPhysics(),
                                 shrinkWrap: true,
                                 itemBuilder: (ctx, mainIndex) {
-                                  // List<dynamic> selectedValues = [];
-                                  // String selectedValues2 = "";
-                                  // if (_type != 'checkbox' ||_type != 'radio'||_type != 'multiple_select')
-                                  //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-                                  //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues2;
-                                  // if (_type == 'checkbox' ||_type == 'radio' || _type == 'multiple_select')
-                                  //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-                                  //   myAdAttributes[_listAttributes[mainIndex]["name"]] = selectedValues;
-
                                   _options =
                                       _listAttributes[mainIndex]['options'];
                                   _type = _listAttributes[mainIndex]['config']
@@ -202,7 +181,6 @@ class _FilterScreenState extends State<FilterScreen> {
                                                       if (_type == 'select')
                                                         _buildSelect(
                                                             opIndex, mainIndex),
-                                                      // _buildRange(opIndex, mainIndex),
                                                       if (_type ==
                                                           'multiple_select')
                                                         buildMultiSelected(
@@ -411,14 +389,17 @@ class _FilterScreenState extends State<FilterScreen> {
   Container _buildSelect(int opIndex, int mainIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+
     if (trendIndex == -1) {
       _buildMap(
           _listAttributes[mainIndex]['id'],
           _listAttributes[mainIndex]['name'],
           _listAttributes[mainIndex]['options'][0]['id']);
+        trendIndex = myAdAttributesArray
+            .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
 
-    var val = "";
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
@@ -432,28 +413,22 @@ class _FilterScreenState extends State<FilterScreen> {
                 dropdownColor: Colors.grey.shade200,
                 isExpanded: true,
                 value: myAdAttributesArray[trendIndex]['value'].toString(),
-                // value: '1',
                 iconSize: 30,
-                // icon: (null),
                 style: appStyle(
                   color: Colors.black54,
                   fontSize: 16,
                 ),
                 onChanged: (value) {
                   setState(() {
-                    print("select:  ${_listAttributes[mainIndex]['id']}");
-                    print(value);
                     _buildMap(_listAttributes[mainIndex]['id'],
                         _listAttributes[mainIndex]['name'], value);
-                    print("$myAdAttributesArray");
                   });
                 },
                 items: _listAttributes[mainIndex]['options']
                         .map<DropdownMenuItem<String>>((listOptions) {
                       // print('LIST  :$list');
                       return new DropdownMenuItem(
-                        child: new Text(
-                            val == "" ? "${listOptions['label'][_lang]}" : val),
+                        child: new Text("${listOptions['label'][_lang]}"),
                         value: listOptions['id'].toString(),
                       );
                     })?.toList() ??
@@ -500,7 +475,6 @@ class _FilterScreenState extends State<FilterScreen> {
                       {'from': valFrom, 'to': valTo},
                     );
                   });
-                  print('val: $myAdAttributesArray');
                 }),
           ),
           Expanded(
@@ -521,7 +495,6 @@ class _FilterScreenState extends State<FilterScreen> {
                       {'from': valFrom, 'to': valTo},
                     );
                   });
-                  print('val: $myAdAttributesArray');
                 }),
           ),
         ],
@@ -571,61 +544,32 @@ class _FilterScreenState extends State<FilterScreen> {
   CheckboxListTile _buildCheckbox(int mainIndex, opIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-    if (trendIndex == -1) {
-      myAdAttributes[_listAttributes[mainIndex]['name']] = [];
-      _buildMap(
-        _listAttributes[mainIndex]['id'],
-        _listAttributes[mainIndex]['name'],
-        [],
-      );
-    }
-    // return CheckboxListTile(
-    //     // value: null,
-    //     value: myAdAttributes[_listAttributes[mainIndex]['name']]
-    //         .contains(_options[opIndex]['id']),
-    //     title: new Text("${_options[opIndex]['label'][_lang]}"),
-    //     controlAffinity: ListTileControlAffinity.leading,
-    //     tristate: true,
-    //     onChanged: (bool val) {
-    //       setState(() {
-    //         myAdAttributes[_listAttributes[mainIndex]['name']]
-    //                 .contains(_options[opIndex]['id'])
-    //             ? myAdAttributes[_listAttributes[mainIndex]['name']]
-    //                 .remove(_options[opIndex]['id'])
-    //             : myAdAttributes[_listAttributes[mainIndex]['name']]
-    //                 .add(_options[opIndex]['id']);
-    //         _buildMap(
-    //           _listAttributes[mainIndex]['id'],
-    //           _listAttributes[mainIndex]['name'],
-    //           myAdAttributes[_listAttributes[mainIndex]['name']],
-    //         );
-    //         print(myAdAttributesArray);
-    //       });
-    //     });
-    CheckboxListTile _buildCheckbox(int mainIndex, opIndex) {
+
+      if(trendIndex == -1){
+        myAdAttributes[_listAttributes[mainIndex]['name']] = [];
+      }
+
       return CheckboxListTile(
-        // value: null,
           value: myAdAttributes[_listAttributes[mainIndex]['name']]
-              .contains(_options[opIndex]['id'].toString()) ??
+              .contains(_listAttributes[mainIndex]['options'][opIndex]['id']) ??
               null,
-          title: new Text("${_options[opIndex]['label'][_lang]}"),
+          title: new Text("${_listAttributes[mainIndex]['options'][opIndex]['label'][_lang]}"),
           controlAffinity: ListTileControlAffinity.leading,
           tristate: true,
           onChanged: (bool val) {
             setState(() {
               myAdAttributes[_listAttributes[mainIndex]['name']]
-                  .contains(_options[opIndex]['id'])
+                  .contains(_listAttributes[mainIndex]['options'][opIndex]['id'])
                   ? myAdAttributes[_listAttributes[mainIndex]['name']]
-                  .remove(_options[opIndex]['id'])
+                  .remove(_listAttributes[mainIndex]['options'][opIndex]['id'])
                   : myAdAttributes[_listAttributes[mainIndex]['name']]
-                  .add(_options[opIndex]['id']);
+                  .add(_listAttributes[mainIndex]['options'][opIndex]['id']);
               _buildMap(_listAttributes[mainIndex]['id'],
                   _listAttributes[mainIndex]['name'],
                   myAdAttributes[_listAttributes[mainIndex]['name']]);
-              print(myAdAttributesArray);
+
             });
           });
-    }
   }
 
 
@@ -649,6 +593,7 @@ class _FilterScreenState extends State<FilterScreen> {
             Expanded(
               flex: 1,
               child: buildTextField(
+                textInputType: TextInputType.number,
                 label: _strController.fFrom,
                 hintTxt: '0',
                 controller: _fromController,
@@ -657,6 +602,7 @@ class _FilterScreenState extends State<FilterScreen> {
             Expanded(
               flex: 1,
               child: buildTextField(
+                textInputType: TextInputType.number,
                 label: _strController.fTo,
                 hintTxt: _maxPrice,
                 controller: _toController,
@@ -701,7 +647,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   fontSize: 20,
                   txtColor: AppColors.blackColor2,
                   fontWeight: FontWeight.w500,
-                  txt: "${_sectionData[0]['sub_sections'][0]['label'][_lang]}",
+                  txt: "${_subSectionData[0]['label'][_lang]}",
                   textAlign: TextAlign.center),
             ),
           ),
@@ -814,7 +760,6 @@ class _FilterScreenState extends State<FilterScreen> {
       ],
     );
   }
-
   Container _buildButton(BuildContext context) {
     // print("AT:$myAdAttributes");
     return Container(
@@ -855,7 +800,7 @@ class _FilterScreenState extends State<FilterScreen> {
             if (directEncodeTypes
                 .contains(item['value'].runtimeType.toString())) {
               urlEncode.add(
-                  "${Uri.encodeComponent(item['name'])}=${Uri.encodeComponent(item['value'])}");
+                  "${Uri.encodeComponent(item['name'])}=${Uri.encodeComponent(item['value'].toString())}");
             } else {
               var array = item['value'];
               if (item['value'].runtimeType.toString() == 'List<dynamic>') {

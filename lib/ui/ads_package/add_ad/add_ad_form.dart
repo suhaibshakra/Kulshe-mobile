@@ -596,26 +596,31 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   CheckboxListTile _buildCheckbox(int mainIndex, int rcsIndex) {
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+
+    if(trendIndex == -1){
+      myAdAttributes[_listAttributes[mainIndex]['name']] = [];
+    }
     if(widget.fromEdit) {
       myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
-      // print("dddd ${myAdAttributes[_listAttributes[mainIndex]['name']]}");
       _buildMap(_listAttributes[mainIndex]['id'],
           _listAttributes[mainIndex]['value']);
     }
     return CheckboxListTile(
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
-            .contains(_options[rcsIndex]['id']),
-        title: new Text("${_options[rcsIndex]['label'][_lang]}"),
+            .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id']),
+        title: new Text("${_listAttributes[mainIndex]['options'][rcsIndex]['label'][_lang]}"),
         controlAffinity: ListTileControlAffinity.leading,
         tristate: true,
         onChanged: (bool val) {
           setState(() {
             myAdAttributes[_listAttributes[mainIndex]['name']]
-                .contains(_options[rcsIndex]['id'])
+                .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
                 ? myAdAttributes[_listAttributes[mainIndex]['name']]
-                .remove(_options[rcsIndex]['id'])
+                .remove(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
                 : myAdAttributes[_listAttributes[mainIndex]['name']]
-                .add(_options[rcsIndex]['id']);
+                .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
             _buildMap(_listAttributes[mainIndex]['id'],
                 myAdAttributes[_listAttributes[mainIndex]['name']]);
             print(myAdAttributesArray);
@@ -1320,7 +1325,6 @@ class _AddAdFormState extends State<AddAdForm> {
 
   Widget _buildItem(item,mainIndex) {
     var checked = myAdAttributesMulti.contains(item['id']);
-    print('TEST:${_listAttributes[mainIndex]['value']}');
     // print('checked: $checked');
     if(widget.fromEdit) {
       checked = _listAttributes[mainIndex]['value'].contains(item['id']);
