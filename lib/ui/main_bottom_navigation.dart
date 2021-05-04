@@ -8,6 +8,7 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ads_package/add_ad/add_ad_sections.dart';
+import 'ads_package/latest_ads_screen.dart';
 import 'ads_package/public_ads_list_screen.dart';
 import 'ads_package/user_panel.dart';
 import 'bottome_navigation_screens/categories.dart';
@@ -29,7 +30,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     setState(
       () {
         _lastSelected = index == 0
-            ? PublicAdsListScreen(isFav: false,isFilter: false,isMain: true)
+            ? LatestAds()
             : index == 1
                 ? CategoriesScreen()
                 : index == 2
@@ -54,7 +55,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
     _sectionData = sections[0]['responseData'];
     setState(() {
-      _lastSelected = PublicAdsListScreen(isFav: false,isFilter: false,isMain: true);
+      _lastSelected = LatestAds();
     });
 
     // print(sections[0].responseData[4].name);

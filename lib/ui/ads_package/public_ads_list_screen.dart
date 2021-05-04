@@ -235,19 +235,18 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
-      child: Directionality(
-        textDirection: _drController,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: buildAppBar(
-              centerTitle: true,
-              bgColor: AppColors.whiteColor,
-              themeColor: Colors.grey),
-          // drawer: buildDrawer(context),
-          backgroundColor: Colors.grey.shade200,
-          body: _loading
-              ? buildLoading(color: AppColors.green)
-              : Stack(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: buildAppBar(
+            centerTitle: true,
+            bgColor: AppColors.whiteColor, ),
+        // drawer: buildDrawer(context),
+        backgroundColor: Colors.grey.shade200,
+        body: _loading
+            ? buildLoading(color: AppColors.green)
+            : Directionality(
+          textDirection: _drController,
+          child: Stack(
                   children: [
                     buildBg(),
                     SingleChildScrollView(
@@ -302,7 +301,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                     ),
                   ],
                 ),
-        ),
+            ),
       ),
     );
   }

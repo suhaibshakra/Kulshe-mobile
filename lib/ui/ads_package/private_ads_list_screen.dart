@@ -43,7 +43,6 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
       lang = _pr.getString('lang');
     });
   }
-
   @override
   void initState() {
     super.initState();
@@ -74,20 +73,20 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
-      child: Directionality(
-        textDirection: _drController,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          // appBar: buildAppBar(
-          //     centerTitle: true,
-          //     bgColor: AppColors.whiteColor,
-          //     themeColor: Colors.grey),
-          // drawer: buildDrawer(context),
-          backgroundColor: Colors.grey.shade200,
-          body: _loading
-              ? buildLoading(color: AppColors.green)
-              : _privateAd.length == 0
-                  ? Container(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: buildAppBar(
+            centerTitle: true,
+            bgColor: AppColors.whiteColor,
+            themeColor: Colors.grey),
+        // drawer: buildDrawer(context,()=>Navigator.of(context).pop()),
+        backgroundColor: Colors.grey.shade200,
+        body: _loading
+            ? buildLoading(color: AppColors.green)
+            : _privateAd.length == 0
+                ? Directionality(
+          textDirection: _drController,
+                  child: Container(
                       color: Colors.white,
                       child: Center(
                         child: Container(
@@ -114,44 +113,44 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                           ),
                         ),
                       ),
-                    )
-                  : Stack(
-                      children: [
-                        buildBg(),
-                        SingleChildScrollView(
-                          child: Container(
-                            color: AppColors.whiteColor,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                buildFilter(),
-                                SizedBox(
-                                  height: 22,
-                                ),
-                                if (isList) buildListOneItem(mq),
-                                if (isList == false) buildGridList(mq),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    OutlineButton(
-                                      onPressed: goToPrevious,
-                                      child: Text("<"),
-                                    ),
-                                    OutlineButton(
-                                      onPressed: goToNext,
-                                      child: Text(">"),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                    ),
+                )
+                : Stack(
+                    children: [
+                      buildBg(),
+                      SingleChildScrollView(
+                        child: Container(
+                          color: AppColors.whiteColor,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              buildFilter(),
+                              SizedBox(
+                                height: 22,
+                              ),
+                              if (isList) buildListOneItem(mq),
+                              if (isList == false) buildGridList(mq),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  OutlineButton(
+                                    onPressed: goToPrevious,
+                                    child: Text("<"),
+                                  ),
+                                  OutlineButton(
+                                    onPressed: goToNext,
+                                    child: Text(">"),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-        ),
+                      ),
+                    ],
+                  ),
       ),
     );
   }

@@ -164,93 +164,93 @@ class _UserPanelState extends State<UserPanel> {
     final mq = MediaQuery.of(context);
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return Directionality(
-      textDirection: _drController,
-      child: SafeArea(
-        child: Scaffold(
-          body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.green):Stack(
-            children: [
-              buildBg(),
-              NestedScrollView(
-                headerSliverBuilder: (context, innerBoxScrolled) {
-                  return <Widget>[
-                    SliverAppBar(
-                      foregroundColor: Colors.lightBlue,
-                      shadowColor: Colors.red,
-                      expandedHeight: isLandscape ?mq.size.height*0.3:mq.size.height*0.2,
-                      pinned: true,
-                      floating: false,
-                      title: Text(_strController.userPanel,style: appStyle(color: AppColors.blackColor2,fontSize: 18),),
-                       actions: [ buildIconButton(icon: Icons.edit,color: AppColors.blackColor2,size: 26,onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(),));
-                      }, ),
+    return SafeArea(
+      child: Scaffold(
+        body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.green):Stack(
+          children: [
+            buildBg(),
+            NestedScrollView(
+              headerSliverBuilder: (context, innerBoxScrolled) {
+                return <Widget>[
+                  SliverAppBar(
+                    foregroundColor: Colors.lightBlue,
+                    shadowColor: Colors.red,
+                    expandedHeight: isLandscape ?mq.size.height*0.3:mq.size.height*0.2,
+                    pinned: true,
+                    floating: false,
+                    title: Text(_strController.userPanel,style: appStyle(color: AppColors.blackColor2,fontSize: 18),),
+                     actions: [ buildIconButton(icon: Icons.edit,color: AppColors.blackColor2,size: 26,onPressed: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(),));
+                    }, ),
 
-                      ],
-                       centerTitle: false,
-                      backgroundColor: Colors.white,
-                      toolbarHeight: 50,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(height: 4,),
-                                Divider(thickness: 0,color: AppColors.whiteColor,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(_profileData['nick_name'],style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
-                                        SizedBox(height: 5,),
-                                        Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
-                                      ],
+                    ],
+                     centerTitle: false,
+                    backgroundColor: Colors.white,
+                    toolbarHeight: 50,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(height: 4,),
+                              Divider(thickness: 0,color: AppColors.whiteColor,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Text(_profileData['nick_name'],style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
+                                      SizedBox(height: 5,),
+                                      Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
+                                    ],
+                                  ),
+                                  InkWell(
+                                    onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
+                                    child: CircleAvatar(
+                                      radius: 40.0,
+                                      child: Container(
+                                      decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
+                                      image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
+                                      backgroundColor: Colors.transparent,
                                     ),
-                                    InkWell(
-                                      onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
-                                      child: CircleAvatar(
-                                        radius: 40.0,
-                                        child: Container(
-                                        decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
-                                        image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
-                                        backgroundColor: Colors.transparent,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    color: AppColors.grey,
-                                    spreadRadius: 1,
-                                    blurRadius: 1,
-                                    offset: Offset(1, 1)),
-                              ],
-                              // image: DecorationImage(image: NetworkImage(_profileData.profileImage)),
-                              gradient: LinearGradient(
-                                colors: [
-                                  // Colors.lightBlueAccent.shade400,
-                                  // Colors.lightBlueAccent.shade200,
-                                  Colors.blue.shade400,
-                                  Colors.blue.shade400,
-                                  Colors.blue.shade400,
-                                  // Colors.lightBlue.shade200,
-                                  // Colors.lightBlueAccent.shade400,
+                                  )
                                 ],
-                              )),
+                              ),
+                            ],
+                          ),
                         ),
+                        decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: AppColors.grey,
+                                  spreadRadius: 1,
+                                  blurRadius: 1,
+                                  offset: Offset(1, 1)),
+                            ],
+                            // image: DecorationImage(image: NetworkImage(_profileData.profileImage)),
+                            gradient: LinearGradient(
+                              colors: [
+                                // Colors.lightBlueAccent.shade400,
+                                // Colors.lightBlueAccent.shade200,
+                                Colors.blue.shade400,
+                                Colors.blue.shade400,
+                                Colors.blue.shade400,
+                                // Colors.lightBlue.shade200,
+                                // Colors.lightBlueAccent.shade400,
+                              ],
+                            )),
                       ),
                     ),
-                  ];
-                },
-                body: Padding(
+                  ),
+                ];
+              },
+              body: Directionality(
+                textDirection: _drController,
+                child: Padding(
                   padding: const EdgeInsets.only(top: 15, right: 5, left: 5),
                   child: GridView.count(
                     childAspectRatio: isLandscape ? 3 : 1.4,
@@ -260,8 +260,8 @@ class _UserPanelState extends State<UserPanel> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
