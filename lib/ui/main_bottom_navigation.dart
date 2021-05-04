@@ -29,13 +29,14 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     setState(
       () {
         _lastSelected = index == 0
-            ? UserPanel()
+            ? PublicAdsListScreen(isFav: false,isFilter: false,isMain: true)
             : index == 1
                 ? CategoriesScreen()
                 : index == 2
                     ? PublicAdsListScreen(
                         isFav: true,
           isFilter: false,
+            isMain:false,
                       )
                     : buildDrawer(context, () => print('Done'), fromNav: true);
       },
@@ -53,7 +54,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
     _sectionData = sections[0]['responseData'];
     setState(() {
-      _lastSelected = CategoriesScreen();
+      _lastSelected = PublicAdsListScreen(isFav: false,isFilter: false,isMain: true);
     });
 
     // print(sections[0].responseData[4].name);
@@ -134,7 +135,7 @@ class FABBottomAppBar extends StatefulWidget {
 }
 
 class FABBottomAppBarState extends State<FABBottomAppBar> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   _updateIndex(int index) {
     widget.onTabSelected(index);

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
+import 'package:kulshe/ui/ads_package/user_panel.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
@@ -64,6 +65,18 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                   onPressed: action),
             ),
           ),
+        buildBorder(buildListTile(
+            context: context,
+            title: _strController.userPanel,
+            hasLeading: true,
+            tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserPanel(),
+                  ),
+                ),
+            iconL: Icons.account_circle,
+            icon: Icons.arrow_forward_ios)),
         buildBorder(buildListTile(
             context: context,
             title: _strController.myAccount,
@@ -571,7 +584,7 @@ Widget listItem(BuildContext context, LinearGradient gradient, String title,
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,):PrivateAdsListScreen(
+              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,isMain: false,):PrivateAdsListScreen(
                 actionTitle: actionTitle,
               ),
             ),

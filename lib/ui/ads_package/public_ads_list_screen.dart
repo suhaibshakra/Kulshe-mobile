@@ -22,6 +22,7 @@ class PublicAdsListScreen extends StatefulWidget {
   final isFav;
   final isFilter;
   final filteredData;
+  final isMain;
 
   PublicAdsListScreen(
       {this.sectionId,
@@ -29,7 +30,7 @@ class PublicAdsListScreen extends StatefulWidget {
       this.subSection,
       this.txt,
       this.section,
-      this.isFav,this.isFilter,this.filteredData});
+      this.isFav,this.isFilter,this.filteredData,this.isMain});
 
   @override
   _PublicAdsListScreenState createState() => _PublicAdsListScreenState();

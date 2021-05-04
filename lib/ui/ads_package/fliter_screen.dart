@@ -819,6 +819,7 @@ class _FilterScreenState extends State<FilterScreen> {
               MaterialPageRoute(
                 builder: (context) => PublicAdsListScreen(
                   isFav: false,
+                  isMain: false,
                   section: widget.sectionId,
                   subSection: widget.subSectionId,
                   isFilter: true,
