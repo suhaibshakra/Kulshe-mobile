@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -526,12 +527,12 @@ class _AddAdFormState extends State<AddAdForm> {
       // print(_listAttributes[mainIndex]['value']);
       // print(myAdAttributesArray[trendIndex]['value']);
       myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
-    //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
-    //   if( _listAttributes[mainIndex]['value'] != null){
-    //     var value = _listAttributes[mainIndex]['value'];
-    //   }
-    //   _buildMap( myAdAttributesArray[trendIndex]['id'],
-    //       value);
+      //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
+      //   if( _listAttributes[mainIndex]['value'] != null){
+      //     var value = _listAttributes[mainIndex]['value'];
+      //   }
+      //   _buildMap( myAdAttributesArray[trendIndex]['id'],
+      //       value);
     }
 
     var val = "";
@@ -596,26 +597,31 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   CheckboxListTile _buildCheckbox(int mainIndex, int rcsIndex) {
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+
+    if(trendIndex == -1){
+      myAdAttributes[_listAttributes[mainIndex]['name']] = [];
+    }
     if(widget.fromEdit) {
       myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
-      // print("dddd ${myAdAttributes[_listAttributes[mainIndex]['name']]}");
       _buildMap(_listAttributes[mainIndex]['id'],
           _listAttributes[mainIndex]['value']);
     }
     return CheckboxListTile(
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
-            .contains(_options[rcsIndex]['id']),
-        title: new Text("${_options[rcsIndex]['label'][_lang]}"),
+            .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id']),
+        title: new Text("${_listAttributes[mainIndex]['options'][rcsIndex]['label'][_lang]}"),
         controlAffinity: ListTileControlAffinity.leading,
         tristate: true,
         onChanged: (bool val) {
           setState(() {
             myAdAttributes[_listAttributes[mainIndex]['name']]
-                .contains(_options[rcsIndex]['id'])
+                .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
                 ? myAdAttributes[_listAttributes[mainIndex]['name']]
-                .remove(_options[rcsIndex]['id'])
+                .remove(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
                 : myAdAttributes[_listAttributes[mainIndex]['name']]
-                .add(_options[rcsIndex]['id']);
+                .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
             _buildMap(_listAttributes[mainIndex]['id'],
                 myAdAttributes[_listAttributes[mainIndex]['name']]);
             print(myAdAttributesArray);
@@ -858,10 +864,15 @@ class _AddAdFormState extends State<AddAdForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                _strController.adDescription,
-                style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Html(
+                customTextAlign: (_)=>TextAlign.start,
+                data: _strController.adDescription,
+                defaultTextStyle: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
+              // Text(
+              //   _strController.adDescription,
+              //   style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              // ),
               Container(
                 child: buildTextField(
                   label: _strController.adDescription,
@@ -1304,7 +1315,7 @@ class _AddAdFormState extends State<AddAdForm> {
   void _onItemCheckedChange(itemValue, bool checked,attributeId) {
     setState(() {
       // print(myAdAttributesMulti);
-       if (checked) {
+      if (checked) {
 
         myAdAttributesMulti.add(itemValue);
       } else {
@@ -1320,7 +1331,6 @@ class _AddAdFormState extends State<AddAdForm> {
 
   Widget _buildItem(item,mainIndex) {
     var checked = myAdAttributesMulti.contains(item['id']);
-    print('TEST:${_listAttributes[mainIndex]['value']}');
     // print('checked: $checked');
     if(widget.fromEdit) {
       checked = _listAttributes[mainIndex]['value'].contains(item['id']);
