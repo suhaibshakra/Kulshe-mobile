@@ -287,6 +287,7 @@ myButton(
     {BuildContext context,
     Function onPressed,
     double radius,
+    String shadowColor,
     Color txtColor,
     double fontSize,
     Color btnColor,
@@ -300,7 +301,7 @@ myButton(
         color: btnColor,
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
-          BoxShadow(color: AppColors.blue, offset: Offset(0, 1), blurRadius: 1)
+          BoxShadow(color: AppColors.grey, offset: Offset(0, 1), blurRadius: 1)
         ]),
     child: FlatButton(
       onPressed: onPressed,

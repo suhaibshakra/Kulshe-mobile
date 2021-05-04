@@ -708,7 +708,6 @@ class _FilterScreenState extends State<FilterScreen> {
             }
           } else {
             if (checked) {
-              print("ssss");
               myAdAttributesArray[trendIndex]['value'].add(item['id']);
             } else {
               myAdAttributesArray[trendIndex]['value'].remove(item['id']);

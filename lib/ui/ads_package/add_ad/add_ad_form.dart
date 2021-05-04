@@ -28,6 +28,8 @@ class AddAdForm extends StatefulWidget {
 
   @override
   _AddAdFormState createState() => _AddAdFormState();
+
+  static getAdsForm({String adID}) {}
 }
 
 class _AddAdFormState extends State<AddAdForm> {
@@ -154,8 +156,8 @@ class _AddAdFormState extends State<AddAdForm> {
       }
       setState(() {
         _selectedDate = pickedDate;
-        if(widget.fromEdit)
-          _birthDateController.text = value;
+
+
         _birthDateController.text = DateFormat("yyyy-MM-dd").format(pickedDate);
         chosenDate = _birthDateController.text;
         _buildMap(id, _birthDateController.text);
@@ -171,54 +173,32 @@ class _AddAdFormState extends State<AddAdForm> {
     myAdAttributesArray = [];
     myAdAttributes = {};
     myAdAttributesMulti = [];
-    if(widget.fromEdit)
-      EditAdForm.getAdsForm(adID: widget.adID.toString())
-          .then((value) {
-        setState(() {
-          _adForm = value;
-          _titleController.text = value[0]['responseData']['title'];
-          _bodyController.text = value[0]['responseData']['body'];
-          _videoController.text = value[0]['responseData']['video'];
-          if(value[0]['responseData']['has_price'] == true)
-            _priceController.text = value[0]['responseData']['price'].toString();
-          _currenciesData = value[0]['responseData']['sub_section']['currencies'];
-          _listAttributes = value[0]['responseData']['attributes'];
-          // print("aaaaaaaaaaaaaaaaaaa ${_listAttributes}");
 
-          _listBrands = value[0]['responseData']['brands'];
-          _showContactInfo = value[0]['responseData']['show_contact'];
-          _negotiable = value[0]['responseData']['negotiable'];
-          _isFree = value[0]['responseData']['if_free'];
-          _loading = false;
-          // var _dataCurrency = _currenciesData
-          //     .where((element) => element['default'] == true)
-          //     .toList();
-          // .where((element) => element['id'] == _adForm[0]['responseData']['currency_id'])
-          _currencyId = _adForm[0]['responseData']['currency_id'].toString();
-          _lat = value[0]['responseData']['lat'];
-          _lng = value[0]['responseData']['lag'];
+    AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
+        .then((value) {
+      setState(() {
+        _adForm = value;
+        _currenciesData = value[0]['responseData']['currencies'];
+        _listAttributes = value[0]['responseData']['attributes'];
+        _listBrands = value[0]['responseData']['brands'];
+        final jsonList = value[0]['responseData']['brands'].map((item) => jsonEncode(item)).toList();
 
-        });
+        // using toSet - toList strategy
+        final uniqueJsonList = jsonList.toSet().toList();
+
+        // convert each item back to the original form using JSON decoding
+        _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+
+        _showContactInfo = value[0]['responseData']['show_my_contact'];
+        _negotiable = value[0]['responseData']['negotiable'];
+        _isFree = value[0]['responseData']['if_free'];
+        _loading = false;
+        var _dataCurrency = _currenciesData
+            .where((element) => element['default'] == true)
+            .toList();
+        _currencyId = _dataCurrency[0]['id'].toString();
       });
-
-    if(!widget.fromEdit)
-      AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
-          .then((value) {
-        setState(() {
-          _adForm = value;
-          _currenciesData = value[0]['responseData']['currencies'];
-          _listAttributes = value[0]['responseData']['attributes'];
-          _listBrands = value[0]['responseData']['brands'];
-          _showContactInfo = value[0]['responseData']['show_my_contact'];
-          _negotiable = value[0]['responseData']['negotiable'];
-          _isFree = value[0]['responseData']['if_free'];
-          _loading = false;
-          var _dataCurrency = _currenciesData
-              .where((element) => element['default'] == true)
-              .toList();
-          _currencyId = _dataCurrency[0]['id'].toString();
-        });
-      });
+    });
 
     super.initState();
   }
@@ -282,8 +262,6 @@ class _AddAdFormState extends State<AddAdForm> {
           physics: ClampingScrollPhysics(),
           itemCount: _listAttributes.length,
           itemBuilder: (ctx, mainIndex) {
-            if(widget.fromEdit)
-              _values = _listAttributes[mainIndex]['value'].toString();
             // print('MY VALUES: $_values');
             _listUnits = _listAttributes[mainIndex]['units'];
             _options = _listAttributes[mainIndex]['options'];
@@ -302,7 +280,9 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Padding buildMainAttributes(int mainIndex, MediaQueryData mq) {
-    // print("VAL:$_values");
+    print("VAL:${_listAttributes[mainIndex]['label'][_lang]}");
+    print("type:${_type}");
+    print("_options:${_options}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Column(
@@ -313,8 +293,8 @@ class _AddAdFormState extends State<AddAdForm> {
             _listAttributes[mainIndex]['label'][_lang].toString(),
             style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-          if (_options.length == 0)
-            if (_type == 'string' || _type == 'number' || _type == 'year')
+
+          if (_type == 'string' || _type == 'number' || _type == 'year')
               _buildSNY(mainIndex),
           if (_listAttributes[mainIndex]['has_unit'] == 1)
           // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
@@ -341,13 +321,13 @@ class _AddAdFormState extends State<AddAdForm> {
                 height: 45,
                 onPressed: () {
                   print("${_listAttributes[mainIndex]['value']}");
-                  _pickDateDialog(_listAttributes[mainIndex]['id'],value: widget.fromEdit?_listAttributes[mainIndex]['value']:"");
+                  _pickDateDialog(_listAttributes[mainIndex]['id'],value: "");
                 },
                 radius: 10,
                 btnTxt: chosenDate,
                 txtColor: Colors.black54,
                 btnColor: Colors.white),
-          if (_options.length != 0)
+          if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'radio')
             GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     childAspectRatio: _type == 'select' ? 7 : 1.5,
@@ -363,7 +343,6 @@ class _AddAdFormState extends State<AddAdForm> {
                 itemBuilder: (context, rcsIndex) {
                   return Container(
                     decoration: BoxDecoration(
-                        color: AppColors.grey.withOpacity(0.2),
                         borderRadius: _type == 'select'
                             ? BorderRadius.circular(8)
                             : BorderRadius.circular(0)),
@@ -392,8 +371,6 @@ class _AddAdFormState extends State<AddAdForm> {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
 
-    // print("_listUnits[0]['unit_id']");
-    // print(_listUnits[0]['unit_id']);
     if(trendIndex == -1){
       _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['units'][0]['id'],unitID:_listUnits[0]['unit_id']);
       trendIndex = myAdAttributesArray
@@ -460,12 +437,7 @@ class _AddAdFormState extends State<AddAdForm> {
 
   Container _buildSNY(int mainIndex) {
     var initialValue ='';
-    if(widget.fromEdit && _listAttributes[mainIndex]['has_unit'] == 1) {
-      _listAttributes[mainIndex]['value'] = _listAttributes[mainIndex]['value'];
-      _buildMap(_listAttributes[mainIndex]['id'],
-          _listAttributes[mainIndex]['value']);
-      initialValue = _listAttributes[mainIndex]['value'].toString();
-    }
+
 
     return Container(
       child: buildTextField(
@@ -474,7 +446,9 @@ class _AddAdFormState extends State<AddAdForm> {
           onChanged: (val) {
             myAdAttributes[_listAttributes[mainIndex]['id']] = val;
             if (_listAttributes[mainIndex]['has_unit'] == 1) {
-              _buildMap(_listAttributes[mainIndex]['id'], val, unitID: "");
+
+              print(_listAttributes[mainIndex]['unit_id']);
+              _buildMap(_listAttributes[mainIndex]['id'], val, unitID: _listAttributes[mainIndex]['unit_id']);
             } else {
               _buildMap(
                 _listAttributes[mainIndex]['id'],
@@ -484,7 +458,7 @@ class _AddAdFormState extends State<AddAdForm> {
             // print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
 
             // print("sss");
-            print(myAdAttributesArray);
+            // print(myAdAttributesArray);
             // print('MYCAT:$myAdAttributes');
           },
           label:  _listAttributes[mainIndex]['label'][_lang].toString(),
@@ -523,27 +497,21 @@ class _AddAdFormState extends State<AddAdForm> {
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
 
-    if(widget.fromEdit) {
-      // print(_listAttributes[mainIndex]['value']);
-      // print(myAdAttributesArray[trendIndex]['value']);
-      myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
-      //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
-      //   if( _listAttributes[mainIndex]['value'] != null){
-      //     var value = _listAttributes[mainIndex]['value'];
-      //   }
-      //   _buildMap( myAdAttributesArray[trendIndex]['id'],
-      //       value);
-    }
 
     var val = "";
     return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+          border:Border.all(color: Colors.black54),
+          borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: [
           DropdownButtonHideUnderline(
             child: ButtonTheme(
+              padding: const EdgeInsets.only(bottom: 200,top: 10),
+
               alignedDropdown: true,
               child: DropdownButton<String>(
+
                 isExpanded: true,
                 value:myAdAttributesArray[trendIndex]['value'].toString(),
                 // value: '1',
@@ -561,10 +529,11 @@ class _AddAdFormState extends State<AddAdForm> {
                 // ),
                 onChanged: (value) {
                   setState(() {
+
                     // myAdAttributesArray[_listAttributes[mainIndex]['id']]['value'] = value;
                     _listAttributes[mainIndex]['value'] = value;
                     // print("select:  ${_listAttributes[mainIndex]['id']}");
-                    print(value);
+
                     // List newOp = _listAttributes[mainIndex]['options'];
                     // newOp = newOp
                     //     .where((element) => element['id'].toString() == value)
@@ -580,7 +549,6 @@ class _AddAdFormState extends State<AddAdForm> {
                 },
                 items: _listAttributes[mainIndex]['options']
                     .map<DropdownMenuItem<String>>((listOptions) {
-                  // print('LIST  :$list');
                   return new DropdownMenuItem(
                     child: new Text(
                         val == "" ? "${listOptions['label'][_lang]}" : val),
@@ -603,11 +571,7 @@ class _AddAdFormState extends State<AddAdForm> {
     if(trendIndex == -1){
       myAdAttributes[_listAttributes[mainIndex]['name']] = [];
     }
-    if(widget.fromEdit) {
-      myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
-      _buildMap(_listAttributes[mainIndex]['id'],
-          _listAttributes[mainIndex]['value']);
-    }
+
     return CheckboxListTile(
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
             .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id']),
@@ -637,15 +601,7 @@ class _AddAdFormState extends State<AddAdForm> {
       trendIndex = myAdAttributesArray
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
-    if(widget.fromEdit) {
-      myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
-      //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
-      //   if( _listAttributes[mainIndex]['value'] != null){
-      //     var value = _listAttributes[mainIndex]['value'];
-      //   }
-      //   _buildMap( myAdAttributesArray[trendIndex]['id'],
-      //       _listAttributes[mainIndex]['value']);
-    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -679,10 +635,11 @@ class _AddAdFormState extends State<AddAdForm> {
     return Container(
       height: mq.size.height * 0.1,
       child: Card(
-        elevation: 5,
+        margin: EdgeInsets.only(bottom: 20.0),
+        elevation: 7,
         shadowColor: AppColors.grey,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Row(
             children: [
               Text(
@@ -690,10 +647,10 @@ class _AddAdFormState extends State<AddAdForm> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               SizedBox(
-                width: 30,
+                width: 25,
                 child: Icon(
                   Icons.arrow_forward_ios,
-                  size: 18,
+                  size: 14,
                   color: AppColors.grey,
                 ),
               ),
@@ -784,13 +741,18 @@ class _AddAdFormState extends State<AddAdForm> {
 
   _buildConstData() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          _strController.selectCity,
+          style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 20,top: 10),
           child: Container(
             decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4)),
+            border: Border.all(color: Colors.black54),
+            borderRadius: BorderRadius.circular(10)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -812,13 +774,11 @@ class _AddAdFormState extends State<AddAdForm> {
                           _cityId != null
                               ? _cityId.toString()
                               : _strController.selectCity,
-                          style: appStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                          style: appStyle( fontSize: 16),
                         ),
                         onChanged: (String value) {
                           setState(() {
                             _cityId = value;
-                            // print('Value:$value');
                           });
                         },
                         items: _citiesData.map((listCity) {
@@ -848,7 +808,8 @@ class _AddAdFormState extends State<AddAdForm> {
             children: [
               Text(
                 _strController.adTitle,
-                style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+
               ),
               Container(
                 child: buildTextField(
@@ -860,25 +821,24 @@ class _AddAdFormState extends State<AddAdForm> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Html(
-                customTextAlign: (_)=>TextAlign.start,
-                data: _strController.adDescription,
-                defaultTextStyle: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              // Text(
-              //   _strController.adDescription,
-              //   style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              // Html(
+              //   customTextAlign: (_)=>TextAlign.start,
+              //   data: _strController.adDescription,
+              //   defaultTextStyle: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
               // ),
+              Text(
+                _strController.adDescription,
+                style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
               Container(
                 child: buildTextField(
                   label: _strController.adDescription,
                   controller: _bodyController,
                   minLines: 4,
-                  maxLines: 8,
                   textInputType: TextInputType.multiline,
                 ),
               ),
@@ -887,7 +847,7 @@ class _AddAdFormState extends State<AddAdForm> {
         ),
         if (_adForm[0]['responseData']['has_price'])
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -917,8 +877,8 @@ class _AddAdFormState extends State<AddAdForm> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(4)),
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
@@ -984,8 +944,8 @@ class _AddAdFormState extends State<AddAdForm> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4)),
+                      border: Border.all(color: Colors.black54),
+                      borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
@@ -994,6 +954,7 @@ class _AddAdFormState extends State<AddAdForm> {
                         child: DropdownButtonHideUnderline(
                           child: ButtonTheme(
                             alignedDropdown: true,
+
                             child: DropdownButton<String>(
                               isExpanded: false,
                               value: _brandId,
@@ -1018,8 +979,13 @@ class _AddAdFormState extends State<AddAdForm> {
                                   element['id'].toString() ==
                                       value.toString())
                                       .toList();
+
                                   _listSubBrands =
                                   _listSubBrands[0]['sub_brands'];
+
+
+                                  _listSubBrands = _listSubBrands.toSet().toList();
+
                                   if (_listSubBrands != [] &&
                                       _listSubBrands != null &&
                                       _listSubBrands.isNotEmpty) {
@@ -1031,7 +997,7 @@ class _AddAdFormState extends State<AddAdForm> {
                                       hasSubBrands = false;
                                     });
                                   }
-                                  // print(" typeee ${hasSubBrands}");
+
                                 });
                               },
                               items: _listBrands.map((listBrand) {
@@ -1059,8 +1025,9 @@ class _AddAdFormState extends State<AddAdForm> {
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: Container(
                       decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(4)),
+                          border: Border.all(color: Colors.black54),
+                          borderRadius: BorderRadius.circular(10)
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
@@ -1220,89 +1187,47 @@ class _AddAdFormState extends State<AddAdForm> {
             ],
           ),
         ),
-        if(!widget.fromEdit)
-          if (_adForm[0]['responseData']['has_map'])
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Container(
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  child: Text(
-                    "Pick a Location",
-                    style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  onPressed: () {
-                    double latitude = _selectedLocation != null
-                        ? _selectedLocation.latitude
-                        : SLPConstants.DEFAULT_LATITUDE;
-                    double longitude = _selectedLocation != null
-                        ? _selectedLocation.longitude
-                        : SLPConstants.DEFAULT_LONGITUDE;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SimpleLocationPicker(
-                              zoomLevel: 18,
-                              markerColor: AppColors.grey,
-                              displayOnly: false,
-                              appBarTextColor: AppColors.blackColor,
-                              appBarColor: AppColors.whiteColor,
-                              initialLatitude: latitude,
-                              initialLongitude: longitude,
-                              appBarTitle: "Select Location",
-                            ))).then((value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedLocation = value;
-                        });
-                      }
-                    });
-                  },
+        if (_adForm[0]['responseData']['has_map'])
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Container(
+              alignment: Alignment.center,
+              child: RaisedButton(
+                child: Text(
+                  "Pick a Location",
+                  style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
+                onPressed: () {
+                  double latitude = _selectedLocation != null
+                      ? _selectedLocation.latitude
+                      : SLPConstants.DEFAULT_LATITUDE;
+                  double longitude = _selectedLocation != null
+                      ? _selectedLocation.longitude
+                      : SLPConstants.DEFAULT_LONGITUDE;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SimpleLocationPicker(
+                            zoomLevel: 18,
+                            markerColor: AppColors.grey,
+                            displayOnly: false,
+                            appBarTextColor: AppColors.blackColor,
+                            appBarColor: AppColors.whiteColor,
+                            initialLatitude: latitude,
+                            initialLongitude: longitude,
+                            appBarTitle: "Select Location",
+                          ))).then((value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedLocation = value;
+                      });
+                    }
+                  });
+                },
               ),
             ),
+          ),
 
-        if(widget.fromEdit)
-          if (_adForm[0]['responseData']['sub_section']['has_map'])
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20),
-              child: Container(
-                alignment: Alignment.center,
-                child: RaisedButton(
-                  child: Text(
-                    "Pick a Location",
-                    style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  onPressed: () {
-                    double latitude = _selectedLocation != null
-                        ? _selectedLocation.latitude
-                        : SLPConstants.DEFAULT_LATITUDE;
-                    double longitude = _selectedLocation != null
-                        ? _selectedLocation.longitude
-                        : SLPConstants.DEFAULT_LONGITUDE;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SimpleLocationPicker(
-                              zoomLevel: 18,
-                              markerColor: AppColors.grey,
-                              displayOnly: false,
-                              appBarTextColor: AppColors.blackColor,
-                              appBarColor: AppColors.whiteColor,
-                              initialLatitude: latitude,
-                              initialLongitude: longitude,
-                              appBarTitle: "Select Location",
-                            ))).then((value) {
-                      if (value != null) {
-                        setState(() {
-                          _selectedLocation = value;
-                        });
-                      }
-                    });
-                  },
-                ),
-              ),
-            ),
       ],
     );
   }
@@ -1330,18 +1255,16 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Widget _buildItem(item,mainIndex) {
-    var checked = myAdAttributesMulti.contains(item['id']);
-    // print('checked: $checked');
-    if(widget.fromEdit) {
-      checked = _listAttributes[mainIndex]['value'].contains(item['id']);
-      _buildMap(_listAttributes[mainIndex]['id'],myAdAttributesMulti);
+
+    int trendIndex = myAdAttributesArray
+        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+    var checked = false;
+    if (trendIndex != -1) {
+      myAdAttributesMulti = myAdAttributesArray[trendIndex]['value'];
+      checked = myAdAttributesArray[trendIndex]['value'].contains(item['id']);
     }
-    // if(widget.fromEdit) {
-    //   myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
-    //   // print("dddd ${myAdAttributes[_listAttributes[mainIndex]['name']]}");
-    //   _buildMap(_listAttributes[mainIndex]['id'],
-    //       _listAttributes[mainIndex]['value']);
-    // }
+
+
     return CheckboxListTile(
       value: checked,
       title: Text(item['label'][_lang]),

@@ -234,7 +234,7 @@ class AdAddForm {
     }
   }
 }
-class EditAdForm {
+class AdEditForm {
   static Future<List> getAdsForm({
     String adID,
   }) async {

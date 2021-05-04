@@ -10,6 +10,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ad_details_screen.dart';
+import 'add_ad/edit_ad_form.dart';
 
 class PrivateAdsListScreen extends StatefulWidget {
   final String actionTitle;
@@ -820,8 +821,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                         // label: Text(_strController.edit,style: appStyle(fontSize: 14),),
                           iconData: Icons.edit,
                           action: () {
-                            // print('DT:${_data}');
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => AddAdForm(fromEdit: true,sectionId: _data['section_id'].toString(),subSectionId: _data['sub_section_id'],adID: _data['id'],),));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditAdForm(fromEdit: true,sectionId: _data['section_id'].toString(),subSectionId: _data['sub_section_id'],adID: _data['id'],),));
                           },
                           size: 30,
                           color: AppColors.blue),

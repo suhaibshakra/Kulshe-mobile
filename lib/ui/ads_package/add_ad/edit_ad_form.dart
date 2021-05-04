@@ -17,20 +17,22 @@ import 'package:simple_location_picker/simple_location_picker_screen.dart';
 import 'package:simple_location_picker/simple_location_result.dart';
 import 'package:simple_location_picker/utils/slp_constants.dart';
 
-class AddAdForm extends StatefulWidget {
+class EditAdForm extends StatefulWidget {
   final String section;
   final sectionId;
   final subSectionId;
   final bool fromEdit;
   final int adID;
 
-  AddAdForm({this.section, this.sectionId, this.subSectionId, this.adID,this.fromEdit});
+  EditAdForm({this.section, this.sectionId, this.subSectionId, this.adID,this.fromEdit});
 
   @override
-  _AddAdFormState createState() => _AddAdFormState();
+  _EditAdFormState createState() => _EditAdFormState();
+
+  static getAdsForm({String adID}) {}
 }
 
-class _AddAdFormState extends State<AddAdForm> {
+class _EditAdFormState extends State<EditAdForm> {
   String _lang;
   String _cityId;
   String _currencyId;
@@ -172,7 +174,7 @@ class _AddAdFormState extends State<AddAdForm> {
     myAdAttributes = {};
     myAdAttributesMulti = [];
     if(widget.fromEdit)
-      EditAdForm.getAdsForm(adID: widget.adID.toString())
+      AdEditForm.getAdsForm(adID: widget.adID.toString())
           .then((value) {
         setState(() {
           _adForm = value;
