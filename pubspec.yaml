@@ -30,7 +30,8 @@ dependencies:
   cupertino_icons: ^1.0.0
   flutter_unicons: 0.0.1
   shared_preferences: ^0.5.12+4
-  url_launcher: ^5.7.10
+  url_launcher: ^6.0.3
+  whatsapp_unilink: ^2.0.0
   http: ^0.12.2
   flutter_spinkit: ^4.1.2+1
   toast: ^0.1.5
@@ -58,6 +59,8 @@ dependencies:
   simple_location_picker: ^0.0.3
   video_player: ^0.10.1
   provider: ^5.0.0
+  share: ^2.0.1
+  carousel_slider:
 #  flutter_absolute_path: ^1.0.6
 
 dev_dependencies:

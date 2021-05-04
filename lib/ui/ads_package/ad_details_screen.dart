@@ -1,20 +1,20 @@
 import 'dart:io';
-
+import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 import 'play_video.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 class AdDetailsScreen extends StatefulWidget {
   final int adID;
   final String slug;
@@ -52,27 +52,23 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
     });
     super.initState();
   }
-
-  _launchURLWhatsApp(String mobile) async {
-    var _url = 'https://api.whatsapp.com/send?phone=$mobile&text=...!';
-    if (await canLaunch(_url)) {
-      await launch(_url);
-    } else {
-      throw 'Could not launch $_url';
-    }
+  launchWhatsApp(String mobile) async {
+    final link = WhatsAppUnilink(
+      phoneNumber: mobile,
+      text: "",
+    );
+    await launch('$link');
   }
-
-  _launchURLEmail(String mail) async {}
-
-  _launchCaller(String mobile) async {
-    String str = "tel:" + mobile;
-    if (await canLaunch(str)) {
-      await launch(str);
-    } else {
-      throw 'Could not launch $str';
-    }
+  shareData(BuildContext context){
+    Share.share('Some text here',
+        subject: 'Update the coordinate!',
+    );
   }
-
+void share(BuildContext context){
+    final String text = "http:www.kulshe.com";
+    RenderBox box = context.findRenderObject();
+    Share.share(text,subject: text,sharePositionOrigin: box.localToGlobal(Offset.zero)& box.size);
+}
   List _myImages =[];
   Widget adsWidget(List images) {
     if(_myImages != [] )
@@ -109,7 +105,19 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
     );
     return
         // _load2 ? buildLoading(color: Colors.amber.shade700) :
-        imageCarousel;
+        Stack(
+          children: [
+            imageCarousel,
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: buildIcons(
+                  iconData: FontAwesomeIcons.shareAlt,
+                  bgColor: Colors.grey,
+                  color: AppColors.whiteColor,
+                  action: ()=>shareData(context),),
+            )
+          ],
+        );
   }
 
   @override
@@ -297,9 +305,9 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                           iconData: FontAwesomeIcons.whatsapp,
                                           color: AppColors.whiteColor,
                                           bgColor: AppColors.green,
-                                          action: () {
+                                          action:()=> launchWhatsApp(_details['user_contact']['mobile_number'].toString()),
                                             // _launchURLWhatsApp(_details['user_contact']['mobile_number'].toString());
-                                          }),
+                                          ),
                                       buildIcons(
                                           iconData: FontAwesomeIcons.phoneAlt,
                                           bgColor: AppColors.blue,
@@ -314,11 +322,12 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         color: AppColors.whiteColor,
                                         bgColor: AppColors.redColor,
                                         action: () {
-                                          _launchURLEmail(
-                                            _details['user_contact']
-                                                    ['mobile_number']
-                                                .toString(),
-                                          );
+                                          launch('mailto:${_details['user_contact']['email'].toString()}');
+                                          // _launchURLEmail(
+                                          //   _details['user_contact']
+                                          //           ['mobile_number']
+                                          //       .toString(),
+                                          // );
                                         },
                                       ),
                                     ],
@@ -430,7 +439,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: myButton(
-                                        btnTxt: _strController.callUs,
+                                        btnTxt: _strController.callAdv,
                                         fontSize: 16,
                                         btnColor: Colors.lightBlueAccent,
                                         radius: 8,
@@ -438,9 +447,10 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         txtColor: AppColors.whiteColor,
                                         height: 45,
                                         onPressed: (){
-                                          print('${_details['video']}');
-                                            if(_details['video'] != null)
-                                            Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
+                                          launch("tel://${_details['user_contact']['mobile_number'].toString()}");
+                                          // print('${_details['video']}');
+                                          //   if(_details['video'] != null)
+                                          //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
                                         }
                                       ),
                                     ),
@@ -450,13 +460,14 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                     Expanded(
                                       flex: 1,
                                       child: myButton(
-                                        btnTxt: "Send Email",
+                                        btnTxt: _strController.sendEmail,
                                         fontSize: 16,
                                         btnColor: Colors.lightBlueAccent,
                                         radius: 8,
                                         context: context,
                                         txtColor: AppColors.whiteColor,
                                         height: 45,
+                                        onPressed: ()=> launch('mailto:${_details['user_contact']['email'].toString()}'),
                                       ),
                                     ),
                                   ],
@@ -470,26 +481,26 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      buildIcons(
-                                          iconData: FontAwesomeIcons.facebookF,
-                                          bgColor: Colors.blue,
-                                          color: AppColors.whiteColor,
-                                          action: () {}),
-                                      buildIcons(
-                                          iconData: FontAwesomeIcons.instagram,
-                                          color: AppColors.whiteColor,
-                                          bgColor: Colors.deepOrangeAccent,
-                                          action: () {}),
-                                      buildIcons(
-                                          iconData: FontAwesomeIcons.twitter,
-                                          bgColor: Colors.lightBlueAccent,
-                                          color: AppColors.whiteColor,
-                                          action: () {}),
-                                      buildIcons(
-                                          iconData: FontAwesomeIcons.linkedinIn,
-                                          color: AppColors.whiteColor,
-                                          bgColor: AppColors.blue,
-                                          action: () {}),
+                                      // buildIcons(
+                                      //     iconData: FontAwesomeIcons.facebookF,
+                                      //     bgColor: Colors.blue,
+                                      //     color: AppColors.whiteColor,
+                                      //     action: ()=>shareData(context)),
+                                      // buildIcons(
+                                      //     iconData: FontAwesomeIcons.instagram,
+                                      //     color: AppColors.whiteColor,
+                                      //     bgColor: Colors.deepOrangeAccent,
+                                      //     action: () {}),
+                                      // buildIcons(
+                                      //     iconData: FontAwesomeIcons.twitter,
+                                      //     bgColor: Colors.lightBlueAccent,
+                                      //     color: AppColors.whiteColor,
+                                      //     action: () {}),
+                                      // buildIcons(
+                                      //     iconData: FontAwesomeIcons.linkedinIn,
+                                      //     color: AppColors.whiteColor,
+                                      //     bgColor: AppColors.blue,
+                                      //     action: () {}),
                                     ],
                                   ),
                                 ),
@@ -550,20 +561,20 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                buildTextField(label: _strController.email),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                myButton(
-                                    fontSize: 20,
-                                    width: double.infinity,
-                                    onPressed: () => print(''),
-                                    height: 45,
-                                    txtColor: AppColors.whiteColor,
-                                    context: context,
-                                    btnColor: AppColors.redColor,
-                                    btnTxt: _strController.mobile,
-                                    radius: 10),
+                                // buildTextField(label: _strController.email),
+                                // SizedBox(
+                                //   height: 10,
+                                // ),
+                                // myButton(
+                                //     fontSize: 20,
+                                //     width: double.infinity,
+                                //     onPressed: () => print(''),
+                                //     height: 45,
+                                //     txtColor: AppColors.whiteColor,
+                                //     context: context,
+                                //     btnColor: AppColors.redColor,
+                                //     btnTxt: _strController.mobile,
+                                //     radius: 10),
                                 SizedBox(
                                   height: 40,
                                 ),
@@ -585,7 +596,6 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                   height: 10,
                                 ),
                                 Text(
-                                    // "مع أكثر من 2 مليار مشاهدة شهرياً للإعلانات الموجودة عليها، تقوم بدورها بربط البائعين والمشترين بشكل فعلي؛ لتمكينهم من البيع والشراء أو الحصول على خدمة أو حتى وظيفة. يتكون فريق العمل في كل شي من أكثر من 160 موظف يتعاملون مع أكثر من 45 مليون فرد وشركة، ممّن يستخدمون منصتنا لبيع الكثير من السلع والمنتجات بقيمة تزيد عن 25 مليار دولار سنوياً، وذلك إلى جانب قيمة عروض الوظائف الشاغرة والخدمات التي يتم تداولها عبر المنصة. نحن في كل شي نعمل من أجل أن تصبح عمليات البيع والشراء أسهل وأسرع من الأسلوب المعتاد؛ حيث تم تصميم المنصة لتكون آمنة ومتاحة لجميع دون استثناء، سواء كان المستخدم يمثّل نفسه كـ فرد أو شركة. منذ تأسيس كل شي ، ساهم في خدمة جميع العملاء بمساعدتهم في إتمام عمليات البيع والشراء والإعلان أو البحث عن خدمة أو وظيفة شاغرة، وأصبح بعد ذلك الخيار الأول للمستخدمين العرب في منطقة الشرق الأوسط وشمال إفريقيا عبر الإنترنت؛ حيث أننا نقدم خدماتنا في 19 دولة، هي: الأردن، المملكة العربية السعودية، الإمارات العربية المتحدة، الكويت، العراق، سلطنة عُمان، مصر، البحرين، سوريا، لبنان، ليبيا، السودان، اليمن، قطر، فلسطين، الجزائر، المغرب، موريتانيا وتونس. نسعى في شركة كل شي جاهدين لتوفير بيئة إعلانية آمنة وموثوقة عبر الإنترنت، هدفها إيصال البائعين بالمشترين والعكس أيضاً، بشكل مباشر دون الحاجة إلى وجود وسيط أو دفع عمولة من خلال القوائم والتصنيفات الموجودة والتي يزيد عددها عن 120، مثل: المركبات، السيارات، العقارات، الإلكترونيات، ألعاب الفيديو، الهواتف المحمولة، الأثاث، الملابس والأزياء، الكتب والمجلات ومختلف أنواع الخدمات والقطاعات كذلك. رؤيتنا تتجلّى رؤيتنا في كل شي بتمكين الأفراد والشركات من تحقيق الربح من خلال خلق فرص اقتصادية جيدة بمردودها، وتحقيق الرغبات وتلبية الاحتياجات وتطوير المجتمعات. كيف نعمل؟ يمكن للمستخدمين تحميل تطبيقنا على الـ iOS والآندرويد للحصول على أفضل تجربة، أو استخدام موقعنا الإلكتروني للبيع والشراء والتقديم للحصول على وظيفة ما أو تقديم خدمة.",
                                   "لا ترسل أي معلومات شخصية أو صور أو أي أموال من خلال الإنترنت و قم بالازم للتأكد من صحة الإعلان و الجهة المعلنة. و توخى الحذر من الإعلانات التي تروج الربح السريع و تزوير الوثائق.",
                                 style: appStyle(color: AppColors.blackColor2,fontWeight: FontWeight.w500,fontSize: 18),)
                               ],
