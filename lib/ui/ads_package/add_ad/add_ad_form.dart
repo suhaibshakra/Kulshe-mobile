@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -526,12 +527,12 @@ class _AddAdFormState extends State<AddAdForm> {
       // print(_listAttributes[mainIndex]['value']);
       // print(myAdAttributesArray[trendIndex]['value']);
       myAdAttributesArray[trendIndex]['value']= _listAttributes[mainIndex]['value'];
-    //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
-    //   if( _listAttributes[mainIndex]['value'] != null){
-    //     var value = _listAttributes[mainIndex]['value'];
-    //   }
-    //   _buildMap( myAdAttributesArray[trendIndex]['id'],
-    //       value);
+      //   var value =  _listAttributes[mainIndex]['options'][0]['id'];
+      //   if( _listAttributes[mainIndex]['value'] != null){
+      //     var value = _listAttributes[mainIndex]['value'];
+      //   }
+      //   _buildMap( myAdAttributesArray[trendIndex]['id'],
+      //       value);
     }
 
     var val = "";
@@ -863,10 +864,15 @@ class _AddAdFormState extends State<AddAdForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                _strController.adDescription,
-                style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Html(
+                customTextAlign: (_)=>TextAlign.start,
+                data: _strController.adDescription,
+                defaultTextStyle: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
+              // Text(
+              //   _strController.adDescription,
+              //   style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              // ),
               Container(
                 child: buildTextField(
                   label: _strController.adDescription,
@@ -1309,7 +1315,7 @@ class _AddAdFormState extends State<AddAdForm> {
   void _onItemCheckedChange(itemValue, bool checked,attributeId) {
     setState(() {
       // print(myAdAttributesMulti);
-       if (checked) {
+      if (checked) {
 
         myAdAttributesMulti.add(itemValue);
       } else {

@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
-import 'package:kulshe/ui/ads_package/fliter_screen.dart';
+import 'package:kulshe/ui/ads_package/filter_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ad_add_last.dart';
 import 'add_ad_form.dart';

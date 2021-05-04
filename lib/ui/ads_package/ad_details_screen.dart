@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
- import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
@@ -15,6 +16,7 @@ import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 import 'play_video.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 class AdDetailsScreen extends StatefulWidget {
   final int adID;
   final String slug;
@@ -52,6 +54,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
     });
     super.initState();
   }
+
   launchWhatsApp(String mobile) async {
     final link = WhatsAppUnilink(
       phoneNumber: mobile,
@@ -59,26 +62,35 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
     );
     await launch('$link');
   }
-  shareData(BuildContext context){
-    Share.share('Some text here',
-        subject: 'Update the coordinate!',
+
+  shareData(BuildContext context) {
+    Share.share(
+      'Some text here',
+      subject: 'Update the coordinate!',
     );
   }
-void share(BuildContext context){
+
+  void share(BuildContext context) {
     final String text = "http:www.kulshe.com";
     RenderBox box = context.findRenderObject();
-    Share.share(text,subject: text,sharePositionOrigin: box.localToGlobal(Offset.zero)& box.size);
-}
-  List _myImages =[];
+    Share.share(text,
+        subject: text,
+        sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+  }
+
+  List _myImages = [];
+
   Widget adsWidget(List images) {
-    if(_myImages != [] )
-    if(images != null){
-     for(int i = 0;i<images.length;i++){
-      _myImages.add(NetworkImage('${images[i]['medium']}'),);
-    }}else{
+    if (_myImages != []) if (images != null) {
+      for (int i = 0; i < images.length; i++) {
+        _myImages.add(
+          NetworkImage('${images[i]['medium']}'),
+        );
+      }
+    } else {
       _myImages = [(AssetImage("assets/images/no_img.png"))];
     }
-     Widget imageCarousel = new Container(
+    Widget imageCarousel = new Container(
       height: MediaQuery.of(context).size.height * 0.25,
       child: new Carousel(
         boxFit: BoxFit.cover,
@@ -106,18 +118,19 @@ void share(BuildContext context){
     return
         // _load2 ? buildLoading(color: Colors.amber.shade700) :
         Stack(
-          children: [
-            imageCarousel,
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: buildIcons(
-                  iconData: FontAwesomeIcons.shareAlt,
-                  bgColor: Colors.grey,
-                  color: AppColors.whiteColor,
-                  action: ()=>shareData(context),),
-            )
-          ],
-        );
+      children: [
+        imageCarousel,
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: buildIcons(
+            iconData: FontAwesomeIcons.shareAlt,
+            bgColor: Colors.grey,
+            color: AppColors.whiteColor,
+            action: () => shareData(context),
+          ),
+        )
+      ],
+    );
   }
 
   @override
@@ -164,93 +177,108 @@ void share(BuildContext context){
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
-                                            flex:3,
+                                            flex: 3,
                                             child: Padding(
-                                              padding: const EdgeInsets.all(2.0),
-                                              child: Text(_details['title'].toString(),
-                                              style: appStyle(
-                                              fontSize: 14,
-                                              color: AppColors.blackColor2,
-                                              fontWeight: FontWeight.w700,
-
-                                              ),overflow: TextOverflow.visible,),
+                                              padding:
+                                                  const EdgeInsets.all(2.0),
+                                              child: Text(
+                                                _details['title'].toString(),
+                                                style: appStyle(
+                                                  fontSize: 14,
+                                                  color: AppColors.blackColor2,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                                overflow: TextOverflow.visible,
+                                              ),
                                             ),
                                           ),
-                                          Expanded(flex: 1,child: buildIcons(
-                                              iconData:
-                                              _details['is_favorite_ad'] ==
-                                                  false
-                                                  ? Icons.favorite_border
-                                                  : Icons.favorite,
-                                              color: Colors.red,
-                                              size: 30,
-                                              action: () {
-                                                favoriteAd(
-                                                  context: context,
-                                                  adId: _details['id'],
-                                                  state: _details[
-                                                  'is_favorite_ad'] ==
-                                                      true
-                                                      ? "delete"
-                                                      : "add",
-                                                ).then((value) {
-                                                  setState(() {
-                                                    AdDetailsServicesNew
-                                                        .getAdData(
-                                                        adId:
-                                                        widget.adID,
-                                                        slug:
-                                                        widget.slug)
-                                                        .then((value) {
-                                                      setState(() {
-                                                        _adDetails = value;
-                                                        // _adDetailsData = value[0]['responseData'];
-                                                        // _detailsAttribute = value[0]['responseData']['selected_attributes'];
-                                                        _loading = false;
+                                          Expanded(
+                                            flex: 1,
+                                            child: buildIcons(
+                                                iconData: _details[
+                                                            'is_favorite_ad'] ==
+                                                        false
+                                                    ? Icons.favorite_border
+                                                    : Icons.favorite,
+                                                color: Colors.red,
+                                                size: 30,
+                                                action: () {
+                                                  favoriteAd(
+                                                    context: context,
+                                                    adId: _details['id'],
+                                                    state: _details[
+                                                                'is_favorite_ad'] ==
+                                                            true
+                                                        ? "delete"
+                                                        : "add",
+                                                  ).then((value) {
+                                                    setState(() {
+                                                      AdDetailsServicesNew
+                                                              .getAdData(
+                                                                  adId: widget
+                                                                      .adID,
+                                                                  slug: widget
+                                                                      .slug)
+                                                          .then((value) {
+                                                        setState(() {
+                                                          _adDetails = value;
+                                                          // _adDetailsData = value[0]['responseData'];
+                                                          // _detailsAttribute = value[0]['responseData']['selected_attributes'];
+                                                          _loading = false;
+                                                        });
                                                       });
                                                     });
                                                   });
-                                                });
-                                              }),)
+                                                }),
+                                          )
                                         ],
                                       ),
                                     ),
-                                    if(!_details['is_free'])
+                                    if (!_details['is_free'])
                                       Row(
                                         children: [
                                           Expanded(
-                                            flex:2,
+                                            flex: 2,
                                             child: Container(
-                                            width: double.infinity,
-                                            child: _details['has_price'] && _details['price']!=0 &&  _details['currency']!=null
-                                                ? Text(
-                                                    '${_details['price'].toString()}${_details['currency']['ar'].toString()}',
-                                                    style: appStyle(
-                                                        color: Colors.green,
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.w500),
-                                                  )
-                                                : Text(_strController.callAdvPrice,
-                                            style: appStyle(
-                                                color: Colors.green,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),),
-                                    ),
+                                              width: double.infinity,
+                                              child: _details['has_price'] &&
+                                                      _details['price'] != 0 &&
+                                                      _details['currency'] !=
+                                                          null
+                                                  ? Text(
+                                                      '${_details['price'].toString()}${_details['currency']['ar'].toString()}',
+                                                      style: appStyle(
+                                                          color: Colors.green,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    )
+                                                  : Text(
+                                                      _strController
+                                                          .callAdvPrice,
+                                                      style: appStyle(
+                                                          color: Colors.green,
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.w500),
+                                                    ),
+                                            ),
                                           ),
-                                          if(_details['negotiable'])
+                                          if (_details['negotiable'])
                                             Expanded(
-                                              flex:4,
+                                              flex: 4,
                                               child: Text(
                                                 '(قابل للتفاوض)',
                                                 style: appStyle(
                                                     color: Colors.green,
                                                     fontSize: 18,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ),
                                         ],
                                       ),
-                                    if(_details['is_free'])
+                                    if (_details['is_free'])
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16),
@@ -278,7 +306,10 @@ void share(BuildContext context){
                                 SizedBox(
                                   height: 20,
                                 ),
-                                if (_details['show_contact'] && _details['user_contact'] != null && _details['user_contact']['user_image']!=null)
+                                if (_details['show_contact'] &&
+                                    _details['user_contact'] != null &&
+                                    _details['user_contact']['user_image'] !=
+                                        null)
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -302,12 +333,15 @@ void share(BuildContext context){
                                         width: 30,
                                       ),
                                       buildIcons(
-                                          iconData: FontAwesomeIcons.whatsapp,
-                                          color: AppColors.whiteColor,
-                                          bgColor: AppColors.green,
-                                          action:()=> launchWhatsApp(_details['user_contact']['mobile_number'].toString()),
-                                            // _launchURLWhatsApp(_details['user_contact']['mobile_number'].toString());
-                                          ),
+                                        iconData: FontAwesomeIcons.whatsapp,
+                                        color: AppColors.whiteColor,
+                                        bgColor: AppColors.green,
+                                        action: () => launchWhatsApp(
+                                            _details['user_contact']
+                                                    ['mobile_number']
+                                                .toString()),
+                                        // _launchURLWhatsApp(_details['user_contact']['mobile_number'].toString());
+                                      ),
                                       buildIcons(
                                           iconData: FontAwesomeIcons.phoneAlt,
                                           bgColor: AppColors.blue,
@@ -322,7 +356,8 @@ void share(BuildContext context){
                                         color: AppColors.whiteColor,
                                         bgColor: AppColors.redColor,
                                         action: () {
-                                          launch('mailto:${_details['user_contact']['email'].toString()}');
+                                          launch(
+                                              'mailto:${_details['user_contact']['email'].toString()}');
                                           // _launchURLEmail(
                                           //   _details['user_contact']
                                           //           ['mobile_number']
@@ -348,15 +383,24 @@ void share(BuildContext context){
                                     var _anotherData;
 
                                     // print('SELECTED: ${_myAttributes}');
-                                    print('TYPE: ${_selectedValue.runtimeType}');
-                                    var attributeName =
-                                        (_selectedValue.runtimeType == int ||
-                                                _selectedValue.runtimeType ==String ||
-                                                _selectedValue.runtimeType ==double)
-                                            ?_selectedValue.toString()
-                                            : _selectedValue.runtimeType.toString() == "_InternalLinkedHashMap<String, dynamic>"? _selectedValue['name']['ar'].toString()
+                                    print(
+                                        'TYPE: ${_selectedValue.runtimeType}');
+                                    var attributeName = (_selectedValue
+                                                    .runtimeType ==
+                                                int ||
+                                            _selectedValue.runtimeType ==
+                                                String ||
+                                            _selectedValue.runtimeType ==
+                                                double)
+                                        ? _selectedValue.toString()
+                                        : _selectedValue.runtimeType
+                                                    .toString() ==
+                                                "_InternalLinkedHashMap<String, dynamic>"
+                                            ? _selectedValue['name']['ar']
+                                                .toString()
                                             : _selectedValue;
-                                    var _myLabel = _attributes[position]['label'];
+                                    var _myLabel =
+                                        _attributes[position]['label'];
 
                                     // print('a type: ${attributeName.toString()}');
                                     return Container(
@@ -366,7 +410,7 @@ void share(BuildContext context){
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                            Expanded(
+                                          Expanded(
                                               flex: 3,
                                               child: Text(
                                                 _myLabel['ar'].toString(),
@@ -376,29 +420,57 @@ void share(BuildContext context){
                                                     fontWeight:
                                                         FontWeight.w700),
                                               )),
-                                          if(_selectedValue.runtimeType.toString() != "List<dynamic>" )
+                                          if (_selectedValue.runtimeType
+                                                  .toString() !=
+                                              "List<dynamic>")
                                             Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              attributeName.toString(),
-                                              style: appStyle(
-                                                fontSize: 16,
-                                                color: AppColors.blackColor2,
-                                                fontWeight: FontWeight.w700
+                                              flex: 2,
+                                              child: Text(
+                                                attributeName.toString(),
+                                                style: appStyle(
+                                                    fontSize: 16,
+                                                    color:
+                                                        AppColors.blackColor2,
+                                                    fontWeight:
+                                                        FontWeight.w700),
                                               ),
                                             ),
-                                          ),
-                                          if(_selectedValue.runtimeType.toString() == "List<dynamic>" )
-                                          Expanded(
-                                            flex: 6,
-                                            child: Container(
-                                              margin: const EdgeInsets.symmetric(vertical: 0),
-                                              child: GridView.builder(shrinkWrap: true,physics: ClampingScrollPhysics()
-                                                  ,gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount:3,childAspectRatio: 3), itemCount: attributeName.length,itemBuilder: (ctx,index){
-                                                return Center(child: Text(attributeName[index]['name']['ar'].toString() + " , ",style: appStyle(fontWeight: FontWeight.w500),));
-                                              }),
+                                          if (_selectedValue.runtimeType
+                                                  .toString() ==
+                                              "List<dynamic>")
+                                            Expanded(
+                                              flex: 6,
+                                              child: Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 0),
+                                                child: GridView.builder(
+                                                    shrinkWrap: true,
+                                                    physics:
+                                                        ClampingScrollPhysics(),
+                                                    gridDelegate:
+                                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                                            crossAxisCount: 3,
+                                                            childAspectRatio:
+                                                                3),
+                                                    itemCount:
+                                                        attributeName.length,
+                                                    itemBuilder: (ctx, index) {
+                                                      return Center(
+                                                          child: Text(
+                                                        attributeName[index]
+                                                                        ['name']
+                                                                    ['ar']
+                                                                .toString() +
+                                                            " , ",
+                                                        style: appStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ));
+                                                    }),
+                                              ),
                                             ),
-                                          ),
                                         ],
                                       ),
                                     );
@@ -439,20 +511,20 @@ void share(BuildContext context){
                                     Expanded(
                                       flex: 1,
                                       child: myButton(
-                                        btnTxt: _strController.callAdv,
-                                        fontSize: 16,
-                                        btnColor: Colors.lightBlueAccent,
-                                        radius: 8,
-                                        context: context,
-                                        txtColor: AppColors.whiteColor,
-                                        height: 45,
-                                        onPressed: (){
-                                          launch("tel://${_details['user_contact']['mobile_number'].toString()}");
-                                          // print('${_details['video']}');
-                                          //   if(_details['video'] != null)
-                                          //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
-                                        }
-                                      ),
+                                          btnTxt: _strController.callAdv,
+                                          fontSize: 16,
+                                          btnColor: Colors.lightBlueAccent,
+                                          radius: 8,
+                                          context: context,
+                                          txtColor: AppColors.whiteColor,
+                                          height: 45,
+                                          onPressed: () {
+                                            launch(
+                                                "tel://${_details['user_contact']['mobile_number'].toString()}");
+                                            // print('${_details['video']}');
+                                            //   if(_details['video'] != null)
+                                            //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
+                                          }),
                                     ),
                                     SizedBox(
                                       width: 10,
@@ -467,7 +539,8 @@ void share(BuildContext context){
                                         context: context,
                                         txtColor: AppColors.whiteColor,
                                         height: 45,
-                                        onPressed: ()=> launch('mailto:${_details['user_contact']['email'].toString()}'),
+                                        onPressed: () => launch(
+                                            'mailto:${_details['user_contact']['email'].toString()}'),
                                       ),
                                     ),
                                   ],
@@ -479,7 +552,8 @@ void share(BuildContext context){
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       // buildIcons(
                                       //     iconData: FontAwesomeIcons.facebookF,
@@ -543,15 +617,26 @@ void share(BuildContext context){
                                   height: 10,
                                 ),
                                 Container(
+
                                     width: double.infinity,
-                                    child: Text(
-                                      _details["body"].toString(),
-                                      //  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
-                                      style: appStyle(
+                                    child: Html(
+                                      customTextAlign: (_)=>TextAlign.start,
+                                      data: _details['body'],
+                                      defaultTextStyle: appStyle(
                                           color: AppColors.blackColor2,
-                                          fontSize: 18,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.w500),
-                                    )),
+                                     )
+
+                                    // Text(
+                                    //   _details['body']+'sss',
+                                    //   //  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
+                                    //   style: appStyle(
+                                    //       color: AppColors.blackColor2,
+                                    //       fontSize: 18,
+                                    //       fontWeight: FontWeight.w500),
+                                    // )
+                                    ),
                                 SizedBox(
                                   height: 20,
                                 ),
@@ -597,7 +682,11 @@ void share(BuildContext context){
                                 ),
                                 Text(
                                   "لا ترسل أي معلومات شخصية أو صور أو أي أموال من خلال الإنترنت و قم بالازم للتأكد من صحة الإعلان و الجهة المعلنة. و توخى الحذر من الإعلانات التي تروج الربح السريع و تزوير الوثائق.",
-                                style: appStyle(color: AppColors.blackColor2,fontWeight: FontWeight.w500,fontSize: 18),)
+                                  style: appStyle(
+                                      color: AppColors.blackColor2,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18),
+                                )
                               ],
                             );
                           },
@@ -612,9 +701,7 @@ void share(BuildContext context){
   }
 
   _buildAbuseDialog(
-      {BuildContext context,
-      List<dynamic> details,
-      Function action}) {
+      {BuildContext context, List<dynamic> details, Function action}) {
     return Alert(
       context: context,
       title: "Report Abuse",
@@ -627,69 +714,80 @@ void share(BuildContext context){
           itemCount: details.length,
           itemBuilder: (ctx, index) {
             return
-              // Row(
+                // Row(
                 // children: <Widget>[
-                  Column(
-                    children: [
-                      RadioListTile(
-                        value: details[index]['id'],
-                        groupValue: _selection,
-                        title: Text(
-                          details[index]['reason'],style: TextStyle(color: Colors.black54),
-                        ),
-                        onChanged: (val) {
-                          setState(() {
-                            _selection = val;
-                            abuseID = val;
-                            abuseReason = details[index]['reason'];
-                            if(details[index]['id'] == 5){
-                              setState(() {
-                                _showOtherReason = true;
-                              });
-                            }else{
-                              setState(() {
-                                _showOtherReason = false;
-                              });
-                            }
-                          });
-                        },
-                         selected: true,
-                      ),
-                      if(details[index]['id'] == 5 && _showOtherReason == true)
-                        buildTextField(label: "reason",textInputType: TextInputType.text,controller: _otherReason,hintTxt: "Enter reason",fromPhone: false,)
-
-                    ],
-                  );
-                  // Radio(
-                  //   activeColor: Colors.red,
-                  //   focusColor: Colors.white,
-                  //   groupValue: _selection,
-                  //   onChanged: (newVal) {
-                  //     setSelectedRadio(newVal);
-                  //   },
-                  //   value: _selection,
-                  // ),
-                  // Text(
-                  //   details[index]['reason'],
-                  //   style: TextStyle(fontWeight: FontWeight.normal,fontSize: 16),
-                  // ),
-                // ],
-              // );
+                Column(
+              children: [
+                RadioListTile(
+                  value: details[index]['id'],
+                  groupValue: _selection,
+                  title: Text(
+                    details[index]['reason'],
+                    style: TextStyle(color: Colors.black54),
+                  ),
+                  onChanged: (val) {
+                    setState(() {
+                      _selection = val;
+                      abuseID = val;
+                      abuseReason = details[index]['reason'];
+                      if (details[index]['id'] == 5) {
+                        setState(() {
+                          _showOtherReason = true;
+                        });
+                      } else {
+                        setState(() {
+                          _showOtherReason = false;
+                        });
+                      }
+                    });
+                  },
+                  selected: true,
+                ),
+                if (details[index]['id'] == 5 && _showOtherReason == true)
+                  buildTextField(
+                    label: "reason",
+                    textInputType: TextInputType.text,
+                    controller: _otherReason,
+                    hintTxt: "Enter reason",
+                    fromPhone: false,
+                  )
+              ],
+            );
+            // Radio(
+            //   activeColor: Colors.red,
+            //   focusColor: Colors.white,
+            //   groupValue: _selection,
+            //   onChanged: (newVal) {
+            //     setSelectedRadio(newVal);
+            //   },
+            //   value: _selection,
+            // ),
+            // Text(
+            //   details[index]['reason'],
+            //   style: TextStyle(fontWeight: FontWeight.normal,fontSize: 16),
+            // ),
+            // ],
+            // );
           },
         ),
       ),
       buttons: [
-
         DialogButton(
           child: Text(
             "Submit",
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
-          onPressed:(){
+          onPressed: () {
             print(widget.adID);
             print(abuseID);
             print(abuseReason);
-            abuseAd(context: context,adId: widget.adID,abuseId: abuseID,abuseDescription: _otherReason.text.isNotEmpty?_otherReason.text.toString():null);
+            abuseAd(
+                context: context,
+                adId: widget.adID,
+                abuseId: abuseID,
+                abuseDescription: _otherReason.text.isNotEmpty
+                    ? _otherReason.text.toString()
+                    : null);
             Navigator.of(context, rootNavigator: true).pop();
           },
           color: Color.fromRGBO(0, 179, 134, 1.0),
@@ -703,5 +801,4 @@ void share(BuildContext context){
       _selection = val;
     });
   }
-
 }

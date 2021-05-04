@@ -60,6 +60,7 @@ dependencies:
   video_player: ^0.10.1
   provider: ^5.0.0
   share: ^2.0.1
+  flutter_html: ^0.11.0
   carousel_slider:
 #  flutter_absolute_path: ^1.0.6
 
