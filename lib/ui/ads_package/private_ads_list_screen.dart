@@ -23,6 +23,7 @@ class PrivateAdsListScreen extends StatefulWidget {
 class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   int offset = 0;
   int limit = 10;
@@ -74,6 +75,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         appBar: buildAppBar(
             centerTitle: true,
@@ -511,6 +513,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                         size: 30,
                                         action: () {
                                           favoriteAd(
+                                            scaffoldKey: _scaffoldKey,
                                             context: context,
                                             adId: _data['id'],
                                             state:

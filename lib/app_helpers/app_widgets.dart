@@ -394,6 +394,7 @@ buildTextField({
         keyboardType: textInputType,
         obscureText: isPassword ? true : false,
         decoration: InputDecoration(
+          errorStyle: appStyle(fontSize: 15,color: AppColors.redColor,fontWeight: FontWeight.w400),
           contentPadding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
           suffix: fromPhone ? suffix : null,
           filled: true,
