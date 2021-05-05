@@ -12,9 +12,12 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/ui/auth/forget_password_screen.dart';
 import 'package:kulshe/ui/auth/signup_screen.dart';
+import 'package:kulshe/ui/auth/social_media/change_password_social_media.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'social_media/google_login.dart';
 import 'package:http/http.dart' as http;
+
+import 'social_media_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -65,43 +68,45 @@ class _LoginScreenState extends State<LoginScreen> {
           context: context).then((value){
         print('VAL:$value');
         if(value['custom_code'] == 2166){
-              buildDialog(desc: '',no: _strController.cancel,yes: _strController.done,title: "Enter New Password", context: context,content: Column(
-                children: [
-                  buildTextField(
-                    fromDialog: true,
-                    label: _strController.newPassword,
-                    controller: _newPasswordController,
-                    textInputType: TextInputType.visiblePassword,
-                    isPassword: true
-                  ),
-                  buildTextField(
-                    fromDialog: true,
-                    label: _strController.confirmPassword,
-                    controller: _confirmPasswordController,
-                    textInputType: TextInputType.visiblePassword,
-                    isPassword: true
-                  ),
-                ],
-              ),
-                action:()=> changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),value['responseData']['token'].toString()).then((value) {
-                  print('VALUE');
-                  print(value['responseData']['token']);
-
-                  })
-              );
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChangePasswordSocialMedia(value: value['responseData']['token'],),),);
+              // buildDialog(desc: '',no: _strController.cancel,yes: _strController.done,title: "Enter New Password", context: context,content:
+              // Column(
+              //   children: [
+              //     buildTextField(
+              //       fromDialog: true,
+              //       label: _strController.newPassword,
+              //       controller: _newPasswordController,
+              //       textInputType: TextInputType.visiblePassword,
+              //       isPassword: true
+              //     ),
+              //     buildTextField(
+              //       fromDialog: true,
+              //       label: _strController.confirmPassword,
+              //       controller: _confirmPasswordController,
+              //       textInputType: TextInputType.visiblePassword,
+              //       isPassword: true
+              //     ),
+              //   ],
+              // ),
+              //   action:()=> changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),value['responseData']['token'].toString()).then((value) {
+              //     print('VALUE');
+              //     print(value['responseData']['token']);
+              //
+              //     })
+              // );
             }
       });
     } else {
       print('Form is invalid');
     }
   }
-  void _validateDialog() {
-    final FormState form = _formKey2.currentState;
-    if (form.validate()) {
-    } else {
-      print('Form is invalid');
-    }
-  }
+  // void _validateDialog() {
+  //   final FormState form = _formKey2.currentState;
+  //   if (form.validate()) {
+  //   } else {
+  //     print('Form is invalid');
+  //   }
+  // }
 
   @override
   void initState() {
@@ -338,149 +343,150 @@ class _LoginScreenState extends State<LoginScreen> {
         ).then((value) {
           if (value == 2095) {
             print('TRY NOW');
-            _buildChoiceDialog(noEmail: email.isEmpty, from: 'google');
+            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,),),);
+            // _buildChoiceDialog(noEmail: email.isEmpty, from: 'google');
           }
         });
     });
   }
 
-  _buildChoiceDialog({bool noEmail, String from}) {
-    return buildDialog(
-        context: context,
-        title: "يرجى إدخال الحقول المطلوبة",
-        desc: "",
-        no: _strController.cancel,
-        yes: _strController.done,
-        content: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 8, left: 12, right: 12),
-              child: myButton(
-                  txtColor: AppColors.blackColor,
-                  fontSize: 18,
-                  context: context,
-                  btnColor: AppColors.greyOne,
-                  radius: 4,
-                  btnTxt: _selectedCountry,
-                  width: double.infinity,
-                  onPressed: () =>
-                      _showCountriesDialog(mq: MediaQuery.of(context))),
-            ),
-            buildTextField(
-              label: _strController.nickName,
-              controller: _nickNameControllerS,
-              textInputType: TextInputType.name,
-            ),
-            if (noEmail)
-              buildTextField(
-                label: _strController.email,
-                controller: _emailControllerS,
-                textInputType: TextInputType.emailAddress,
-              ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    height: 46,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.6),
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: CountryListPick(
-                      appBar: AppBar(
-                        backgroundColor: Colors.blue,
-                        title: Text(
-                          _strController.country,
-                          style: appStyle(
-                              fontSize: 18, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      theme: CountryTheme(
-                          isShowFlag: false,
-                          isShowTitle: false,
-                          isShowCode: true,
-                          isDownIcon: false,
-                          showEnglishName: true,
-                          initialSelection: '+962'),
-                      initialSelection: '+962',
-                      useSafeArea: true,
-                      onChanged: (CountryCode code) {
-                        print(code.name);
-                        print(code.code);
-                        print(code.dialCode);
-                        print(code.dialCode);
-                        print(code.dialCode);
-                        print(code.flagUri);
-                        setState(() {
-                          mobileCountryIsoCode.text = code.code;
-                          _mobileCountryCode.text =
-                              code.dialCode.replaceAll('+', '').toString();
-                          print('code : ${_mobileCountryCode.text}');
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: buildTextField(
-                    fromDialog: true,
-                    label: _strController.mobile,
-                    controller: _phoneControllerS,
-                    hintTxt: _strController.mobile,
-                    textInputType: TextInputType.phone,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        action: () => from == 'google'
-            ? createAccountFunctionGoogle(
-                    context: context,
-                    gId: gId,
-                    gToken: gToken,
-                    email: email,
-                    nickName: _nickNameControllerS.text.toString(),
-                    userImage: imageUrl,
-                    countryId: _myCountry.toString(),
-                    mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
-                        ? '962'
-                        : mobileCountryIsoCode.text.toString(),
-                    mobileNumber: _phoneControllerS.text.toString(),
-                    mobileCountryPhoneCode: _mobileCountryCode.text.toString())
-                .then((value) {
-                if (value == 200)
-                  Navigator.of(context, rootNavigator: true).pop();
-              })
-            : from == 'facebook'
-                ? createAccountFunctionFacebook(
-                        context: context,
-                        email:
-                            "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
-                        mobileNumber: "${_phoneControllerS.text.toString()}",
-                        nickName: "${_nickNameControllerS.text.toString()}",
-                        fbId: "${facebookLoginResult.accessToken.userId}",
-                        fbToken: "${facebookLoginResult.accessToken.token}",
-                        userImage: "${profileData['picture']['data']['url']}",
-                        mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
-                            ? '962'
-                            : mobileCountryIsoCode.text.toString(),
-                        mobileCountryPhoneCode:
-                            _mobileCountryCode.text.toString(),
-                        countryId: _myCountry.toString()
-
-                        // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-                        )
-                    .then((value) {
-                    if (value == 200)
-                      Navigator.of(context, rootNavigator: true).pop();
-                  })
-                : null);
-  }
+  // _buildChoiceDialog({bool noEmail, String from}) {
+  //   return buildDialog(
+  //       context: context,
+  //       title: "يرجى إدخال الحقول المطلوبة",
+  //       desc: "",
+  //       no: _strController.cancel,
+  //       yes: _strController.done,
+  //       content: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Container(
+  //             margin: EdgeInsets.only(bottom: 8, left: 12, right: 12),
+  //             child: myButton(
+  //                 txtColor: AppColors.blackColor,
+  //                 fontSize: 18,
+  //                 context: context,
+  //                 btnColor: AppColors.greyOne,
+  //                 radius: 4,
+  //                 btnTxt: _selectedCountry,
+  //                 width: double.infinity,
+  //                 onPressed: () =>
+  //                     _showCountriesDialog(mq: MediaQuery.of(context))),
+  //           ),
+  //           buildTextField(
+  //             label: _strController.nickName,
+  //             controller: _nickNameControllerS,
+  //             textInputType: TextInputType.name,
+  //           ),
+  //           if (noEmail)
+  //             buildTextField(
+  //               label: _strController.email,
+  //               controller: _emailControllerS,
+  //               textInputType: TextInputType.emailAddress,
+  //             ),
+  //           Row(
+  //             children: [
+  //               Expanded(
+  //                 flex: 4,
+  //                 child: Container(
+  //                   height: 46,
+  //                   padding: EdgeInsets.symmetric(horizontal: 16),
+  //                   decoration: BoxDecoration(
+  //                       color: Colors.white.withOpacity(0.6),
+  //                       border: Border.all(width: 1, color: Colors.grey),
+  //                       borderRadius: BorderRadius.circular(8)),
+  //                   child: CountryListPick(
+  //                     appBar: AppBar(
+  //                       backgroundColor: Colors.blue,
+  //                       title: Text(
+  //                         _strController.country,
+  //                         style: appStyle(
+  //                             fontSize: 18, fontWeight: FontWeight.w400),
+  //                       ),
+  //                     ),
+  //                     theme: CountryTheme(
+  //                         isShowFlag: false,
+  //                         isShowTitle: false,
+  //                         isShowCode: true,
+  //                         isDownIcon: false,
+  //                         showEnglishName: true,
+  //                         initialSelection: '+962'),
+  //                     initialSelection: '+962',
+  //                     useSafeArea: true,
+  //                     onChanged: (CountryCode code) {
+  //                       print(code.name);
+  //                       print(code.code);
+  //                       print(code.dialCode);
+  //                       print(code.dialCode);
+  //                       print(code.dialCode);
+  //                       print(code.flagUri);
+  //                       setState(() {
+  //                         mobileCountryIsoCode.text = code.code;
+  //                         _mobileCountryCode.text =
+  //                             code.dialCode.replaceAll('+', '').toString();
+  //                         print('code : ${_mobileCountryCode.text}');
+  //                       });
+  //                     },
+  //                   ),
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 flex: 7,
+  //                 child: buildTextField(
+  //                   fromDialog: true,
+  //                   label: _strController.mobile,
+  //                   controller: _phoneControllerS,
+  //                   hintTxt: _strController.mobile,
+  //                   textInputType: TextInputType.phone,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //       action: () => from == 'google'
+  //           ? createAccountFunctionGoogle(
+  //                   context: context,
+  //                   gId: gId,
+  //                   gToken: gToken,
+  //                   email: email,
+  //                   nickName: _nickNameControllerS.text.toString(),
+  //                   userImage: imageUrl,
+  //                   countryId: _myCountry.toString(),
+  //                   mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
+  //                       ? '962'
+  //                       : mobileCountryIsoCode.text.toString(),
+  //                   mobileNumber: _phoneControllerS.text.toString(),
+  //                   mobileCountryPhoneCode: _mobileCountryCode.text.toString())
+  //               .then((value) {
+  //               if (value == 200)
+  //                 Navigator.of(context, rootNavigator: true).pop();
+  //             })
+  //           : from == 'facebook'
+  //               ? createAccountFunctionFacebook(
+  //                       context: context,
+  //                       email:
+  //                           "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
+  //                       mobileNumber: "${_phoneControllerS.text.toString()}",
+  //                       nickName: "${_nickNameControllerS.text.toString()}",
+  //                       fbId: "${facebookLoginResult.accessToken.userId}",
+  //                       fbToken: "${facebookLoginResult.accessToken.token}",
+  //                       userImage: "${profileData['picture']['data']['url']}",
+  //                       mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
+  //                           ? '962'
+  //                           : mobileCountryIsoCode.text.toString(),
+  //                       mobileCountryPhoneCode:
+  //                           _mobileCountryCode.text.toString(),
+  //                       countryId: _myCountry.toString()
+  //
+  //                       // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
+  //                       )
+  //                   .then((value) {
+  //                   if (value == 200)
+  //                     Navigator.of(context, rootNavigator: true).pop();
+  //                 })
+  //               : null);
+  // }
 
   // Future<void> signOutGoogle() async {
   //   await googleSignIn.signOut();
@@ -535,8 +541,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ).then((value) {
             print('VALUE : $value');
             if (value == 2095) {
-              _buildChoiceDialog(
-                  noEmail: profileData['email'].isEmpty, from: 'facebook');
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,fId: facebookLoginResult.accessToken.userId.toString(),fToken: facebookLoginResult.accessToken.token,fImage:profileData['picture']['data']['url'],fEmail:profileData['email']),),);
+              // _buildChoiceDialog(
+              //     noEmail: profileData['email'].isEmpty, from: 'facebook');
             }
           });
           break;
@@ -544,166 +551,166 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  _displayUserData(profileData) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          height: 200.0,
-          width: 200.0,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-              fit: BoxFit.fill,
-              image: NetworkImage(
-                profileData['picture']['data']['url'],
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: 28.0),
-        Text(
-          "Logged in as: ${profileData['name']}",
-          style: TextStyle(
-            fontSize: 20.0,
-          ),
-        ),
-        Text(
-          "Logged in as: ${profileData['email']}",
-          style: TextStyle(
-            fontSize: 20.0,
-          ),
-        ),
-      ],
-    );
-  }
+  // _displayUserData(profileData) {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: <Widget>[
+  //       Container(
+  //         height: 200.0,
+  //         width: 200.0,
+  //         decoration: BoxDecoration(
+  //           shape: BoxShape.circle,
+  //           image: DecorationImage(
+  //             fit: BoxFit.fill,
+  //             image: NetworkImage(
+  //               profileData['picture']['data']['url'],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(height: 28.0),
+  //       Text(
+  //         "Logged in as: ${profileData['name']}",
+  //         style: TextStyle(
+  //           fontSize: 20.0,
+  //         ),
+  //       ),
+  //       Text(
+  //         "Logged in as: ${profileData['email']}",
+  //         style: TextStyle(
+  //           fontSize: 20.0,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  _displayLoginButton() {
-    return RaisedButton(
-      child: Text("Login with Facebook"),
-      onPressed: () => initiateFacebookLogin(),
-    );
-  }
+  // _displayLoginButton() {
+  //   return RaisedButton(
+  //     child: Text("Login with Facebook"),
+  //     onPressed: () => initiateFacebookLogin(),
+  //   );
+  // }
+  //
+  // _logout() async {
+  //   await facebookLogin.logOut();
+  //   onLoginStatusChanged(false);
+  //   print("Logged out");
+  // }
 
-  _logout() async {
-    await facebookLogin.logOut();
-    onLoginStatusChanged(false);
-    print("Logged out");
-  }
+  // void _showCountriesDialog({MediaQueryData mq}) {
+  //   showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (context) {
+  //         return AlertDialog(
+  //           contentPadding: EdgeInsets.only(left: 15, right: 15),
+  //           title: Center(child: Text(_strController.country)),
+  //           shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.all(Radius.circular(20.0))),
+  //           content: Container(
+  //             height: mq.size.height * 0.5,
+  //             width: mq.size.width * 1,
+  //             child: ListView.builder(
+  //               itemCount: _countryData.length,
+  //               itemBuilder: (context, index) {
+  //                 final list = _countryData[index];
+  //                 return Padding(
+  //                   padding: const EdgeInsets.symmetric(vertical: 5),
+  //                   child: InkWell(
+  //                     onTap: () {
+  //                       setState(() {
+  //                         _selectedCountry = list['name'];
+  //                         _myCountry = list['id'].toString();
+  //                         print(_myCountry);
+  //                         _dismissDialog(context: context);
+  //                       });
+  //                     },
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: <Widget>[
+  //                         SizedBox(
+  //                           height: 25,
+  //                         ),
+  //                         Expanded(
+  //                           flex: 4,
+  //                           child: Text(
+  //                             list['name'],
+  //                             maxLines: 3,
+  //                           ),
+  //                         ),
+  //                         Expanded(
+  //                           flex: 1,
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.all(8.0),
+  //                             child: SvgPicture.network(
+  //                               list['flag'],
+  //                               fit: BoxFit.fill,
+  //                               height: 25,
+  //                               width: 15,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //           actions: <Widget>[
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: <Widget>[
+  //                 Container(
+  //                   width: MediaQuery.of(context).size.width * 0.16,
+  //                   child: RaisedButton(
+  //                     child: new Text(
+  //                       'Fund',
+  //                       style: TextStyle(color: Colors.white),
+  //                     ),
+  //                     color: Color(0xFF121A21),
+  //                     shape: new RoundedRectangleBorder(
+  //                       borderRadius: new BorderRadius.circular(30.0),
+  //                     ),
+  //                     onPressed: () {
+  //                       Navigator.of(context).pop();
+  //                     },
+  //                   ),
+  //                 ),
+  //                 SizedBox(
+  //                   width: MediaQuery.of(context).size.width * 0.01,
+  //                 ),
+  //                 Padding(
+  //                   padding: const EdgeInsets.only(right: 70.0),
+  //                   child: Container(
+  //                     width: MediaQuery.of(context).size.width * 0.20,
+  //                     child: RaisedButton(
+  //                       child: new Text(
+  //                         'Cancel',
+  //                         style: TextStyle(color: Colors.white),
+  //                       ),
+  //                       color: Color(0xFF121A21),
+  //                       shape: new RoundedRectangleBorder(
+  //                         borderRadius: new BorderRadius.circular(30.0),
+  //                       ),
+  //                       onPressed: () {
+  //                         Navigator.of(context).pop();
+  //                       },
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 SizedBox(
+  //                   height: MediaQuery.of(context).size.height * 0.02,
+  //                 ),
+  //               ],
+  //             )
+  //           ],
+  //         );
+  //       });
+  // }
 
-  void _showCountriesDialog({MediaQueryData mq}) {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.only(left: 15, right: 15),
-            title: Center(child: Text(_strController.country)),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            content: Container(
-              height: mq.size.height * 0.5,
-              width: mq.size.width * 1,
-              child: ListView.builder(
-                itemCount: _countryData.length,
-                itemBuilder: (context, index) {
-                  final list = _countryData[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedCountry = list['name'];
-                          _myCountry = list['id'].toString();
-                          print(_myCountry);
-                          _dismissDialog(context: context);
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Expanded(
-                            flex: 4,
-                            child: Text(
-                              list['name'],
-                              maxLines: 3,
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SvgPicture.network(
-                                list['flag'],
-                                fit: BoxFit.fill,
-                                height: 25,
-                                width: 15,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            actions: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.16,
-                    child: RaisedButton(
-                      child: new Text(
-                        'Fund',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Color(0xFF121A21),
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.01,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 70.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.20,
-                      child: RaisedButton(
-                        child: new Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Color(0xFF121A21),
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                ],
-              )
-            ],
-          );
-        });
-  }
-
-  _dismissDialog({BuildContext context}) {
-    Navigator.pop(context);
-  }
+  // _dismissDialog({BuildContext context}) {
+  //   Navigator.pop(context);
+  // }
 }

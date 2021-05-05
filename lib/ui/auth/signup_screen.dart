@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
@@ -10,12 +12,19 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'social_media/google_login.dart';
+import 'social_media_screen.dart';
+
 class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController _phoneControllerS = TextEditingController()..text;
+  TextEditingController _nickNameControllerS = TextEditingController()..text;
+  TextEditingController _mobileCountryCode = TextEditingController()..text;
+
   TextEditingController _countryController = TextEditingController()..text;
   TextEditingController _nickNameController = TextEditingController()..text;
   TextEditingController _emailController = TextEditingController()..text;
@@ -24,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _confirmPasswordController = TextEditingController()
     ..text;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var facebookLoginResult;
   String _selectedCountry;
 
   String _myCountry;
@@ -339,6 +349,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         margin:
                                             EdgeInsets.symmetric(horizontal: 8),
                                         boxFit: BoxFit.cover,
+                                        onTap: buildGoogleLogin,
                                         url: "assets/images/google.png"),
                                     buildSocialIcons(
                                         width: 40,
@@ -347,6 +358,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         margin:
                                             EdgeInsets.symmetric(horizontal: 8),
                                         boxFit: BoxFit.cover,
+                                        onTap: initiateFacebookLogin,
                                         url: "assets/images/facebook.png"),
                                     buildSocialIcons(
                                         width: 40,
@@ -485,8 +497,84 @@ class _SignUpScreenState extends State<SignUpScreen> {
           );
         });
   }
-
   _dismissDialog({BuildContext context}) {
     Navigator.pop(context);
+  }
+
+  buildGoogleLogin() {
+    signInWithGoogle().then((result) {
+      if (result != null)
+        createAccountFunctionGoogle(
+          context: context,
+          gId: gId,
+          gToken: gToken,
+          email: email,
+          nickName: _nickNameControllerS.text.toString(),
+          userImage: imageUrl,
+        ).then((value) {
+          if (value == 2095) {
+            print('TRY NOW');
+            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,),),);
+            // _buildChoiceDialog(noEmail: email.isEmpty, from: 'google');
+          }
+        });
+    });
+  }
+
+
+
+  var facebookLogin = FacebookLogin();
+  var profileData;
+  bool isLoggedIn = false;
+
+  void onLoginStatusChanged(bool isLoggedIn, {profileData}) {
+    setState(() {
+      this.isLoggedIn = isLoggedIn;
+      this.profileData = profileData;
+    });
+  }
+
+  void initiateFacebookLogin() async {
+    facebookLoginResult = await facebookLogin.logIn(['email']);
+
+    switch (facebookLoginResult.status) {
+      case FacebookLoginStatus.error:
+        onLoginStatusChanged(false);
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        onLoginStatusChanged(false);
+        break;
+      case FacebookLoginStatus.loggedIn:
+        {
+          var graphResponse = await http.get(
+              'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture.height(200)&access_token=${facebookLoginResult.accessToken.token}');
+          print(
+              '************************** ${facebookLoginResult.accessToken.token}');
+
+          var profile = json.decode(graphResponse.body);
+          print(profile.toString());
+          onLoginStatusChanged(true, profileData: profile);
+
+          createAccountFunctionFacebook(
+            context: context,
+            email: profileData['email'],
+            // "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
+            mobileNumber: "${_phoneControllerS.text.toString()}",
+            nickName: "${_nickNameControllerS.text.toString()}",
+            fbId: "${facebookLoginResult.accessToken.userId}",
+            fbToken: "${facebookLoginResult.accessToken.token}",
+            userImage: "${profileData['picture']['data']['url']}",
+            mobileCountryIsoCode: mobileCountryIsoCode ,
+            mobileCountryPhoneCode: _mobileCountryCode.text.toString(),
+            countryId: _myCountry,
+          ).then((value) {
+            print('VALUE : $value');
+            if (value == 2095) {
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,fId: facebookLoginResult.accessToken.userId.toString(),fToken: facebookLoginResult.accessToken.token,fImage:profileData['picture']['data']['url'],fEmail:profileData['email']),),);
+            }
+          });
+          break;
+        }
+    }
   }
 }

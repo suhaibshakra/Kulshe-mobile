@@ -7,6 +7,7 @@ abstract class Strings {
   String nickName;
   String errorNickName;
   String country;
+  String selectCountry;
   String errorCountry;
   String password;
   String errorPassword;
@@ -24,6 +25,7 @@ abstract class Strings {
   String noAccount;
   String sendAnEmail;
   String resetPassword;
+  String enterRequiredField;
 
   //drawer
   String myAccount;
@@ -143,6 +145,7 @@ class EnglishString extends Strings {
     nickName = "Nick name";
     errorNickName = "Enter another name";
     country = "Country";
+    selectCountry = "Select country";
     errorCountry = "Choose country";
     confirmPassword = "Confirm Password";
     errorConfirmPassword = "Error confirm password";
@@ -165,6 +168,7 @@ class EnglishString extends Strings {
     termsAndCon = "Terms&Conditions";
     privacyPolicy = "Privacy Policy";
     followUs = "Follow Us";
+    enterRequiredField = "Enter Required Field";
 
     //profile
     userPanel = "User Panel";
@@ -269,6 +273,7 @@ class ArabicString extends Strings {
     nickName = "اسم المستحدم";
     errorNickName = "أدخل اسم اخر";
     country = "الدولة";
+    selectCountry = "إختر الدولة";
     errorCountry = "إختر الدولة";
     confirmPassword = "تأكيد كلمة السر";
     errorConfirmPassword = "خطأ في تأكيد كلمة السر";
@@ -276,6 +281,7 @@ class ArabicString extends Strings {
     noAccount = "ليس لديك حساب؟ ";
     sendAnEmail = "إرسال البريد الإلكتروني";
     resetPassword = "إستعادة كلمة السر";
+    enterRequiredField = "أدخل الحقول المطلوبة";
 
     //drawer
     myAccount = "حسابي";

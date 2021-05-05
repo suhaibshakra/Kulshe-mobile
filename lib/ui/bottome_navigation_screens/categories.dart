@@ -47,7 +47,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-      _getCountries();
+    print('LANG:$lang');
+    _getCountries();
       _getSections();
     // CountriesServices.getCountries().then((countriesList) {
     //   setState(() {
@@ -222,7 +223,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             ),
             child: ExpansionTile(
               backgroundColor: AppColors.whiteColor,
-              title: Text(_data['label'][lang],
+              title: Text(_data['label'][lang??'ar'],
               style: appStyle(fontSize: 18, color: AppColors.blackColor2,fontWeight: FontWeight.w500,),),
               leading: Container(
                 width: 35,
