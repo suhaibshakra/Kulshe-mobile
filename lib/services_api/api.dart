@@ -119,11 +119,13 @@ Future forgetPasswordEmail(BuildContext context, String bodyData) async {
     // print(await response.stream.bytesToString());
     print('********************************Done');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
-        Toast.CENTER);
+        Toast.BOTTOM);
+    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen(),));
+
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
-        Toast.CENTER);
+        Toast.BOTTOM);
   }
 }
 

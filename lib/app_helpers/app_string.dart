@@ -22,6 +22,8 @@ abstract class Strings {
   String createAccountUsing;
   String logout;
   String noAccount;
+  String sendAnEmail;
+  String resetPassword;
 
   //drawer
   String myAccount;
@@ -146,7 +148,8 @@ class EnglishString extends Strings {
     errorConfirmPassword = "Error confirm password";
     logout = "Logout";
     noAccount = "Don't have an account? ";
-
+    sendAnEmail = "Send An Email";
+    resetPassword = "Reset Password";
     //drawer
     myAccount = "My Account";
     myAds = "My Ads";
@@ -255,7 +258,7 @@ class ArabicString extends Strings {
     errorEmail = "أدخل بريد إالكتروني صالح";
     password = "كلمة السر";
     errorPassword = "يجب ان لا تقل عن 8 حروف";
-    forgetPassword = "؟نسيت كلمة السر";
+    forgetPassword = "نسيت كلمة السر";
     login = "دخول";
     loginUsing = "دخول باستخدام";
     or = "أو";
@@ -271,6 +274,8 @@ class ArabicString extends Strings {
     errorConfirmPassword = "خطأ في تأكيد كلمة السر";
     logout = "خروج";
     noAccount = "ليس لديك حساب؟ ";
+    sendAnEmail = "إرسال البريد الإلكتروني";
+    resetPassword = "إستعادة كلمة السر";
 
     //drawer
     myAccount = "حسابي";

@@ -42,7 +42,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
           imageBackground: AssetImage("assets/images/main_bg.png"),
           image: Image.asset("assets/images/logo_icon.png"),
           photoSize: 120,
-          seconds: 10,
+          seconds: 3,
           navigateAfterSeconds: token != null?MainBottomNavigation():LoginScreen(),
           backgroundColor: Colors.white,
           title: Text(

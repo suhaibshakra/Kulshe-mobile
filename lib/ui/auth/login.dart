@@ -10,6 +10,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_string.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
+import 'package:kulshe/ui/auth/forget_password_screen.dart';
 import 'package:kulshe/ui/auth/signup_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'social_media/google_login.dart';
@@ -119,12 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
         textDirection: _drController,
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          // appBar: buildAppBar(
-          //     centerTitle: true,
-          //     bgColor: AppColors.whiteColor,
-          //     themeColor: Colors.grey),
-          // drawer: buildDrawer(context),
-          backgroundColor: Colors.grey.shade200,
+           backgroundColor: Colors.grey.shade200,
           body: Stack(
             children: [
               buildBg(),
@@ -132,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(
                   padding: isLandscape
                       ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
-                      : EdgeInsets.symmetric(horizontal: 25,vertical: 40),
+                      : EdgeInsets.symmetric(horizontal: 15),
                   height:
                       isLandscape ? mq.size.height * 1.9 : mq.size.height * 0.9,
                   child: LayoutBuilder(
@@ -189,8 +185,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ? Alignment.centerLeft
                                 : Alignment.centerRight,
                             child: GestureDetector(
-                              onTap: () => buildDialog(title: 'استرجاع كلمة السر',
-                              no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
+                              onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),)),
+                              // no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
                               child: buildTxt(
                                   txt: _strController.forgetPassword +" ؟",
                                   txtColor: AppColors.redColor,
@@ -329,93 +325,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  void _buildDialog({BuildContext context,String title,double height,TextInputType textInputType,String hintTxt,String labelTxt,String body,TextEditingController controller,Function onChanged,bool withToast = false,Function action}) {
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text(title),
-            content: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // buildTxt(txt: labelTxt),
-                  buildTextField(
-                    textInputType: textInputType,
-                    hintTxt: hintTxt,
-                    label: _strController.email,
-                    onChanged: (val){
-                      setState(() {
-                        _emailForgetController.text = val;
-                      });
-                    }
-                    // validator: (value) => EmailValidator.validate(value)
-                    //     ? null
-                    //     : "Please enter a valid email",
-                  ),
-                  SizedBox(
-                    height: 7,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: RaisedButton(
-                              color: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Text(
-                                "cancel",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onPressed: () {
-                                Navigator.of(ctx).pop();
-                              },
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: RaisedButton(
-                              color: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Text(
-                                "send",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onPressed: withToast == true
-                                  ? () {
-                                      print('BODY:${controller.toString()}');
-                                      forgetPasswordEmail(
-                                          ctx, controller.text.toString());
-                                    }
-                                  : action,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        barrierDismissible: false,
-        barrierColor: Colors.grey.withOpacity(0.6));
-  }
-
   buildGoogleLogin() {
     signInWithGoogle().then((result) {
       if (result != null)
