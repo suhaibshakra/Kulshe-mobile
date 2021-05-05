@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,7 +87,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
 
   Widget _buildFab(BuildContext context) {
     return FloatingActionButton(
-      backgroundColor: Colors.amber,
+      backgroundColor: AppColors.redColor,
       onPressed: () {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)));

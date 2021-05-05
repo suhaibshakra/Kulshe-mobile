@@ -85,7 +85,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
         // drawer: buildDrawer(context,()=>Navigator.of(context).pop()),
         backgroundColor: Colors.grey.shade200,
         body: _loading
-            ? buildLoading(color: AppColors.green)
+            ? buildLoading(color: AppColors.redColor)
             : _privateAd.length == 0
                 ? Directionality(
           textDirection: _drController,

@@ -46,7 +46,7 @@ class _LatestAdsState extends State<LatestAds> {
         key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         body: _loading
-            ? buildLoading(color: AppColors.green)
+            ? buildLoading(color: AppColors.redColor)
             : Directionality(
           textDirection: AppController.textDirection,
              child:Stack(

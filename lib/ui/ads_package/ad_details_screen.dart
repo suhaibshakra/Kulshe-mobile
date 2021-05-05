@@ -182,7 +182,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
         backgroundColor: Colors.white,
         body: _loading
-            ? buildLoading(color: AppColors.green)
+            ? buildLoading(color: AppColors.redColor)
             : Directionality(
                 textDirection: _drController,
                 child: Column(

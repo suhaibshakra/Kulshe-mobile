@@ -81,7 +81,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
           endDrawer: buildDrawer(context, () => Navigator.of(context).pop()),
           body: _loading
-              ? buildLoading(color: AppColors.green)
+              ? buildLoading(color: AppColors.redColor)
               : Stack(
                 children: [
                   buildBg(),

@@ -215,7 +215,7 @@ class _AddAdFormState extends State<AddAdForm> {
         child: Directionality(
           textDirection: AppController.textDirection,
           child: _loading
-              ? Center(child: buildLoading(color: AppColors.green))
+              ? Center(child: buildLoading(color: AppColors.redColor))
               : Stack(
                 children: [
                   buildBg(),

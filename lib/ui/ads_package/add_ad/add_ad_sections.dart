@@ -20,6 +20,7 @@ class AddAdSectionsScreen extends StatefulWidget {
 
 class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   int _questionIndex = 0;
+  int selected = -1;
   List<Widget> _questionPages = [];
   // List<ResponseSectionDatum> _sectionData;
   List _sectionData;
@@ -27,7 +28,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   String _myCity;
   bool _loading = true;
   var _strController = AppController.strings;
-
+  Map<String, bool> expansionState = Map();
   //add data id's
   int sectionID;
   int subSectionID;
@@ -39,14 +40,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
     });
     super.initState();
   }
-  // _getCountries() async {
-  //   SharedPreferences _gp = await SharedPreferences.getInstance();
-  //   final List<Countries> sections =
-  //   countriesFromJson(_gp.getString("allCountriesData"));
-  //   _countryData = sections[0].responseData;
-  //   _localityData = _countryData[1].cities[1].localities;
-  //   // print(sections[0].responseData[4].name);
-  // }
+
   _getSections() async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
     final List sections =
@@ -54,7 +48,6 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
     _sectionData = sections[0]['responseData'];
     _loading = false;
     callWidgets(_sectionData);
-    // print(sections[0].responseData[4].name);
   }
 
   void callWidgets(List _mySec) {
@@ -157,11 +150,14 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.redColor,
         title: Text(widget.comeFrom == 'addAd'?"Add Ad":"Select Section"),
       ),
       body: _loading
-          ? buildLoading(color: AppColors.green)
+          ? buildLoading(color: AppColors.redColor)
           : Center(
+        key: Key('builder ${selected.toString()}'),
+
         child: ListView.builder(
           itemCount: _sectionData.length,
           scrollDirection: Axis.vertical,
@@ -185,6 +181,17 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ExpansionTile(
+                  key: Key(index.toString()),
+                  initiallyExpanded: index==selected,
+                  onExpansionChanged: (expanded){
+                    if(expanded)
+                      setState(() {
+                        selected = index;
+                      });
+                    else setState(() {
+                      selected = -1;
+                    });
+                  },
                   backgroundColor: AppColors.whiteColor,
                   title: Text(_data['name']),
                   leading: Container(
@@ -220,8 +227,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                               subSectionID = data['id'];
                               _questionIndex -= 1;
                             });
-                            print("Sub section id ${data['id']}");
-                            print("section id ${_data['id']}");
+
             widget.comeFrom == 'addAd'?Navigator.push(context,MaterialPageRoute(builder: (context) =>AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),):
             Navigator.push(context, MaterialPageRoute(builder: (context) => FilterScreen(sectionId: _data['id'],subSectionId: data['id']),));
                              },
@@ -250,17 +256,6 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
             );
           },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add_circle,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          setState(() {
-            _questionIndex += 1;
-          });
-        },
       ),
     );
   }

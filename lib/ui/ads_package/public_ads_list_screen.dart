@@ -245,7 +245,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
         // drawer: buildDrawer(context),
         backgroundColor: Colors.grey.shade200,
         body: _loading
-            ? buildLoading(color: AppColors.green)
+            ? buildLoading(color: AppColors.redColor)
             : Directionality(
           textDirection: _drController,
           child: Stack(
