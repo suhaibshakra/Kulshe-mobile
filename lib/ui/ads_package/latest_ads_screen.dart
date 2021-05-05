@@ -66,7 +66,8 @@ class _LatestAdsState extends State<LatestAds> {
                          title: Padding(
                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                            child: CircleAvatar(
-                             radius: 30.0,
+
+                             radius: 20.0,
                              backgroundImage: AssetImage('assets/images/logo_icon.png'),
                              backgroundColor: Colors.transparent,
                            ),

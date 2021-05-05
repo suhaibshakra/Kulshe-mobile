@@ -890,6 +890,7 @@ class _AddAdFormState extends State<AddAdForm> {
                       appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
+                      width: 399.0,
                       child: buildTextField(
                           label: _strController.price,
                           controller: _priceController,

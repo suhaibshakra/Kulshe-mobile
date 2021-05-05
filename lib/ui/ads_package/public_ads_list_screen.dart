@@ -239,9 +239,8 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
-        appBar: buildAppBar(
-            centerTitle: true,
-            bgColor: AppColors.whiteColor,),
+        appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+
         // drawer: buildDrawer(context),
         backgroundColor: Colors.grey.shade200,
         body: _loading

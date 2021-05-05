@@ -67,15 +67,15 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     return Scaffold(
       body: _lastSelected,
       bottomNavigationBar: FABBottomAppBar(
+        height: 52,
         color: Colors.grey.shade600,
-        selectedColor: Colors.red,
+        selectedColor: AppColors.redColor,
         notchedShape: CircularNotchedRectangle(),
         onTabSelected: _selectedTab,
         items: [
           FABBottomAppBarItem(iconData: Icons.home, text: AppController.strings.home),
           FABBottomAppBarItem(iconData: Icons.list, text: AppController.strings.categories),
-          FABBottomAppBarItem(
-              iconData: FontAwesomeIcons.heartbeat, text: AppController.strings.fav),
+          FABBottomAppBarItem(iconData: FontAwesomeIcons.heartbeat, text: AppController.strings.fav),
           FABBottomAppBarItem(iconData: Icons.more_horiz, text: AppController.strings.more),
         ],
       ),
@@ -95,7 +95,6 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
       tooltip: _strController.addAd,
       // child: Icon(Icons.add),
       child: Text(_strController.addAd,style: appStyle(fontWeight: FontWeight.w700,),maxLines: 2,textAlign: TextAlign.center,),
-      elevation: 2.0,
     );
   }
 }
