@@ -166,7 +166,7 @@ class _UserPanelState extends State<UserPanel> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
-        body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.green):Stack(
+        body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.redColor):Stack(
           children: [
             buildBg(),
             NestedScrollView(

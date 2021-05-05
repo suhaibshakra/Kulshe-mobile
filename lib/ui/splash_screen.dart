@@ -3,6 +3,7 @@ import 'package:kulshe/app_helpers/lang_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splashscreen/splashscreen.dart';
 
+import 'auth/login.dart';
 import 'main_bottom_navigation.dart';
 
 class MainSplashScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
           image: Image.asset("assets/images/logo_icon.png"),
           photoSize: 120,
           seconds: 3,
-          navigateAfterSeconds: token != null?MainBottomNavigation():LangScreen(),
+          navigateAfterSeconds: token != null?MainBottomNavigation():LoginScreen(),
           backgroundColor: Colors.white,
           title: Text(
             "Welcome To Kulshe",

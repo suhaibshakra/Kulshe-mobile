@@ -72,7 +72,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
           key: _scaffoldKey,
            resizeToAvoidBottomInset: false,
           body: _loading
-              ? buildLoading(color: AppColors.green)
+              ? buildLoading(color: AppColors.redColor)
               : Stack(
                   children: [
                     buildBg(),
