@@ -222,8 +222,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                             });
                             print("Sub section id ${data['id']}");
                             print("section id ${_data['id']}");
-                            widget.comeFrom == 'addAd'?Navigator.push(context,MaterialPageRoute(builder: (context) =>AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),):
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterScreen(sectionId: _data['id'],subSectionId: data['id']),));
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),);
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(

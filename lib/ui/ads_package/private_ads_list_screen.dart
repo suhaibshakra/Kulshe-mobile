@@ -41,7 +41,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
   getLang() async {
     SharedPreferences _pr = await SharedPreferences.getInstance();
     setState(() {
-      lang = _pr.getString('lang');
+      lang = _pr.getString('lang')??'ar';
     });
   }
   @override

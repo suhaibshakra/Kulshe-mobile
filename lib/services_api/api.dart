@@ -48,7 +48,7 @@ Future loginFunction(
 
   http.Response response = await http.post('${baseURL}login',
       body: map,
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
@@ -93,7 +93,7 @@ Future changePasswordSocial(BuildContext context,String password,String confirmP
 
   http.Response response = await http.post('${baseURL}change-password-social',
       body: map,
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -113,7 +113,7 @@ Future forgetPasswordEmail(BuildContext context, String bodyData) async {
 
   http.Response response = await http.post('${baseURL}reset-password',
       body: map,
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
@@ -133,7 +133,7 @@ Future deleteAd({BuildContext context, @required int adId}) async {
   var map = Map<String, dynamic>();
   http.Response response = await http
       .post('${baseURL}user/classifieds/$adId/delete', body: map, headers: {
-    'lang': _pref.getString('lang'),
+    'lang': _pref.getString('lang')??'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -162,7 +162,7 @@ Future pauseAd({
   http.Response response = await http.get(
       '${baseURL}user/classifieds/$adId/paused?paused=$pausedStatus',
       headers: {
-        'lang': _pref.getString('lang'),
+        'lang': _pref.getString('lang')??'ar',
         'Accept': 'application/json',
         'token': '${_pref.getString('token')}',
         'Authorization': 'bearer ${_pref.getString('token')}',
@@ -189,7 +189,7 @@ Future reNewAd({
 
   http.Response response =
       await http.get('${baseURL}user/classifieds/$adId/renew', headers: {
-    'lang': _pref.getString('lang'),
+    'lang': _pref.getString('lang')??'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -221,7 +221,7 @@ Future abuseAd({
   http.Response response =
       await http.post('${baseURL}user/classifieds/$adId/abuse',
           headers: {
-            'lang': _pref.getString('lang'),
+            'lang': _pref.getString('lang')??'ar',
             'Content-Type': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
@@ -249,7 +249,7 @@ Future favoriteAd({
   SharedPreferences _pref = await SharedPreferences.getInstance();
   http.Response response = await http
       .get('${baseURL}user/classifieds/$adId/favorite/$state', headers: {
-    'lang': _pref.getString('lang'),
+    'lang': _pref.getString('lang')??'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -299,7 +299,7 @@ Future createAccountFunction({
   map['mobileCountryIsoCode'] = mobileCountryIsoCode;
   map['comeFrom'] = "m";
   var response = await http.post('${baseURL}register',
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'},
+      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'},
       body: map);
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
@@ -387,7 +387,7 @@ Future updateProfile({
       headers: {
         'token': _pref.getString('token'),
         'Authorization': "bearer ${_pref.getString('token')}",
-        'lang': _pref.getString('lang'),
+        'lang': _pref.getString('lang')??'ar',
         'Content-Type': 'application/json'
       },
       body: body);
@@ -435,7 +435,7 @@ Future addAdFunction({
   var headers = {
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
-    'lang': '${_pref.getString('lang')}',
+    'lang': '${_pref.getString('lang')??'ar'}',
     'Content-Type': 'application/json'
   };
 
@@ -507,7 +507,7 @@ Future updateAdFunction({
   var headers = {
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
-    'lang': '${_pref.getString('lang')}',
+    'lang': '${_pref.getString('lang')??'ar'}',
     'Content-Type': 'application/json'
   };
 
@@ -561,7 +561,7 @@ Future logoutFunction({BuildContext context}) async {
 
   http.Response response = await http.post('${baseURL}logout',
       body: map,
-      headers: {'lang': _pref.getString('lang'), 'Accept': 'application/json'});
+      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -600,7 +600,7 @@ Future maxPrice({BuildContext context, @required int subSectionId}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   http.Response response =
       await http.get('${baseURL}classified/$subSectionId/max-price', headers: {
-    'lang': _pref.getString('lang'),
+    'lang': _pref.getString('lang')??'ar',
     'Accept': 'application/json',
     'Country-id': _pref.getString('countryId')
   });
@@ -650,7 +650,7 @@ Future createAccountFunctionGoogle(
   });
   var response = await http.post('${baseURL}login/google',
       headers: {
-        'lang': _pref.getString('lang'),
+        'lang': _pref.getString('lang')??'ar',
         'Content-Type': 'application/json'
       },
       body: body);
@@ -718,7 +718,7 @@ Future createAccountFunctionFacebook(
   var response = await http.post(
       'https://api.kulshe.nurdevops.com/api/v1/login/facebook',
       headers: {
-        'lang': _pref.getString('lang'),
+        'lang': _pref.getString('lang')??'ar',
         'Content-Type': 'application/json'
       },
       body: body);

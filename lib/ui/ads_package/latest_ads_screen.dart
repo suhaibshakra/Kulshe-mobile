@@ -143,7 +143,7 @@ class _LatestAdsState extends State<LatestAds> {
                    body: Padding(
                        padding:
                        const EdgeInsets.only(top: 5,),
-                       child: buildListView()),
+                       child: buildListView())
                  ),
                ],
              ),

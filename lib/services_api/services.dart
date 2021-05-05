@@ -12,7 +12,7 @@ class SectionServicesNew {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
-        url,headers: {'lang':_pref.getString('lang')}
+        url,headers: {'lang':_pref.getString('lang')??'ar'}
       );
       // print(response.statusCode);
       if (200 == response.statusCode) {
@@ -35,7 +35,7 @@ class CountriesServices {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response =
-          await http.get('${baseURL}countries?classified=$isClassified',headers: {'lang':_pref.getString('lang')});
+          await http.get('${baseURL}countries?classified=$isClassified',headers: {'lang':_pref.getString('lang')??'ar'});
       // print(response.statusCode);
       if (200 == response.statusCode) {
         final List _countries = jsonDecode('[${response.body}]');
@@ -63,7 +63,7 @@ class MyAdsServicesNew {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/user/classifieds?status=$status&limit=$limit&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
@@ -103,7 +103,7 @@ class PublicAdsServicesNew {
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=$limit&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
@@ -134,7 +134,7 @@ class LatestAdsServices {
       final response = await http.get(
           '${baseURL}classifieds/latest?isoCountryCode=$iso',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
           });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -172,7 +172,7 @@ class FilterAdsServices {
       final response = await http.get(
           '${baseURL}classifieds?${filteredData}',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
@@ -209,7 +209,7 @@ class SearchAdsServices {
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&hasImage=$hasImage&sort=$sort&offset=$offset&limit=$limit&countryId=${_pref.getString('countryId')}',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
@@ -243,7 +243,7 @@ class AdAddForm {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/$subSectionId/classified?iso=JO',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
@@ -271,7 +271,7 @@ class AdEditForm {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/classified/$adID',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
@@ -301,7 +301,7 @@ class FavoriteAdsServices {
       final response = await http.get(
           '${baseURL}user/classifieds/favorite?limit=$limit&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
@@ -328,7 +328,7 @@ class ProfileServicesNew {
         'accept': 'application/json',
         'token': "${_pref.getString('token')}",
         'Authorization': 'bearer ${_pref.getString('token')}',
-        'lang': '${_pref.getString('lang')}',
+        'lang': '${_pref.getString('lang')??'ar'}',
       });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -407,7 +407,7 @@ class AdDetailsServicesNew {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/classified/$adId/view?slug=$slug',
           headers: {
-            'lang': '${_pref.getString('lang')}',
+            'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
             'Country-id': '${_pref.getString('countryId')}',
             'token': '${_pref.getString('token')}',

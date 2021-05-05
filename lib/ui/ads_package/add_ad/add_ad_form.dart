@@ -307,8 +307,7 @@ class _AddAdFormState extends State<AddAdForm> {
                     children: [
                       if (_listAttributes[mainIndex]['id'] ==
                           _listUnits[unitIndex]['attribute_id'])
-                        Text(
-                            "${_listAttributes[mainIndex]['units'][unitIndex]['label']}"),
+
                       if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
                         _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
                     ],
@@ -377,8 +376,9 @@ class _AddAdFormState extends State<AddAdForm> {
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
     return Container(
+      width: 373.0,
       decoration: BoxDecoration(
-          color: AppColors.grey.withOpacity(0.2),
+          border: Border.all(color: Colors.black54),
           borderRadius: BorderRadius.circular(8)),
       child: Column(
         children: [
@@ -468,19 +468,20 @@ class _AddAdFormState extends State<AddAdForm> {
 
   buildMultiSelected(mainIndex) {
     return SingleChildScrollView(
-      child:
+    child:
       Row(
         children: [
           Expanded(
-            flex: 2,
+            flex: 14,
             child: Container(
-              height: MediaQuery.of(context).size.height*0.3,
-              child: ListView(
-                // physics: ClampingScrollPhysics(),
+              height: 250,
+              child:Scrollbar(
+                child:ListView(
                 shrinkWrap: true,
                 children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
               ),
             ),
+          ),
           ),
         ],
       ),
@@ -500,6 +501,8 @@ class _AddAdFormState extends State<AddAdForm> {
 
     var val = "";
     return Container(
+      width: 373.0,
+
       decoration: BoxDecoration(
           border:Border.all(color: Colors.black54),
           borderRadius: BorderRadius.circular(10)),
@@ -750,6 +753,8 @@ class _AddAdFormState extends State<AddAdForm> {
         Padding(
           padding: const EdgeInsets.only(bottom: 20,top: 10),
           child: Container(
+            width: 395.0,
+
             decoration: BoxDecoration(
             border: Border.all(color: Colors.black54),
             borderRadius: BorderRadius.circular(10)),
@@ -758,6 +763,7 @@ class _AddAdFormState extends State<AddAdForm> {
               children: <Widget>[
                 Expanded(
                   flex: 1,
+
                   child: DropdownButtonHideUnderline(
                     child: ButtonTheme(
                       alignedDropdown: true,
@@ -876,6 +882,7 @@ class _AddAdFormState extends State<AddAdForm> {
                       appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
+                      width: 395.0,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black54),
                           borderRadius: BorderRadius.circular(10)),
@@ -1024,6 +1031,9 @@ class _AddAdFormState extends State<AddAdForm> {
                   Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: Container(
+                      width: 382.0,
+
+
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black54),
                           borderRadius: BorderRadius.circular(10)
@@ -1239,7 +1249,6 @@ class _AddAdFormState extends State<AddAdForm> {
 
   void _onItemCheckedChange(itemValue, bool checked,attributeId) {
     setState(() {
-      // print(myAdAttributesMulti);
       if (checked) {
 
         myAdAttributesMulti.add(itemValue);
@@ -1270,7 +1279,7 @@ class _AddAdFormState extends State<AddAdForm> {
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
-        print('id : ${item['id']}');
+        print('_lang : ${item['label'][_lang]}');
         _onItemCheckedChange(item['id'], checked,_listAttributes[mainIndex]['id']);
       },
     );
