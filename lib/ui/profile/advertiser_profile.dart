@@ -27,6 +27,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
   String lang;
   List _publicAd;
   var _publicProfile;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   _getLang() async {
     SharedPreferences _pr = await SharedPreferences.getInstance();
@@ -68,6 +69,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
       child: Directionality(
         textDirection: _dirController,
         child: Scaffold(
+          key: _scaffoldKey,
            resizeToAvoidBottomInset: false,
           body: _loading
               ? buildLoading(color: AppColors.green)
@@ -298,6 +300,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                           size: 25,
                                           action: () {
                                             favoriteAd(
+                                              scaffoldKey: _scaffoldKey,
                                               context: context,
                                               adId: _data['id'],
                                               state: _data['is_favorite_ad'] ==

@@ -226,7 +226,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                     (value.length > 11 ||
                                                             value.length < 9 ||
                                                             value.isEmpty)
-                                                        ? "Enter valid number"
+                                                        ? "أدخل رقم صحيح"
                                                         : null,
                                                 controller: _phoneController,
                                                 textInputType:

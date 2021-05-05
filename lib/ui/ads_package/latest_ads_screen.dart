@@ -1,11 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/app_helpers/search_ui.dart';
+import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
+import 'package:kulshe/ui/profile/advertiser_profile.dart';
 
 import 'ad_details_screen.dart';
 
@@ -16,6 +19,8 @@ class LatestAds extends StatefulWidget {
 
 class _LatestAdsState extends State<LatestAds> {
   List _adsData;
+  bool _loading = true;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -23,6 +28,8 @@ class _LatestAdsState extends State<LatestAds> {
       setState(() {
         _adsData = value[0]['responseData'];
         log('value $_adsData');
+        _loading = false;
+
         // print('Length ${_adsData.length}');
       });
     });
@@ -36,7 +43,11 @@ class _LatestAdsState extends State<LatestAds> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
-         body: Directionality(
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
+        body: _loading
+            ? buildLoading(color: AppColors.green)
+            : Directionality(
           textDirection: AppController.textDirection,
              child:Stack(
                children: [
@@ -143,7 +154,7 @@ class _LatestAdsState extends State<LatestAds> {
                    body: Padding(
                        padding:
                        const EdgeInsets.only(top: 5,),
-                       child: buildListView())
+                       child: buildListView(mq)),
                  ),
                ],
              ),
@@ -152,8 +163,8 @@ class _LatestAdsState extends State<LatestAds> {
     );
   }
 
-  ListView buildListView() {
-    return ListView.builder(
+  ListView buildListView(MediaQueryData mq) {
+     return ListView.builder(
         shrinkWrap: true,
         itemCount: _adsData.length,
         physics: ClampingScrollPhysics(),
@@ -162,78 +173,205 @@ class _LatestAdsState extends State<LatestAds> {
           bool hasImg = false;
           if (_data['images'] != [] || _data['images'] != null) hasImg = true;
           print(hasImg);
-          return InkWell(
-            onTap: () {
-              print(_data['id'].toString());
-              print(_data['slug']);
-              return Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AdDetailsScreen(
-                      adID: _data['id'], slug: _data['slug']),
-                ),
-              );
-            },
-            child: Card(
-              elevation: 2.0,
-              margin: EdgeInsets.only(bottom: 5.0),
-              child: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Row(
-                  children: [
-                    // Hero(
-                    //   tag: '${item.newsTitle}',
-                    if (hasImg)
-                      Stack(
-                        children: [
-                          Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: NetworkImage(_data['images'][0]['image']),
-                                  fit: BoxFit.cover,
+          return Card(
+            elevation: 2.0,
+            margin: EdgeInsets.only(bottom: 5.0),
+            child: Stack(
+              children: [
+
+                InkWell(
+                  onTap: () {
+                    print(_data['id'].toString());
+                    print(_data['slug']);
+                    return Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdDetailsScreen(
+                            adID: _data['id'], slug: _data['slug']),),);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Row(
+                      children: [
+                        // Hero(
+                        //   tag: '${item.newsTitle}',
+                        if (hasImg)
+                          Stack(
+                            children: [
+                              Container(
+                                width: mq.size.width*0.4,
+                                height: mq.size.height*0.19,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(_data['images'][0]['image']),
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8.0)),
+                              ),
+                              Container(
+                                     height: mq.size.height*0.18,
+                                width: mq.size.width*0.4,
+                                  alignment: Alignment.center,
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width * 0.32,
+                                      decoration: BoxDecoration(
+                                          color:
+                                          Colors.black.withOpacity(0.6),
+                                          borderRadius:
+                                          BorderRadius.circular(16)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              myIcon(
+                                                  context, Icons.video_call,
+                                                  color: Colors.white,
+                                                  size: 25,
+                                                  hasDecoration: false),
+                                              buildTxt(
+                                                  txt: (_data['video'] ==
+                                                      null ||
+                                                      _data['video'] ==
+                                                          ""
+                                                      ? "0"
+                                                      : 1)
+                                                      .toString(),
+                                                  txtColor:
+                                                  AppColors.whiteColor)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              myIcon(
+                                                  context, Icons.camera_alt,
+                                                  color: Colors.white,
+                                                  size: 25,
+                                                  hasDecoration: false),
+                                              buildTxt(
+                                                  txt:
+                                                  _data['count_of_images']
+                                                      .toString(),
+                                                  txtColor:
+                                                  AppColors.whiteColor)
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                borderRadius: BorderRadius.circular(8.0)),
+                            ],
                           ),
-                        ],
-                      ),
-                    SizedBox(
-                      width: 5.0,
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (_data['show_contact'] != false)
+                                InkWell(
+                                  onTap: (){
+
+                                    return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                  },
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: _data['user_contact']
+                                        ['user_image'] !=
+                                            null
+                                            ? NetworkImage(_data['user_contact']
+                                        ['user_image'])
+                                            : AssetImage(
+                                            "assets/images/no_img.png"),
+                                      ),
+                                      SizedBox(width: 5,),
+                                      Text(
+                                        _data['user_contact']['nick_name'],
+                                        style: appStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+
+                              Text(
+                                _data['title'],
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: appStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 5.0,
+                              ),
+                              Text(
+                                _data['body'],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: appStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      ],
                     ),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _data['title'],
-                            style: appStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16.0,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5.0,
-                          ),
-                          Text(
-                            _data['body'],
-                            maxLines: 3,
-                            style: appStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 15.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: buildIcons(
+                      iconData:
+                      _data['is_favorite_ad'] == false
+                          ? Icons.favorite_border
+                          : Icons.favorite,
+                      color: Colors.red,
+                      size: 26,
+                      action: () {
+                        favoriteAd(
+                          scaffoldKey: _scaffoldKey,
+                          context: context,
+                          adId: _data['id'],
+                          state:
+                          _data['is_favorite_ad'] == true
+                              ? "delete"
+                              : "add",
+                        ).then((value) {
+                          setState(() {
+                            LatestAdsServices.getLatestAdsData(iso: "JO").then((value) {
+                              setState(() {
+                                _adsData = value[0]['responseData'];
+                                log('value $_adsData');
+                                _loading = false;
+                              });
+                            });
+                          });
+                        });
+                      }),
+                ),
+
+              ],
             ),
           );
         },
       );
   }
-
 }

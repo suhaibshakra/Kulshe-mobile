@@ -39,6 +39,7 @@ class PublicAdsListScreen extends StatefulWidget {
 class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   //270
 
@@ -236,10 +237,11 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         appBar: buildAppBar(
             centerTitle: true,
-            bgColor: AppColors.whiteColor, ),
+            bgColor: AppColors.whiteColor,),
         // drawer: buildDrawer(context),
         backgroundColor: Colors.grey.shade200,
         body: _loading
@@ -264,7 +266,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                       txt: "${widget.section}",
                                       fontSize: 18,
                                       txtColor: Colors.black,
-                                    )),
+                                    ),),
                                 SizedBox(
                                   height: 10,
                                 ),
@@ -382,6 +384,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                         size: 26,
                                         action: () {
                                           favoriteAd(
+                                            scaffoldKey: _scaffoldKey,
                                             context: context,
                                             adId: _data['id'],
                                             state:
@@ -489,7 +492,8 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  if (_data['show_contact'] != false)
+                                  if (_data['show_contact'] != false &&
+                                      _data['user_contact'] != null)
                                     InkWell(
 
                                       onTap: (){
@@ -665,6 +669,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                           size: 25,
                                           action: () {
                                             favoriteAd(
+                                              scaffoldKey: _scaffoldKey,
                                               context: context,
                                               adId: _data['id'],
                                               state: _data['is_favorite_ad'] ==

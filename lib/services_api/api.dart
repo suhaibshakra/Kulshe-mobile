@@ -71,7 +71,7 @@ Future loginFunction(
     AppSharedPreferences.saveIsEmailVerified(isEmailVerified);
     AppSharedPreferences.saveCountryId(
         decodedData['token_data']['country_id'].toString());
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => MainBottomNavigation(),
@@ -239,12 +239,15 @@ Future abuseAd({
         Toast.BOTTOM);
   }
 }
-
+// void showInSnackBar(String value,GlobalKey<ScaffoldState> _scaffoldKey) {
+//   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
+// }
 //favorite
 Future favoriteAd({
   @required BuildContext context,
   @required int adId,
   @required String state,
+  GlobalKey<ScaffoldState> scaffoldKey
 }) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   http.Response response = await http
@@ -258,8 +261,15 @@ Future favoriteAd({
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
     print('********************************Done');
-    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
-        Toast.BOTTOM);
+    scaffoldKey.currentState.showSnackBar(new SnackBar(action: SnackBarAction(
+      label: 'حسنا',
+      textColor: AppColors.whiteColor,
+      onPressed: () {
+        // Some code to undo the change.
+      },
+    ),duration: Duration(milliseconds: 2000),backgroundColor: Colors.green.shade300,content: new Text('${decodeData['custom_message']}',style: appStyle(fontWeight: FontWeight.bold,fontSize: 15,color: AppColors.whiteColor),)));
+    // viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+    //     Toast.BOTTOM);
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,

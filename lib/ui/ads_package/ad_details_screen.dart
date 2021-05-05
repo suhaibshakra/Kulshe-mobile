@@ -35,6 +35,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
   TextEditingController _otherReason = new TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int abuseID;
   String abuseReason;
 
@@ -177,6 +178,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
         backgroundColor: Colors.white,
         body: _loading
@@ -236,6 +238,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                                 size: 30,
                                                 action: () {
                                                   favoriteAd(
+                                                    scaffoldKey: _scaffoldKey,
                                                     context: context,
                                                     adId: _details['id'],
                                                     state: _details[
