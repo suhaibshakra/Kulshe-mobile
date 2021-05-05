@@ -67,6 +67,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
     final mq = MediaQuery.of(context);
     return SafeArea(
       child: Directionality(
+
         textDirection: _dirController,
         child: Scaffold(
           key: _scaffoldKey,
