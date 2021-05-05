@@ -731,61 +731,40 @@ class _EditAdFormState extends State<EditAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
-          !widget.fromEdit?
-          addAdFunction(
-              context: context,
-              sectionId: widget.sectionId.toString(),
-              subSectionId: '${widget.subSectionId.toString()}',
-              title: _titleController.text.toString(),
-              bodyAd: _bodyController.text.toLowerCase(),
-              cityId: _cityId,
-              price: _priceController.text.toString().isNotEmpty
-                  ? double.parse(_priceController.text.toString())
-                  : 0,
-              localityId: '1',
-              lat: _selectedLocation != null
-                  ? '${_selectedLocation.latitude}'
-                  : "",
-              lag: _selectedLocation != null
-                  ? '${_selectedLocation.longitude}'
-                  : "",
-              brandId: _brandId != null ? _brandId : "",
-              subBrandId: _subBrandId != null ? _subBrandId : "",
-              isDelivery: true,
-              isFree: _isFree,
-              showContact: _showContactInfo,
-              negotiable: _negotiable,
-              zoom: 14,
-              adAttributes: myAdAttributesArray,
-              images: _images != null ? _images : [],
-              currencyId: _currencyId):
-          updateAdFunction(
-              context: context,
-              adID: widget.adID.toString(),
-              title: _titleController.text.toString(),
-              bodyAd: _bodyController.text.toLowerCase(),
-              cityId: _cityId,
-              price: _priceController.text.toString().isNotEmpty
-                  ? double.parse(_priceController.text.toString())
-                  : 0,
-              localityId: '1',
-              lat: _selectedLocation != null
-                  ? '${_selectedLocation.latitude}'
-                  : "",
-              lag: _selectedLocation != null
-                  ? '${_selectedLocation.longitude}'
-                  : "",
-              brandId: _brandId != null ? _brandId : "",
-              subBrandId: _subBrandId != null ? _subBrandId : "",
-              isDelivery: true,
-              isFree: _isFree,
-              showContact: _showContactInfo,
-              negotiable: _negotiable,
-              zoom: 14,
-              adAttributes: myAdAttributesArray,
-              images: _images != null ? _images : [],
-              currencyId: _currencyId)
-          ;
+          final FormState form = _formKey.currentState;
+          if(form.validate()){
+            updateAdFunction(
+                context: context,
+                adID: widget.adID.toString(),
+                title: _titleController.text.toString(),
+                bodyAd: _bodyController.text.toLowerCase(),
+                cityId: _cityId,
+                price: _priceController.text.toString().isNotEmpty
+                    ? double.parse(_priceController.text.toString())
+                    : 0,
+                localityId: '1',
+                lat: _selectedLocation != null
+                    ? '${_selectedLocation.latitude}'
+                    : "",
+                lag: _selectedLocation != null
+                    ? '${_selectedLocation.longitude}'
+                    : "",
+                brandId: _brandId != null ? _brandId : "",
+                subBrandId: _subBrandId != null ? _subBrandId : "",
+                isDelivery: true,
+                isFree: _isFree,
+                showContact: _showContactInfo,
+                negotiable: _negotiable,
+                zoom: 14,
+                adAttributes: myAdAttributesArray,
+                images: _images != null ? _images : [],
+                currencyId: _currencyId);
+          }else{
+            print('Form is invalid');
+
+          }
+
+
           // _validateAndSubmit();
         },
       ),
@@ -817,11 +796,15 @@ class _EditAdFormState extends State<EditAdForm> {
                   child: DropdownButtonHideUnderline(
                     child: ButtonTheme(
                       alignedDropdown: true,
-                      child: DropdownButton<String>(
+                      child: DropdownButtonFormField<String>(
                         isExpanded: false,
                         value: _cityId,
                         iconSize: 30,
                         icon: (null),
+                        validator: (value) =>
+                        (_cityId == null || _cityId.isEmpty)
+                            ? "يجب اختيار المدينه"
+                            : null,
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -869,6 +852,10 @@ class _EditAdFormState extends State<EditAdForm> {
               ),
               Container(
                 child: buildTextField(
+                    validator: (value) =>
+                    (_titleController.text == null || _titleController.text.isEmpty)
+                        ? "يجب اختيار _bodyController"
+                        : null,
                     label: _strController.adTitle,
                     controller: _titleController,
                     textInputType: TextInputType.text),
@@ -887,6 +874,10 @@ class _EditAdFormState extends State<EditAdForm> {
               ),
               Container(
                 child: buildTextField(
+                  validator: (value) =>
+                  (_bodyController.text == null || _bodyController.text.isEmpty)
+                      ? "يجب اختيار _bodyController"
+                      : null,
                   label: _strController.adDescription,
                   controller: _bodyController,
                   minLines: 4,
@@ -913,6 +904,10 @@ class _EditAdFormState extends State<EditAdForm> {
                     Container(
                       width: 399.0,
                       child: buildTextField(
+                          validator: (value) =>
+                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  _priceController.text.runtimeType.toString() != 'int' ||  _priceController.text.runtimeType.toString() != 'doble')
+                              ? "يجب اختيار price"
+                              : null,
                           label: _strController.price,
                           controller: _priceController,
                           textInputType: TextInputType.number),
@@ -940,9 +935,13 @@ class _EditAdFormState extends State<EditAdForm> {
                             child: DropdownButtonHideUnderline(
                               child: ButtonTheme(
                                 alignedDropdown: true,
-                                child: DropdownButton<String>(
+                                child: DropdownButtonFormField<String>(
                                   isExpanded: false,
                                   value: _currencyId,
+                                  validator: (value) =>
+                                  (_currencyId == null || _currencyId.isEmpty)
+                                      ? "يجب اختيار _currencyId"
+                                      : null,
                                   iconSize: 30,
                                   icon: (null),
                                   style: TextStyle(
@@ -1008,10 +1007,14 @@ class _EditAdFormState extends State<EditAdForm> {
                           child: ButtonTheme(
                             alignedDropdown: true,
 
-                            child: DropdownButton<String>(
+                            child: DropdownButtonFormField<String>(
                               isExpanded: false,
                               value: _brandId,
                               iconSize: 30,
+                              validator: (value) =>
+                              (_brandId == null || _brandId.isEmpty)
+                                  ? "يجب اختيار _brandId"
+                                  : null,
                               icon: (null),
                               style: appStyle(
                                 color: Colors.black54,
@@ -1304,8 +1307,6 @@ class _EditAdFormState extends State<EditAdForm> {
       }
 
       _buildMap(attributeId,myAdAttributesArray[trendIndex]['value']);
-      // print(myAdAttributesArray);
-
 
     });
   }

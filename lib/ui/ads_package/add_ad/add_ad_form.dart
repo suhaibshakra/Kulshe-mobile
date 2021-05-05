@@ -705,61 +705,41 @@ class _AddAdFormState extends State<AddAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
-          !widget.fromEdit?
-          addAdFunction(
-              context: context,
-              sectionId: widget.sectionId.toString(),
-              subSectionId: '${widget.subSectionId.toString()}',
-              title: _titleController.text.toString(),
-              bodyAd: _bodyController.text.toLowerCase(),
-              cityId: _cityId,
-              price: _priceController.text.toString().isNotEmpty
-                  ? double.parse(_priceController.text.toString())
-                  : 0,
-              localityId: '1',
-              lat: _selectedLocation != null
-                  ? '${_selectedLocation.latitude}'
-                  : "",
-              lag: _selectedLocation != null
-                  ? '${_selectedLocation.longitude}'
-                  : "",
-              brandId: _brandId != null ? _brandId : "",
-              subBrandId: _subBrandId != null ? _subBrandId : "",
-              isDelivery: true,
-              isFree: _isFree,
-              showContact: _showContactInfo,
-              negotiable: _negotiable,
-              zoom: 14,
-              adAttributes: myAdAttributesArray,
-              images: _images != null ? _images : [],
-              currencyId: _currencyId):
-          updateAdFunction(
-              context: context,
-              adID: widget.adID.toString(),
-              title: _titleController.text.toString(),
-              bodyAd: _bodyController.text.toLowerCase(),
-              cityId: _cityId,
-              price: _priceController.text.toString().isNotEmpty
-                  ? double.parse(_priceController.text.toString())
-                  : 0,
-              localityId: '1',
-              lat: _selectedLocation != null
-                  ? '${_selectedLocation.latitude}'
-                  : "",
-              lag: _selectedLocation != null
-                  ? '${_selectedLocation.longitude}'
-                  : "",
-              brandId: _brandId != null ? _brandId : "",
-              subBrandId: _subBrandId != null ? _subBrandId : "",
-              isDelivery: true,
-              isFree: _isFree,
-              showContact: _showContactInfo,
-              negotiable: _negotiable,
-              zoom: 14,
-              adAttributes: myAdAttributesArray,
-              images: _images != null ? _images : [],
-              currencyId: _currencyId)
-          ;
+
+          final FormState form = _formKey.currentState;
+          if(form.validate()){
+            addAdFunction(
+                context: context,
+                sectionId: widget.sectionId.toString(),
+                subSectionId: '${widget.subSectionId.toString()}',
+                title: _titleController.text.toString(),
+                bodyAd: _bodyController.text.toLowerCase(),
+                cityId: _cityId,
+                price: _priceController.text.toString().isNotEmpty
+                    ? double.parse(_priceController.text.toString())
+                    : 0,
+                localityId: '1',
+                lat: _selectedLocation != null
+                    ? '${_selectedLocation.latitude}'
+                    : "",
+                lag: _selectedLocation != null
+                    ? '${_selectedLocation.longitude}'
+                    : "",
+                brandId: _brandId != null ? _brandId : "",
+                subBrandId: _subBrandId != null ? _subBrandId : "",
+                isDelivery: true,
+                isFree: _isFree,
+                showContact: _showContactInfo,
+                negotiable: _negotiable,
+                zoom: 14,
+                adAttributes: myAdAttributesArray,
+                images: _images != null ? _images : [],
+                currencyId: _currencyId) ;
+          }else{
+            print('Form is invalid');
+
+          }
+
           // _validateAndSubmit();
         },
       ),
@@ -791,9 +771,13 @@ class _AddAdFormState extends State<AddAdForm> {
                   child: DropdownButtonHideUnderline(
                     child: ButtonTheme(
                       alignedDropdown: true,
-                      child: DropdownButton<String>(
+                      child: DropdownButtonFormField<String>(
                         isExpanded: false,
                         value: _cityId,
+                        validator: (value) =>
+                        (_cityId == null || _cityId.isEmpty)
+                            ? "يجب اختيار المدينه"
+                            : null,
                         iconSize: 30,
                         icon: (null),
                         style: TextStyle(
@@ -843,6 +827,10 @@ class _AddAdFormState extends State<AddAdForm> {
               ),
               Container(
                 child: buildTextField(
+                    validator: (value) =>
+                    (_titleController.text == null || _titleController.text.isEmpty)
+                        ? "يجب اختيار عنوان"
+                        : null,
                     label: _strController.adTitle,
                     controller: _titleController,
                     textInputType: TextInputType.text),
@@ -855,17 +843,17 @@ class _AddAdFormState extends State<AddAdForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Html(
-              //   customTextAlign: (_)=>TextAlign.start,
-              //   data: _strController.adDescription,
-              //   defaultTextStyle: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              // ),
+
               Text(
                 _strController.adDescription,
                 style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               Container(
                 child: buildTextField(
+                  validator: (value) =>
+                  (_bodyController.text == null || _bodyController.text.isEmpty)
+                      ? "يجب اختيار _bodyController"
+                      : null,
                   label: _strController.adDescription,
                   controller: _bodyController,
                   minLines: 4,
@@ -892,6 +880,10 @@ class _AddAdFormState extends State<AddAdForm> {
                     Container(
                       width: 399.0,
                       child: buildTextField(
+                          validator: (value) =>
+                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  _priceController.text.runtimeType.toString() != 'int' ||  _priceController.text.runtimeType.toString() != 'doble')
+                              ? "يجب اختيار price"
+                              : null,
                           label: _strController.price,
                           controller: _priceController,
                           textInputType: TextInputType.number),
@@ -919,11 +911,15 @@ class _AddAdFormState extends State<AddAdForm> {
                             child: DropdownButtonHideUnderline(
                               child: ButtonTheme(
                                 alignedDropdown: true,
-                                child: DropdownButton<String>(
+                                child: DropdownButtonFormField<String>(
                                   isExpanded: false,
                                   value: _currencyId,
                                   iconSize: 30,
                                   icon: (null),
+                                  validator: (value) =>
+                                  (_currencyId == null || _currencyId.isEmpty)
+                                      ? "يجب اختيار _currencyId"
+                                      : null,
                                   style: TextStyle(
                                     color: Colors.black54,
                                     fontSize: 16,
@@ -987,9 +983,13 @@ class _AddAdFormState extends State<AddAdForm> {
                           child: ButtonTheme(
                             alignedDropdown: true,
 
-                            child: DropdownButton<String>(
+                            child: DropdownButtonFormField<String>(
                               isExpanded: false,
                               value: _brandId,
+                              validator: (value) =>
+                              (_brandId == null || _brandId.isEmpty)
+                                  ? "يجب اختيار _brandId"
+                                  : null,
                               iconSize: 30,
                               icon: (null),
                               style: appStyle(
@@ -1071,9 +1071,13 @@ class _AddAdFormState extends State<AddAdForm> {
                             child: DropdownButtonHideUnderline(
                               child: ButtonTheme(
                                 alignedDropdown: true,
-                                child: DropdownButton<String>(
+                                child: DropdownButtonFormField<String>(
                                   isExpanded: false,
                                   value: _subBrandId,
+                                  validator: (value) =>
+                                  (_subBrandId == null || _subBrandId.isEmpty)
+                                      ? "يجب اختيار _subBrandId"
+                                      : null,
                                   iconSize: 30,
                                   icon: (null),
                                   style: appStyle(
@@ -1301,6 +1305,11 @@ class _AddAdFormState extends State<AddAdForm> {
 
     return CheckboxListTile(
       value: checked,
+      // subtitle: !false
+      //     ? Padding(
+      //   padding: EdgeInsets.fromLTRB(12.0, 0, 0, 0),
+      //   child: Text('Required field', style: TextStyle(color: Color(0xFFe53935), fontSize: 12),),)
+      //     : null,
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
