@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kulshe/app_helpers/app_colors.dart';
+import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/app_helpers/lang_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:splashscreen/splashscreen.dart';
@@ -40,17 +42,18 @@ class _MainSplashScreenState extends State<MainSplashScreen> {
           imageBackground: AssetImage("assets/images/main_bg.png"),
           image: Image.asset("assets/images/logo_icon.png"),
           photoSize: 120,
-          seconds: 3,
+          seconds: 10,
           navigateAfterSeconds: token != null?MainBottomNavigation():LoginScreen(),
           backgroundColor: Colors.white,
           title: Text(
-            "Welcome To Kulshe",
-            style: TextStyle(fontSize: 30),
+            "أهلا بك في كل شي",
+            style: appStyle(fontWeight: FontWeight.bold,fontSize: 30,color: AppColors.blackColor2),
           ),
           loaderColor: Colors.red,
           loadingText: Text(
-            "© Copy Right 2021",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            "حقوق النشر 2021 ©",
+            //"© Copy Right 2021",
+            style: appStyle(fontWeight: FontWeight.bold,fontSize: 16),
           ),
         ),
       ),
