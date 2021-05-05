@@ -67,7 +67,7 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                           alignment: Alignment.bottomCenter,
                           height: mq.size.height*0.08,
                           child: buildTxt(
-                              txt: _strController.enterRequiredField,
+                              txt: _strController.changePassword,
                               fontSize: 25,
                               fontWeight: FontWeight.w700,
                               txtColor: AppColors.redColor),

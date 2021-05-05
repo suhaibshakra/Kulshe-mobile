@@ -26,6 +26,7 @@ abstract class Strings {
   String sendAnEmail;
   String resetPassword;
   String enterRequiredField;
+  String changePassword;
 
   //drawer
   String myAccount;
@@ -169,7 +170,7 @@ class EnglishString extends Strings {
     privacyPolicy = "Privacy Policy";
     followUs = "Follow Us";
     enterRequiredField = "Enter Required Field";
-
+    changePassword = "Change Password";
     //profile
     userPanel = "User Panel";
     profile = "Profile";
@@ -282,6 +283,7 @@ class ArabicString extends Strings {
     sendAnEmail = "إرسال البريد الإلكتروني";
     resetPassword = "إستعادة كلمة السر";
     enterRequiredField = "أدخل الحقول المطلوبة";
+    changePassword = "تغيير كلمة السر";
 
     //drawer
     myAccount = "حسابي";
