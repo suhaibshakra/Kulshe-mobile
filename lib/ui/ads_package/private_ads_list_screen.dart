@@ -823,7 +823,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                         // label: Text(_strController.edit,style: appStyle(fontSize: 14),),
                           iconData: Icons.edit,
                           action: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => AddAdForm(fromEdit: true,sectionId: _data['section_id'].toString(),subSectionId: _data['sub_section_id'],adID: _data['id'],),));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => EditAdForm(fromEdit: true,sectionId: _data['section_id'].toString(),subSectionId: _data['sub_section_id'],adID: _data['id'],),));
                           },
                           size: 30,
                           color: AppColors.blue),
