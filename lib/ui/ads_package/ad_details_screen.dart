@@ -337,11 +337,29 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                   ],
                                 ),
                                 if (imageSliders.isNotEmpty)
-                                  Container(
-                                      height: mq.size.height * 0.25,
-                                      child: EnlargeStrategyDemo(
-                                        imageSliders: imageSliders,
-                                      )),
+                                  Stack(
+
+                                    children: [
+                                      Container(
+                                          height: mq.size.height * 0.25,
+                                          child: EnlargeStrategyDemo(
+                                            imageSliders: imageSliders,
+                                          )),
+                                      Align(
+                                        alignment: Alignment.bottomLeft,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                                          child: Container(
+                                            child:buildIcons(
+                                                iconData: FontAwesomeIcons.shareAlt,
+                                                bgColor: Colors.blue,
+                                                color: AppColors.whiteColor,
+                                                action: ()=>shareData(context)),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 // adsWidget(_details['images']),
                                 SizedBox(
                                   height: 20,
@@ -704,7 +722,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       // buildIcons(
-                                      //     iconData: FontAwesomeIcons.facebookF,
+                                      //     iconData: FontAwesomeIcons.shareAlt,
                                       //     bgColor: Colors.blue,
                                       //     color: AppColors.whiteColor,
                                       //     action: ()=>shareData(context)),

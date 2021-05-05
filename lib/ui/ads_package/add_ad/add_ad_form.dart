@@ -47,6 +47,8 @@ class _AddAdFormState extends State<AddAdForm> {
   bool _isDelivery = false;
   bool _loading = true;
   bool hasSubBrands = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final _strController = AppController.strings;
   TextEditingController _titleController = TextEditingController()..text;
   TextEditingController _priceController = TextEditingController()..text;
@@ -66,6 +68,7 @@ class _AddAdFormState extends State<AddAdForm> {
   List _options;
   List _images;
   String _type;
+  var validation;
   List<dynamic> myAdAttributesArray = []; //edit
   List<dynamic> myAdAttributesMulti = []; //edit
   Map myAdAttributes = {}; //edit
@@ -80,7 +83,7 @@ class _AddAdFormState extends State<AddAdForm> {
   void _pickImageLast(ImageSource src) async {
     final pickedImageFile =
     await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-    // print('PC:$_picker');
+    // // print('PC:$_picker');
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = File(pickedImageFile.path);
@@ -91,12 +94,12 @@ class _AddAdFormState extends State<AddAdForm> {
       String fileName = _userImageFile.path.split('/').last;
       fileName = fileName.split('.').last;
 
-      // print(fileName);
-      // print("data:image/$fileName;base64,${base64Encode(bytes)}");
+      // // print(fileName);
+      // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
       _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
       _images.add({"image": _userImage != null ? _userImage : "sss"});
     } else {
-      print('No Image Selected');
+      // print('No Image Selected');
     }
   }
 
@@ -121,17 +124,17 @@ class _AddAdFormState extends State<AddAdForm> {
           .toList();
       _citiesData = _citiesData[0]['cities'];
     });
-    // print('_${_countryData.where((element) => element.classified == true)}');
-    // print(sections[0].responseData[4].name);
+    // // print('_${_countryData.where((element) => element.classified == true)}');
+    // // print(sections[0].responseData[4].name);
   }
 
   _buildMap(id, value, {unitID}) {
-    // print(id);
-    // print(unitID);
-    // print(unitID != null);
+    // // print(id);
+    // // print(unitID);
+    // // print(unitID != null);
     int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
-    // print(trendIndex);
-    // print(id);
+    // // print(trendIndex);
+    // // print(id);
     if (trendIndex == -1) {
       Map<dynamic, dynamic> mapData = unitID != null
           ? {"id": id, "value": value, "unit_id": unitID}
@@ -141,7 +144,7 @@ class _AddAdFormState extends State<AddAdForm> {
       myAdAttributesArray[trendIndex]["value"] = value;
       if (unitID != null) myAdAttributesArray[trendIndex]["unit_id"] = unitID;
     }
-    // print(myAdAttributesArray);
+    // // print(myAdAttributesArray);
   }
 
   void _pickDateDialog(id,{String value}) {
@@ -167,7 +170,7 @@ class _AddAdFormState extends State<AddAdForm> {
 
   @override
   void initState() {
-    // print('adID : ${widget.adID}');
+    // // print('adID : ${widget.adID}');
     getLang();
     _getCountries();
     myAdAttributesArray = [];
@@ -203,6 +206,8 @@ class _AddAdFormState extends State<AddAdForm> {
     super.initState();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
@@ -216,43 +221,41 @@ class _AddAdFormState extends State<AddAdForm> {
           textDirection: AppController.textDirection,
           child: _loading
               ? Center(child: buildLoading(color: AppColors.green))
-              : Stack(
-                children: [
-                  buildBg(),
-                  SingleChildScrollView(
+              : Form(
+            key: _formKey,
+                child: SingleChildScrollView(
             child: Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (!widget.fromEdit)
-                        _buildPath(mq),
-                      _buildConstData(),
-                      _buildDynamicData(mq),
-                      Center(
-                        child: buildIconWithTxt(
-                          iconData: Icons.image_outlined,
-                          iconColor: AppColors.redColor,
-                          label: Text(
-                            _strController.labelGallery,
-                            style: appStyle(
-                                fontSize: 16,
-                                color: AppColors.redColor,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          action: () => _pickImageLast(ImageSource.gallery),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!widget.fromEdit)
+                      _buildPath(mq),
+                    _buildConstData(),
+                    _buildDynamicData(mq),
+                    Center(
+                      child: buildIconWithTxt(
+                        iconData: Icons.image_outlined,
+                        iconColor: AppColors.redColor,
+                        label: Text(
+                          _strController.labelGallery,
+                          style: appStyle(
+                              fontSize: 16,
+                              color: AppColors.redColor,
+                              fontWeight: FontWeight.w400),
                         ),
+                        action: () => _pickImageLast(ImageSource.gallery),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      _buildButton(context),
-                    ],
-                  ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _buildButton(context),
+                  ],
+                ),
             ),
           ),
-                ],
               ),
         ),
       ),
@@ -267,9 +270,10 @@ class _AddAdFormState extends State<AddAdForm> {
           physics: ClampingScrollPhysics(),
           itemCount: _listAttributes.length,
           itemBuilder: (ctx, mainIndex) {
-            // print('MY VALUES: $_values');
+            // // print('MY VALUES: $_values');
             _listUnits = _listAttributes[mainIndex]['units'];
             _options = _listAttributes[mainIndex]['options'];
+            _type = _listAttributes[mainIndex]['config']['type'];
             _type = _listAttributes[mainIndex]['config']['type'];
             // List<dynamic> selectedValues = [];
             // String selectedValues2 = "";
@@ -285,9 +289,9 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Padding buildMainAttributes(int mainIndex, MediaQueryData mq) {
-    print("VAL:${_listAttributes[mainIndex]['label'][_lang]}");
-    print("type:${_type}");
-    print("_options:${_options}");
+    // print("VAL:${_listAttributes[mainIndex]['label'][_lang]}");
+    // print("type:${_type}");
+    // print("_options:${_options}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Column(
@@ -324,7 +328,7 @@ class _AddAdFormState extends State<AddAdForm> {
                 width: mq.size.width * 0.5,
                 height: 45,
                 onPressed: () {
-                  print("${_listAttributes[mainIndex]['value']}");
+                  // print("${_listAttributes[mainIndex]['value']}");
                   _pickDateDialog(_listAttributes[mainIndex]['id'],value: "");
                 },
                 radius: 10,
@@ -406,14 +410,14 @@ class _AddAdFormState extends State<AddAdForm> {
                   ),
                 ),
                 onChanged: (value) {
-                  // print(_listAttributes[mainIndex]['units'][unitIndex].toString());
+                  // // print(_listAttributes[mainIndex]['units'][unitIndex].toString());
                   setState(() {
                     // testID = value;
-                    // print(_listAttributes[mainIndex]['id']);
-                    // print(_listAttributes[mainIndex]);
+                    // // print(_listAttributes[mainIndex]['id']);
+                    // // print(_listAttributes[mainIndex]);
                     int trendIndex = myAdAttributesArray
                         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-                    // print('op:${_listAttributes[mainIndex]}');
+                    // // print('op:${_listAttributes[mainIndex]}');
                     // if(trendIndex!= -1)
                     if(trendIndex == -1){
                       _buildMap(_listAttributes[mainIndex]['id'],'',unitID: value);
@@ -426,7 +430,7 @@ class _AddAdFormState extends State<AddAdForm> {
                   });
                 },
                 items: _listUnits.map<DropdownMenuItem<String>>((listUnits) {
-                  // print('LIST  :$list');
+                  // // print('LIST  :$list');
                   return new DropdownMenuItem(
                     child: new Text("${listUnits['label'][_lang]}"),
                     value: listUnits['unit_id'].toString(),
@@ -453,7 +457,7 @@ class _AddAdFormState extends State<AddAdForm> {
             myAdAttributes[_listAttributes[mainIndex]['id']] = val;
             if (_listAttributes[mainIndex]['has_unit'] == 1) {
 
-              print(_listAttributes[mainIndex]['unit_id']);
+              // print(_listAttributes[mainIndex]['unit_id']);
               _buildMap(_listAttributes[mainIndex]['id'], val, unitID: _listAttributes[mainIndex]['unit_id']);
             } else {
               _buildMap(
@@ -461,11 +465,11 @@ class _AddAdFormState extends State<AddAdForm> {
                 val,
               );
             }
-            // print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
+            // // print("s-n-y:  ${_listAttributes[mainIndex]['id']}");
 
-            // print("sss");
-            // print(myAdAttributesArray);
-            // print('MYCAT:$myAdAttributes');
+            // // print("sss");
+            // // print(myAdAttributesArray);
+            // // print('MYCAT:$myAdAttributes');
           },
           label:  _listAttributes[mainIndex]['label'][_lang].toString(),
           textInputType: TextInputType.text),
@@ -542,19 +546,19 @@ class _AddAdFormState extends State<AddAdForm> {
 
                     // myAdAttributesArray[_listAttributes[mainIndex]['id']]['value'] = value;
                     _listAttributes[mainIndex]['value'] = value;
-                    // print("select:  ${_listAttributes[mainIndex]['id']}");
+                    // // print("select:  ${_listAttributes[mainIndex]['id']}");
 
                     // List newOp = _listAttributes[mainIndex]['options'];
                     // newOp = newOp
                     //     .where((element) => element['id'].toString() == value)
                     //     .toList();
 
-                    // print(newOp[rcsIndex]['id']);
-                    // print(_listAttributes[mainIndex]['options'] );
+                    // // print(newOp[rcsIndex]['id']);
+                    // // print(_listAttributes[mainIndex]['options'] );
                     // val = newOp[rcsIndex]['label'][_lang];
                     _buildMap(_listAttributes[mainIndex]['id'], value);
                     // testID = value;
-                    print("$myAdAttributesArray");
+                    // print("$myAdAttributesArray");
                   });
                 },
                 items: _listAttributes[mainIndex]['options']
@@ -598,7 +602,7 @@ class _AddAdFormState extends State<AddAdForm> {
                 .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
             _buildMap(_listAttributes[mainIndex]['id'],
                 myAdAttributes[_listAttributes[mainIndex]['name']]);
-            print(myAdAttributesArray);
+            // print(myAdAttributesArray);
           });
         });
   }
@@ -619,16 +623,28 @@ class _AddAdFormState extends State<AddAdForm> {
           focusColor: Colors.white,
           groupValue: myAdAttributesArray[trendIndex]['value'],
           onChanged: (dynamic newValue) {
+            var isValid = _formKey.currentState.validate();
+            final inData = ["13,14,15"];
+            if (inData.contains(newValue)) {
+              setState(() {
+                isValid = true;
+                print('TRUE STATE $isValid');
+              });
+            }else{
+              setState(() {
+                isValid = false;
+                print('FALSE STATE');
+              });
+            }
             // _buildMap(_listAttributes[mainIndex]["id"], newValue);
             setState(() {
               _listAttributes[mainIndex]['value'] = newValue;
-
               // _listAttributes[mainIndex]['name'] = newValue;
               _buildMap(_listAttributes[mainIndex]['id'], newValue);
-              // print("radio:  ${_listAttributes[mainIndex]['id']}");
-              // print("radio:  ${myAdAttributesArray}");
-              // print(_options[index]['label'][_lang]);
-              // print(list['name']);
+              // // print("radio:  ${_listAttributes[mainIndex]['id']}");
+              // // print("radio:  ${myAdAttributesArray}");
+              // // print(_options[index]['label'][_lang]);
+              // // print(list['name']);
             });
           },
           value: _options[rcsIndex]['id'],
@@ -676,7 +692,7 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Container _buildButton(BuildContext context) {
-    // print("AT:$myAdAttributes");
+    // // print("AT:$myAdAttributes");
     return Container(
       child: myButton(
         context: context,
@@ -1015,7 +1031,7 @@ class _AddAdFormState extends State<AddAdForm> {
                                 });
                               },
                               items: _listBrands.map((listBrand) {
-                                // print("LIST BRAND ${listBrand['id']}");
+                                // // print("LIST BRAND ${listBrand['id']}");
                                 return new DropdownMenuItem(
                                   child: new Text(
                                     listBrand['label'][_lang],
@@ -1075,11 +1091,11 @@ class _AddAdFormState extends State<AddAdForm> {
                                       // myAdAttributes[_listSubBrands[index]['name']] = value;
                                       // test(_listSubBrands[index]['id'], value);
 
-                                      // print(" typeee ${value}");
+                                      // // print(" typeee ${value}");
                                     });
                                   },
                                   items: _listSubBrands.map((listSubBrand) {
-                                    // print("LIST BRAND ${listSubBrand['id']}");
+                                    // // print("LIST BRAND ${listSubBrand['id']}");
                                     return new DropdownMenuItem(
                                       child: new Text(
                                         listSubBrand['label'][_lang],
@@ -1264,7 +1280,7 @@ class _AddAdFormState extends State<AddAdForm> {
       }
 
       _buildMap(attributeId,myAdAttributesMulti);
-      print(myAdAttributesArray);
+      // print(myAdAttributesArray);
 
 
     });
@@ -1286,9 +1302,18 @@ class _AddAdFormState extends State<AddAdForm> {
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
-        print('_lang : ${item['label'][_lang]}');
+        // print('_lang : ${item['label'][_lang]}');
         _onItemCheckedChange(item['id'], checked,_listAttributes[mainIndex]['id']);
       },
     );
   }
+
+  // void _validateAndSubmit(bool isRequired,String validationType) {
+  //   final isValid  = _formKey.currentState;
+  //   if(validationType == 'radio')
+  //   if (form.validate()) {
+  //
+  //   }
+  // }
+
 }
