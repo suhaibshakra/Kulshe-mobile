@@ -642,7 +642,7 @@ class _AddAdFormState extends State<AddAdForm> {
         elevation: 7,
         shadowColor: AppColors.grey,
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10.0),
           child: Row(
             children: [
               Text(

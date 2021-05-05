@@ -70,6 +70,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (pickedImageFile != null) {
       setState(() {
         _pickedImage = File(pickedImageFile.path);
+
+        // print('PATH');
+        // print('PATH');
+        // print('PATH');
+        // print('${pickedImageFile}');
+        // print('PATH');
+        // print('PATH');
+        // print('PATH');
       });
       _userImageFile = _pickedImage;
       bytes = File(_userImageFile.path).readAsBytesSync();
