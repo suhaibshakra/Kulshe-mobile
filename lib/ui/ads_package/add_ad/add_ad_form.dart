@@ -329,7 +329,8 @@ class _AddAdFormState extends State<AddAdForm> {
           if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'radio')
             GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: _type == 'select' ? 7 : 1.5,
+                    mainAxisExtent: _type == 'radio' ? 50 : null,
+                    childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select') ?( _options.length > 4 ?  1.5 :_options.length * 2.0):1.5,
                     crossAxisCount:
                     _type == 'select' || _type == 'multiple_select'
                         ? 1
@@ -346,8 +347,8 @@ class _AddAdFormState extends State<AddAdForm> {
                             ? BorderRadius.circular(8)
                             : BorderRadius.circular(0)),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         if (_type == 'radio')
                           _buildRadio(mainIndex, rcsIndex),
@@ -474,9 +475,10 @@ class _AddAdFormState extends State<AddAdForm> {
           Expanded(
             flex: 14,
             child: Container(
-              height: 250,
+              height: _options.length <= 4 ?   MediaQuery.of(context).size.height*0.08 : null,
               child:Scrollbar(
-                child:ListView(
+                child:GridView(
+                  gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisExtent: 30) ,
                 shrinkWrap: true,
                 children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
               ),
