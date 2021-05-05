@@ -255,7 +255,7 @@ class ArabicString extends Strings {
     errorEmail = "أدخل بريد إالكتروني صالح";
     password = "كلمة السر";
     errorPassword = "يجب ان لا تقل عن 8 حروف";
-    forgetPassword = "نسيت كلمة السر";
+    forgetPassword = "؟نسيت كلمة السر";
     login = "دخول";
     loginUsing = "دخول باستخدام";
     or = "أو";

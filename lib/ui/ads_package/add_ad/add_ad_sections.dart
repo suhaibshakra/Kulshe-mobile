@@ -233,7 +233,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                              },
                           child: Container(
                             margin: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 5),
+                                vertical: 5, horizontal: 1),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(15),
@@ -241,9 +241,9 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                             child: Center(
                               child: Text(data['name'].toString(),
                                   style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       color: Colors.black87),
-                                  textAlign: TextAlign.center),
+                                  ),
                             ),
                           ),
                         ),

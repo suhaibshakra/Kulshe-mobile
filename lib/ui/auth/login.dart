@@ -132,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Container(
                   padding: isLandscape
                       ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
-                      : EdgeInsets.symmetric(horizontal: 12),
+                      : EdgeInsets.symmetric(horizontal: 25,vertical: 40),
                   height:
                       isLandscape ? mq.size.height * 1.9 : mq.size.height * 0.9,
                   child: LayoutBuilder(
@@ -141,12 +141,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          buildLogo(height: constraints.maxHeight * 0.22),
+                          buildLogo(height: constraints.maxHeight * 0.2),
                           Container(
+                            alignment: Alignment.bottomCenter,
                             height: constraints.maxHeight * 0.08,
                             child: buildTxt(
-                                txt: _strController.login,
+                                txt: _strController.loginTitle,
                                 fontSize: 25,
+                                fontWeight: FontWeight.w700,
                                 txtColor: AppColors.redColor),
                           ),
                           //0.25
@@ -190,10 +192,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               onTap: () => buildDialog(title: 'استرجاع كلمة السر',
                               no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
                               child: buildTxt(
-                                  txt: _strController.forgetPassword,
-                                  txtColor: AppColors.blue,
+                                  txt: _strController.forgetPassword +" ؟",
+                                  txtColor: AppColors.redColor,
                                   fontSize: 18,
-                                  decoration: TextDecoration.underline),
+                                  fontWeight: FontWeight.w700
+                                 ),
                             ),
                           ),
                           //0/05
