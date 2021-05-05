@@ -216,39 +216,44 @@ class _AddAdFormState extends State<AddAdForm> {
           textDirection: AppController.textDirection,
           child: _loading
               ? Center(child: buildLoading(color: AppColors.green))
-              : SingleChildScrollView(
-            child: Padding(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              : Stack(
                 children: [
-                  if (!widget.fromEdit)
-                    _buildPath(mq),
-                  _buildConstData(),
-                  _buildDynamicData(mq),
-                  Center(
-                    child: buildIconWithTxt(
-                      iconData: Icons.image_outlined,
-                      iconColor: AppColors.redColor,
-                      label: Text(
-                        _strController.labelGallery,
-                        style: appStyle(
-                            fontSize: 16,
-                            color: AppColors.redColor,
-                            fontWeight: FontWeight.w400),
+                  buildBg(),
+                  SingleChildScrollView(
+            child: Padding(
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!widget.fromEdit)
+                        _buildPath(mq),
+                      _buildConstData(),
+                      _buildDynamicData(mq),
+                      Center(
+                        child: buildIconWithTxt(
+                          iconData: Icons.image_outlined,
+                          iconColor: AppColors.redColor,
+                          label: Text(
+                            _strController.labelGallery,
+                            style: appStyle(
+                                fontSize: 16,
+                                color: AppColors.redColor,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          action: () => _pickImageLast(ImageSource.gallery),
+                        ),
                       ),
-                      action: () => _pickImageLast(ImageSource.gallery),
-                    ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      _buildButton(context),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  _buildButton(context),
-                ],
-              ),
             ),
           ),
+                ],
+              ),
         ),
       ),
     );
