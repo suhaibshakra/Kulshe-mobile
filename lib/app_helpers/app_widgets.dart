@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bmprogresshud/progresshud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -38,10 +39,13 @@ buildAppBar({
     centerTitle: centerTitle,
     title: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      child: CircleAvatar(
-        radius: 20.0,
-        backgroundImage: AssetImage('assets/images/logo_icon.png'),
-        backgroundColor: Colors.transparent,
+      child: Hero(
+        tag: 'logo',
+        child: CircleAvatar(
+          radius: 20.0,
+          backgroundImage: AssetImage('assets/images/logo_icon.png'),
+          backgroundColor: Colors.transparent,
+        ),
       ),
     ),
   );
@@ -531,6 +535,12 @@ buildIcons(
       onPressed: action,
     ),
   );
+}
+
+showLoadingHud({BuildContext context,GlobalKey<ProgressHudState> hudKey}) async {
+  ProgressHud.of(context).show(ProgressHudType.loading, "loading...");
+  // await Future.delayed(const Duration(seconds: 1));
+  hudKey.currentState?.dismiss();
 }
 
 buildDialog(

@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .toList();
     });
 
-    print('_${_countryData.where((element) => element['classified'] == true)}');
+    // print('_${_countryData.where((element) => element['classified'] == true)}');
   }
 
   void _validateAndSubmit() {
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context: context).then((value){
         print('VAL:$value');
         if(value['custom_code'] == 2166){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChangePasswordSocialMedia(value: value['responseData']['token'],),),);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordSocialMedia(value: value['responseData']['token'],),),);
               // buildDialog(desc: '',no: _strController.cancel,yes: _strController.done,title: "Enter New Password", context: context,content:
               // Column(
               //   children: [
@@ -142,7 +142,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          buildLogo(height: constraints.maxHeight * 0.2),
+                          Hero(
+                            tag: 'logo',
+                            child: buildLogo(height: constraints.maxHeight * 0.2),
+                          ),
                           Container(
                             alignment: Alignment.bottomCenter,
                             height: constraints.maxHeight * 0.08,
@@ -343,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ).then((value) {
           if (value == 2095) {
             print('TRY NOW');
-            Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,),),);
+            Navigator.push(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,),),);
             // _buildChoiceDialog(noEmail: email.isEmpty, from: 'google');
           }
         });

@@ -72,7 +72,7 @@ class _LatestAdsState extends State<LatestAds> {
                              backgroundColor: Colors.transparent,
                            ),
                          ),
-                         leading: GestureDetector(
+                         leading: InkWell(
                              onTap: () => Scaffold.of(context).openEndDrawer(),
                              child: Icon(
                                Icons.list,
@@ -360,7 +360,7 @@ class _LatestAdsState extends State<LatestAds> {
                             LatestAdsServices.getLatestAdsData(iso: "JO").then((value) {
                               setState(() {
                                 _adsData = value[0]['responseData'];
-                                log('value $_adsData');
+                                // log('value $_adsData');
                                 _loading = false;
                               });
                             });

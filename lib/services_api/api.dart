@@ -55,6 +55,8 @@ Future loginFunction(
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
   }else if(decodedData['custom_code'] == 2166){
+    viewToast(context, '${decodedData['custom_code']}', AppColors.redColor,
+        Toast.BOTTOM);
     return decodedData;
   } else {
     var mainToken = decodedData['token_data']['token'];
@@ -408,7 +410,10 @@ Future updateProfile({
     // print(await response.stream.bytesToString());
     print('********************************Done');
     AppSharedPreferences.saveCountryId(countryId);
-    if(newPassword!=null || newPassword.isNotEmpty){
+    if((oldPassword!=null && oldPassword.isNotEmpty && oldPassword != "")
+    && (newPassword!=null && newPassword.isNotEmpty && newPassword != "")
+    && (confirmPassword!=null && confirmPassword.isNotEmpty && confirmPassword != "")
+    ){
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
     }
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
@@ -647,7 +652,16 @@ Future createAccountFunctionGoogle(
     String mobileCountryPhoneCode,
     String mobileCountryIsoCode,
     String countryId}) async {
-  SharedPreferences _pref = await SharedPreferences.getInstance();
+  print('gId $gId');
+  print('gToken $gToken');
+  print('email $email');
+  print('nickName $nickName');
+  print('userImage $userImage');
+  print('mobileNumber $mobileNumber');
+  print('mobileCountryPhoneCode $mobileCountryPhoneCode');
+  print('mobileCountryIsoCode $mobileCountryIsoCode');
+  print('countryId $countryId');
+   SharedPreferences _pref = await SharedPreferences.getInstance();
   var body = jsonEncode({
     'email': email,
     'googleId': gId,
@@ -690,10 +704,11 @@ Future createAccountFunctionGoogle(
           builder: (context) => MainBottomNavigation(),
         ));
     print('********************************Done');
+    print(decodedData);
     // viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,        Toast.BOTTOM);
 
   } else {
-    print(decodedData['custom_message']);
+    print(decodedData);
     print(decodedData['custom_code']);
     print('********************************Wrong');
     return decodedData['custom_code'];

@@ -31,10 +31,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     final mq = MediaQuery.of(context);
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return Scaffold(
-      // appBar: AppBar(),
-      body: SafeArea(
-        child: Directionality(
+    return SafeArea(
+      child: Scaffold(
+        // appBar: AppBar(),
+        body: Directionality(
           textDirection: AppController.textDirection,
           child: Stack(
             children: [
@@ -51,7 +51,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          buildLogo(height: mq.size.height*0.2),
+                          Hero(
+                            tag: 'logo',
+                            child: buildLogo(height: mq.size.height*0.2),
+                          ),
                           Container(
                             alignment: Alignment.bottomCenter,
                             height: mq.size.height*0.08,

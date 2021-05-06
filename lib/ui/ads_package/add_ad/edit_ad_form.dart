@@ -187,8 +187,6 @@ class _EditAdFormState extends State<EditAdForm> {
             _priceController.text = value[0]['responseData']['price'].toString();
           _currenciesData = value[0]['responseData']['sub_section']['currencies'];
           _listAttributes = value[0]['responseData']['attributes'];
-          print("_listAttributes");
-          print(_listAttributes);
           _listBrands = value[0]['responseData']['brands'];
           _showContactInfo = value[0]['responseData']['show_contact'];
           _negotiable = value[0]['responseData']['negotiable'];
@@ -905,7 +903,7 @@ class _EditAdFormState extends State<EditAdForm> {
                       width: 399.0,
                       child: buildTextField(
                           validator: (value) =>
-                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  _priceController.text.runtimeType.toString() != 'int' ||  _priceController.text.runtimeType.toString() != 'doble')
+                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  (_priceController.text.runtimeType.toString() != 'int' &&  _priceController.text.runtimeType.toString() != 'double'))
                               ? "يجب اختيار price"
                               : null,
                           label: _strController.price,

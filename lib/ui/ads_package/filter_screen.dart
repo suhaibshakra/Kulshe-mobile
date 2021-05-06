@@ -99,17 +99,17 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: AppController.textDirection,
-      child: Scaffold(
-        appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
-        body: Stack(
-          children: [
-            // buildBg(),
-            _loading
-                ? buildLoading(color: AppColors.redColor)
-                : SingleChildScrollView(
-              child: Padding(
+    return Scaffold(
+      appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
+      body: Stack(
+        children: [
+          // buildBg(),
+          _loading
+              ? buildLoading(color: AppColors.redColor)
+              : Directionality(
+            textDirection: AppController.textDirection,
+            child: SingleChildScrollView(
+            child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -378,10 +378,10 @@ class _FilterScreenState extends State<FilterScreen> {
                     _buildButton(context),
                   ],
                 ),
-              ),
             ),
-          ],
-        ),
+          ),
+              ),
+        ],
       ),
     );
   }

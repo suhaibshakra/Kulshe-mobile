@@ -1,134 +1,136 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'dart:async';
+import 'package:image_picker/image_picker.dart';
 
-import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-
-class SelectMultiImage extends StatefulWidget {
+class SingleImageUpload extends StatefulWidget {
   @override
-  _SelectMultiImageState createState() => _SelectMultiImageState();
+  _SingleImageUploadState createState() {
+    return _SingleImageUploadState();
+  }
 }
 
-class _SelectMultiImageState extends State<SelectMultiImage> {
-  List<Asset> images = <Asset>[];
-  var newImages = [];
-  String _error = 'No Error Dectected';
-
+class _SingleImageUploadState extends State<SingleImageUpload> {
+  List<Object> images = List<Object>();
+  Future<File> _imageFile;
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-  }
-
-  Widget buildGridView() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: images.length,
-      itemBuilder: (context, index) {
-        Asset asset = images[index];
-        return Padding(
-          padding: const EdgeInsets.all(05.0),
-          child: Stack(
-            children: [
-              Container(width: 80,height: 80,
-                child: AssetThumb(
-                  asset: asset,
-                  width: 80,
-                  height: 80,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-
-  Future<File> getImageFileFromAssets(Asset asset) async {
-    final byteData = await asset.getByteData();
-
-    final tempFile =
-    File("${(await getTemporaryDirectory()).path}/${asset.name}");
-    final file = await tempFile.writeAsBytes(
-      byteData.buffer
-          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
-    );
-
-    newImages.add(file);
-    print('new: ${newImages.toString()}');
-    return file;
-  }
-
-  convertData(){
-    for (int i=0;i<images.length;i++){
-      getImageFileFromAssets(images[i]);
-    }
-  }
-
-  Future<void> loadAssets() async {
-    print('image: $images');
-    List<Asset> resultList = <Asset>[];
-    String error = 'No Error Detected';
-
-    try {
-      resultList = await MultiImagePicker.pickImages(
-        maxImages: 20,
-        enableCamera: true,
-        selectedAssets: images,
-        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
-        materialOptions: MaterialOptions(
-          actionBarColor: "#abcdef",
-          actionBarTitle: "Example App",
-          allViewTitle: "All Photos",
-          useDetailsView: false,
-          selectCircleStrokeColor: "#000000",
-        ),
-      );
-    } on Exception catch (e) {
-      error = e.toString();
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
     setState(() {
-      images = resultList;
-      _error = error;
+      images.add("Add Image");
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
+    return new Scaffold(
         body: Column(
           children: <Widget>[
-            Center(child: Text('Error: $_error')),
-            Column(
-              children: [
-                ElevatedButton(
-                  child: Text("Pick images"),
-                  onPressed: loadAssets,
-                ),
-                ElevatedButton(
-                  child: Text("convert images"),
-                  onPressed: convertData,
-                ),
-              ],
-            ),
             Container(
-                width: double.infinity, height: 150, child: buildGridView()),
+              height: 130,
+              width: double.infinity,
+              child: Expanded(
+                child: buildGridView(),
+              ),
+            ),
           ],
         ),
-      ),
     );
   }
+
+  Widget buildGridView() {
+    return ListView.builder(
+      itemCount: images.length,
+      scrollDirection: Axis.horizontal,
+      shrinkWrap: true,
+      reverse: true,
+      itemBuilder:(_ ,index) {
+        if (images[index] is ImageUploadModel) {
+          ImageUploadModel uploadModel = images[index];
+          return Stack(
+           children: <Widget>[
+             Card(
+               elevation: 2,
+               child: Image.file(
+                 uploadModel.imageFile,
+                 width: 130,
+                 height: 130,fit: BoxFit.cover,
+               ),
+             ),
+             Positioned(
+               right: 5,
+               top: 5,
+               child: InkWell(
+                 child: Icon(
+                   Icons.delete_forever,
+                   size: 25,
+                   color: Colors.red,
+                 ),
+                 onTap: () {
+                   setState(() {
+                     images.replaceRange(index, index + 1, ['Add Image']);
+                     images.removeAt(index);
+                   });
+                 },
+               ),
+             ),
+           ],
+            );
+        } else {
+          return Container(
+            width: 130,
+            height: 130,
+            child: Card(
+              child: IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  _onAddImageClick(index);
+                },
+              ),
+            ),
+          );
+        }
+      }
+    );
+  }
+
+  Future _onAddImageClick(int index) async {
+    setState(() {
+      _imageFile = ImagePicker.pickImage(source: ImageSource.gallery);
+      getFileImage(index);
+    });
+  }
+
+  void getFileImage(int index) async {
+//    var dir = await path_provider.getTemporaryDirectory();
+
+    _imageFile.then((file) async {
+      if(file != null)
+      setState(() {
+        ImageUploadModel imageUpload = new ImageUploadModel();
+        imageUpload.isUploaded = false;
+        imageUpload.uploading = false;
+        imageUpload.imageFile = file;
+        imageUpload.imageUrl = '';
+        images.replaceRange(index, index + 1, [imageUpload]);
+        if(images.length < 20)
+        images.add("Add Image");
+
+      });
+    });
+  }
+}
+class ImageUploadModel {
+  bool isUploaded;
+  bool uploading;
+  File imageFile;
+  String imageUrl;
+
+  ImageUploadModel({
+    this.isUploaded,
+    this.uploading,
+    this.imageFile,
+    this.imageUrl,
+  });
 }

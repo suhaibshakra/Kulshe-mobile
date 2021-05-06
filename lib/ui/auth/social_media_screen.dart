@@ -50,11 +50,9 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
             nickName: _nickNameController.text.toString(),
             userImage: imageUrl,
             countryId: _myCountry.toString(),
-            mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
-                ? '962'
-                : mobileCountryIsoCode.text.toString(),
+            mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty? 'JO': mobileCountryIsoCode.text.toString(),
             mobileNumber: _phoneController.text.toString(),
-            mobileCountryPhoneCode: _mobileCountryCode.text.toString());
+            mobileCountryPhoneCode: _mobileCountryCode.text.isEmpty?"962":_mobileCountryCode.text.toString());
 
       if(widget.comeFrom == 'facebook')
         createAccountFunctionFacebook(
@@ -66,8 +64,8 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
           fbId: "${widget.fId}",
           fbToken: "${widget.fToken}",
           userImage: "${widget.fImage}",
-          mobileCountryIsoCode: mobileCountryIsoCode.text.toString(),
-          mobileCountryPhoneCode: _mobileCountryCode.text.toString(),
+          mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty? 'JO': mobileCountryIsoCode.text.toString(),
+            mobileCountryPhoneCode: _mobileCountryCode.text.isEmpty?"962":_mobileCountryCode.text.toString(),
           countryId: _myCountry,
         );
     } else {
@@ -99,7 +97,10 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          buildLogo(height: mq.size.height*0.2),
+                          Hero(
+                            tag: 'logo',
+                            child: buildLogo(height: mq.size.height*0.2),
+                          ),
                           Container(
                             alignment: Alignment.bottomCenter,
                             height: mq.size.height*0.08,
@@ -112,7 +113,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                           Column(
                             children: [
                               Container(
-                                margin: EdgeInsets.only(bottom: 8, left: 12, right: 12),
+                                margin: EdgeInsets.only(bottom: 8, left: 5, right: 5),
                                 child: myButton(
                                     txtColor: AppColors.blackColor,
                                     fontSize: 18,
@@ -191,14 +192,15 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                             mobileCountryIsoCode.text = code.code;
                                             _mobileCountryCode.text =
                                                 code.dialCode.replaceAll('+', '').toString();
-                                            print('code : ${_mobileCountryCode.text}');
+                                            print('code : ${_mobileCountryCode.text}');//962
+                                            print('iso : ${mobileCountryIsoCode.text}');//jo
                                           });
                                         },
                                       ),
                                     ),
                                   ),
                                   Expanded(
-                                    flex: 7,
+                                    flex: 6,
                                     child: buildTextField(
                                       fromDialog: true,
                                       label: _strController.mobile,
@@ -208,7 +210,8 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                           value.length < 9 ||
                                           value.isEmpty)
                                           ? "أدخل رقم صحيح"
-                                          : null,                                      hintTxt: _strController.mobile,
+                                          : null,
+                                      hintTxt: _strController.mobile,
                                       textInputType: TextInputType.phone,
                                     ),
                                   ),

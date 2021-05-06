@@ -17,6 +17,8 @@ import 'package:simple_location_picker/simple_location_picker_screen.dart';
 import 'package:simple_location_picker/simple_location_result.dart';
 import 'package:simple_location_picker/utils/slp_constants.dart';
 
+import '../select_multi_img.dart';
+
 class AddAdForm extends StatefulWidget {
   final String section;
   final sectionId;
@@ -80,28 +82,28 @@ class _AddAdFormState extends State<AddAdForm> {
   var _userImage;
   var _imgURL;
 
-  void _pickImageLast(ImageSource src) async {
-    final pickedImageFile =
-    await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-    // // print('PC:$_picker');
-    if (pickedImageFile != null) {
-      setState(() {
-        _pickedImage = File(pickedImageFile.path);
-      });
-      _userImageFile = _pickedImage;
-      bytes = File(_userImageFile.path).readAsBytesSync();
-
-      String fileName = _userImageFile.path.split('/').last;
-      fileName = fileName.split('.').last;
-
-      // // print(fileName);
-      // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
-      _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
-      _images.add({"image": _userImage != null ? _userImage : "sss"});
-    } else {
-      // print('No Image Selected');
-    }
-  }
+  // void _pickImageLast(ImageSource src) async {
+  //   final pickedImageFile =
+  //   await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+  //   // // print('PC:$_picker');
+  //   if (pickedImageFile != null) {
+  //     setState(() {
+  //       _pickedImage = File(pickedImageFile.path);
+  //     });
+  //     _userImageFile = _pickedImage;
+  //     bytes = File(_userImageFile.path).readAsBytesSync();
+  //
+  //     String fileName = _userImageFile.path.split('/').last;
+  //     fileName = fileName.split('.').last;
+  //
+  //     // // print(fileName);
+  //     // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
+  //     _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
+  //     _images.add({"image": _userImage != null ? _userImage : "sss"});
+  //   } else {
+  //     // print('No Image Selected');
+  //   }
+  // }
 
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -233,22 +235,24 @@ class _AddAdFormState extends State<AddAdForm> {
                   children: [
                     if (!widget.fromEdit)
                       _buildPath(mq),
+                    buildTxt(txt: "إختر من معرض الصور"),
+                    Container(height: 130,child: SingleImageUpload()),
                     _buildConstData(),
                     _buildDynamicData(mq),
-                    Center(
-                      child: buildIconWithTxt(
-                        iconData: Icons.image_outlined,
-                        iconColor: AppColors.redColor,
-                        label: Text(
-                          _strController.labelGallery,
-                          style: appStyle(
-                              fontSize: 16,
-                              color: AppColors.redColor,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        action: () => _pickImageLast(ImageSource.gallery),
-                      ),
-                    ),
+                    // Center(
+                    //   child: buildIconWithTxt(
+                    //     iconData: Icons.image_outlined,
+                    //     iconColor: AppColors.redColor,
+                    //     label: Text(
+                    //       _strController.labelGallery,
+                    //       style: appStyle(
+                    //           fontSize: 16,
+                    //           color: AppColors.redColor,
+                    //           fontWeight: FontWeight.w400),
+                    //     ),
+                    //     action: () => _pickImageLast(ImageSource.gallery),
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 20,
                     ),

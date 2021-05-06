@@ -78,10 +78,14 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                               child: buildTextField(
                                 label: _strController.newPassword,
                                 controller: _newPasswordController,
-                                textInputType: TextInputType.name,
+                                textInputType: TextInputType.visiblePassword,
                                 validator: (value) =>
                                 (value.length < 8 || value.isEmpty)
-                                    ? "الحد الأدنى 8 احرف"
+                                    ? "يجب ان لا تقل عن 8 حروف":(value !=
+                                    _confirmPasswordController.text
+                                        .toString() ||
+                                    value.isEmpty)
+                                    ? "يجب تطابق كلمتي السر"
                                     : null,
                               ),
                             ),
@@ -92,10 +96,13 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                                     label: _strController.confirmPassword,
                                     textInputType: TextInputType.emailAddress,
                                     validator: (value) =>
-                                    (value.length < 8 || value.isEmpty)
-                                        ? "الحد الأدنى 8 احرف"
+                                    (value !=
+                                        _newPasswordController.text
+                                            .toString() ||
+                                        value.isEmpty)
+                                        ? "يجب تطابق كلمتي السر"
                                         : null,
-                                    hintTxt: _strController.email),
+                                ),
                               ),
                               SizedBox(height: 20,),
                             Container(

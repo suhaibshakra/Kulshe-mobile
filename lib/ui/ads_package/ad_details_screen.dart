@@ -345,16 +345,19 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                                           child: EnlargeStrategyDemo(
                                             imageSliders: imageSliders,
                                           )),
-                                      Align(
-                                        alignment: Alignment.bottomLeft,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                                          child: Container(
-                                            child:buildIcons(
-                                                iconData: FontAwesomeIcons.shareAlt,
-                                                bgColor: Colors.blue,
-                                                color: AppColors.whiteColor,
-                                                action: ()=>shareData(context)),
+                                      Container(
+                                        height: mq.size.height * 0.25,
+                                        child: Align(
+                                          alignment: Alignment.topRight,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 5),
+                                            child: Container(
+                                              child:buildIcons(
+                                                  iconData: FontAwesomeIcons.shareAlt,
+                                                  bgColor: Colors.blue,
+                                                  color: AppColors.whiteColor,
+                                                  action: ()=>shareData(context)),
+                                            ),
                                           ),
                                         ),
                                       )

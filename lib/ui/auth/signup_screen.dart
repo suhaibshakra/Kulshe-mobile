@@ -23,25 +23,26 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _phoneControllerS = TextEditingController()..text;
   TextEditingController _nickNameControllerS = TextEditingController()..text;
-  TextEditingController _mobileCountryCode = TextEditingController()..text;
 
   TextEditingController _countryController = TextEditingController()..text;
   TextEditingController _nickNameController = TextEditingController()..text;
   TextEditingController _emailController = TextEditingController()..text;
   TextEditingController _phoneController = TextEditingController()..text;
   TextEditingController _passwordController = TextEditingController()..text;
+  // TextEditingController mobileCountryPhoneCode = TextEditingController()..text;
+  // TextEditingController mobileCountryIsoCode = TextEditingController()..text;
   TextEditingController _confirmPasswordController = TextEditingController()
     ..text;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var facebookLoginResult;
-  String _selectedCountry;
+  String _selectedCountry = AppController.strings.selectCountry;
 
   String _myCountry;
 
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
-  String mobileCountryPhoneCode = "";
-  String mobileCountryIsoCode = "";
+  String mobileCountryPhoneCode = "962";
+  String mobileCountryIsoCode = "JO";
 
   void _validateAndSubmit() {
     final FormState form = _formKey.currentState;
@@ -81,7 +82,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     setState(() {
-      _selectedCountry = "Select country";
       _getCountries();
     });
     super.initState();
@@ -96,10 +96,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Directionality(
         textDirection: _drController,
         child: Scaffold(
-          appBar: buildAppBar(
-              centerTitle: true,
-              bgColor: AppColors.whiteColor,
-              themeColor: Colors.grey),
+          // appBar: buildAppBar(
+          //     centerTitle: true,
+          //     bgColor: AppColors.whiteColor,
+          //     themeColor: Colors.grey),
           backgroundColor: Colors.white,
           body: Stack(
             children: [
@@ -114,13 +114,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        margin: EdgeInsets.all(16),
-                        child: buildTxt(
-                            txt: _strController.createAccount,
-                            fontSize: 25,
-                            txtColor: AppColors.redColor),
+                      Hero(
+                        tag: 'logo',
+                        child: buildLogo(height: mq.size.height* 0.15),
                       ),
+                      // Container(
+                      //   margin: EdgeInsets.all(16),
+                      //   child: buildTxt(
+                      //       txt: _strController.createAccount,
+                      //       fontSize: 25,
+                      //       txtColor: AppColors.redColor),
+                      // ),
                       Container(
                         child: Form(
                           key: _formKey,
@@ -129,12 +133,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             children: [
                               Container(
                                 margin: EdgeInsets.only(
-                                    bottom: 8, left: 12, right: 12),
+                                    bottom: 8, left: 5, right: 5),
                                 child: myButton(
                                     txtColor: AppColors.blackColor,
                                     fontSize: 18,
                                     context: context,
-                                    btnColor: AppColors.greyOne,
+                                    btnColor: AppColors.whiteColor.withOpacity(0.9),
                                     radius: 4,
                                     btnTxt: _selectedCountry,
                                     width: double.infinity,
@@ -170,61 +174,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
-                                            flex: 3,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 8.0),
-                                              child: Container(
-                                                margin:
-                                                    EdgeInsets.only(right: 8),
-                                                decoration: BoxDecoration(
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: AppColors
-                                                              .whiteColor
-                                                              .withOpacity(0.4),
-                                                          offset: Offset(1, 2),
-                                                          blurRadius: 2,
-                                                          spreadRadius: 1),
-                                                    ],
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                child: CountryListPick(
-                                                  appBar: AppBar(
-                                                    backgroundColor:
-                                                        Colors.grey,
-                                                    title: Text(
-                                                      "الدولة",
-                                                      style: TextStyle(
-                                                          color: AppColors
-                                                              .blackColor),
-                                                    ),
+                                            flex: 4,
+                                            child: Container(
+                                              height: 46,
+                                              padding: EdgeInsets.symmetric(horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.6),
+                                                  border: Border.all(width: 1, color: Colors.grey),
+                                                  borderRadius: BorderRadius.circular(8)),
+                                              child: CountryListPick(
+                                                appBar: AppBar(
+                                                  backgroundColor: Colors.blue,
+                                                  title: Text(
+                                                    _strController.country,
+                                                    style: appStyle(
+                                                        fontSize: 18, fontWeight: FontWeight.w400),
                                                   ),
-                                                  theme: CountryTheme(
-                                                      isShowFlag: true,
-                                                      isShowTitle: false,
-                                                      isShowCode: true,
-                                                      isDownIcon: false,
-                                                      showEnglishName: true,
-                                                      initialSelection: '+962'),
-                                                  initialSelection: '+962',
-                                                  useSafeArea: true,
-                                                  onChanged:
-                                                      (CountryCode code) {
-                                                    setState(() {
-                                                      mobileCountryIsoCode =
-                                                          code.code;
-                                                      mobileCountryPhoneCode =
-                                                          code.dialCode
-                                                              .replaceAll(
-                                                                  '+', '')
-                                                              .toString();
-                                                      print(
-                                                          'code : $mobileCountryPhoneCode');
-                                                    });
-                                                  },
                                                 ),
+                                                theme: CountryTheme(
+                                                    isShowFlag: true,
+                                                    isShowTitle: false,
+                                                    isShowCode: true,
+                                                    isDownIcon: false,
+                                                    showEnglishName: false,
+                                                    initialSelection: '+962'),
+                                                initialSelection: '+962',
+                                                useSafeArea: true,
+                                                onChanged: (CountryCode code) {
+
+                                                  // print(code.name);
+                                                  // print(code.code);
+                                                  // print(code.dialCode);
+                                                  // print(code.dialCode);
+                                                  // print(code.dialCode);
+                                                  // print(code.flagUri);
+                                                  setState(() {
+                                                    mobileCountryIsoCode = code.code.toString();
+                                                    mobileCountryPhoneCode =
+                                                        code.dialCode.replaceAll('+', '').toString();
+                                                    print('code : ${code.code}');
+                                                    print('code iso : ${mobileCountryIsoCode}');
+                                                  });
+                                                },
                                               ),
                                             ),
                                           ),
@@ -253,6 +244,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               buildTextField(
                                   validator: (value) =>
                                       (value.length < 8 || value.isEmpty)
+                                          ? "يجب ان لا تقل عن 8 حروف":(value !=
+                                          _confirmPasswordController.text
+                                              .toString() ||
+                                          value.isEmpty)
                                           ? "يجب تطابق كلمتي السر"
                                           : null,
                                   controller: _passwordController,
@@ -451,10 +446,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.16,
+                    width: MediaQuery.of(context).size.width * 0.20,
                     child: RaisedButton(
                       child: new Text(
-                        'Fund',
+                        _strController.cancel,
                         style: TextStyle(color: Colors.white),
                       ),
                       color: Color(0xFF121A21),
@@ -464,28 +459,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.01,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 70.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.20,
-                      child: RaisedButton(
-                        child: new Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Color(0xFF121A21),
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
                     ),
                   ),
                   SizedBox(
@@ -564,8 +537,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             fbId: "${facebookLoginResult.accessToken.userId}",
             fbToken: "${facebookLoginResult.accessToken.token}",
             userImage: "${profileData['picture']['data']['url']}",
-            mobileCountryIsoCode: mobileCountryIsoCode ,
-            mobileCountryPhoneCode: _mobileCountryCode.text.toString(),
+            mobileCountryIsoCode: mobileCountryIsoCode??'962',
+            mobileCountryPhoneCode: mobileCountryPhoneCode.toString(),
             countryId: _myCountry,
           ).then((value) {
             print('VALUE : $value');
