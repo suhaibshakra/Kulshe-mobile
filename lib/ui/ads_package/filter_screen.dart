@@ -799,7 +799,7 @@ class _FilterScreenState extends State<FilterScreen> {
             if (directEncodeTypes
                 .contains(item['value'].runtimeType.toString())) {
               urlEncode.add(
-                  "${Uri.encodeComponent(item['name'])}=${Uri.encodeComponent(item['value'].toString())}");
+                  "${Uri.encodeComponent(item['name'].toString())}=${Uri.encodeComponent(item['value'].toString())}");
             } else {
               var array = item['value'];
               if (item['value'].runtimeType.toString() == 'List<dynamic>') {
