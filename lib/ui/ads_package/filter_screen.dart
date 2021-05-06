@@ -175,7 +175,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                                 if (_type == 'radio')
                                                   _buildRadio(
                                                       mainIndex, opIndex),
-                                                if (_type == 'checkbox')
+                                                if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
                                                   _buildCheckbox(
                                                       mainIndex, opIndex),
                                                 if (_type == 'select')
