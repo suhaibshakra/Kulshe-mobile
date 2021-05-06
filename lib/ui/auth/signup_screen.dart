@@ -36,7 +36,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var facebookLoginResult;
   String _selectedCountry = AppController.strings.selectCountry;
-
+  bool isHiddenNew = true;
+  bool isHiddenConfirm = true;
   String _myCountry;
 
   final _strController = AppController.strings;
@@ -253,16 +254,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   controller: _passwordController,
                                   textInputType: TextInputType.visiblePassword,
                                   label: _strController.password,
-                                  isPassword: true,
-                                  hintTxt: "Password"),
+                                  isPassword: isHiddenNew,
+                                suffixIcon: InkWell(
+                                  onTap: (){setState(() {
+                                    isHiddenNew = !isHiddenNew;
+                                  });},
+                                  child: Icon(isHiddenNew?Icons.visibility
+                                      :Icons.visibility_off),
+                                ),
+                              ),
                               buildTextField(
+                                  suffixIcon: InkWell(
+                                    onTap: (){setState(() {
+                                      isHiddenConfirm = !isHiddenConfirm;
+                                    });},
+                                    child: Icon(isHiddenConfirm?Icons.visibility
+                                        :Icons.visibility_off),
+                                  ),
                                   validator: (value) => (value !=
                                               _passwordController.text
                                                   .toString() ||
                                           value.isEmpty)
                                       ? "يجب تطابق كلمتي السر"
                                       : null,
-                                  isPassword: true,
+                                  isPassword: isHiddenConfirm,
                                   controller: _confirmPasswordController,
                                   textInputType: TextInputType.visiblePassword,
                                   label: _strController.confirmPassword,
