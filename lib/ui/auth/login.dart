@@ -225,7 +225,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }),
                           ), //0.07
                           Container(
-                            padding: EdgeInsets.only(top: 14),
+                            padding: EdgeInsets.only(top: 10),
                             height: constraints.maxHeight * 0.05,
                             child: Center(
                               child: InkWell(
