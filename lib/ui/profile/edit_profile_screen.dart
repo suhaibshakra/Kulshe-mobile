@@ -50,6 +50,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _promotion;
   bool _showContactInfo;
 
+  bool isHiddenNew = true;
+  bool isHiddenOld = true;
+  bool isHiddenConfirm = true;
+
+  final GlobalKey<FormState> _formKeyEditProfile = GlobalKey<FormState>();
+
   var appController = AppController.strings;
   String _selectedCountry = "إختر الدولة";
   List lastProfileData;
@@ -90,6 +96,52 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
     } else {
       print('No Image Selected');
+    }
+  }
+
+  void _validateAndSubmit() {
+    final FormState form = _formKeyEditProfile.currentState;
+    if (form.validate()) {
+      updateProfile(
+          context: context,
+          countryId: _myCountry.toString(),
+          nickName: _nickName.text.toString(),
+          fullName: _fullName.text.toString(),
+          email: _email.text.toString(),
+          mobileNumber:
+          _mobile.text.toString(),
+          mobileCountryIsoCode:
+          mobileCountryIsoCode.text
+              .toString(),
+          mobileCountryCode:
+          _mobileCountryCode.text
+              .toString(),
+          oldPassword:
+          _oldPassword.text.toString(),
+          newPassword:
+          _newPassword.text.toString(),
+          confirmPassword: _confirmPassword
+              .text
+              .toString(),
+          newsLetter: _newsletter ,
+          promotions: _promotion ,
+          showContactInfo: _showContactInfo ,
+          additionalPhoneCountryCode:
+          additionalPhoneCountryCode.text
+              .toString(),
+          additionalPhoneCountryIsoCode:
+          additionalPhoneCountryIsoCode
+              .text
+              .toString(),
+          additionalPhoneNumber:
+          additionalPhoneNumber.text
+              .toString(),
+          currentLang: "ar",
+          profileImage: _userImage != null
+              ? _userImage
+              : "https://i1.sndcdn.com/avatars-sruQLEBrNij9SCng-RstNhA-t500x500.jpg");
+    } else {
+      print('Form is invalid');
     }
   }
 
@@ -167,487 +219,493 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(25),
-                          bottomLeft: Radius.circular(25)),
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.lightBlueAccent.shade400,
-                          Colors.lightBlueAccent.shade200,
-                          Colors.lightBlueAccent.shade200,
-                          Colors.lightBlueAccent.shade200,
-                          Colors.lightBlueAccent.shade400,
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade200,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 2.0,
-                        ),
-                      ],
-                    ),
-                    height: isLandscape
-                        ? mq.size.height * 0.3
-                        : mq.size.height * 0.22,
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.grey,
-                          backgroundImage: _pickedImage != null
-                              ? FileImage(_pickedImage)
-                              : NetworkImage("$_imgURL"),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceAround,
-                          children: [
-                            buildIconWithTxt(
-                              iconData: Icons.camera,
-                              iconColor: AppColors.whiteColor,
-                              label: Text(_strController.labelCamera,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
-                              action: () =>
-                                  _pickImageLast(ImageSource.camera),
-                            ),
-                            buildIconWithTxt(
-                              iconData: Icons.image_outlined,
-                              iconColor: AppColors.whiteColor,
-                              label: Text(_strController.labelGallery,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
-                              action: () =>
-                                  _pickImageLast(ImageSource.gallery),
-                            ),
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(25),
+                            bottomLeft: Radius.circular(25)),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.lightBlueAccent.shade400,
+                            Colors.lightBlueAccent.shade200,
+                            Colors.lightBlueAccent.shade200,
+                            Colors.lightBlueAccent.shade200,
+                            Colors.lightBlueAccent.shade400,
                           ],
                         ),
-                      ],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade200,
+                            offset: Offset(0.0, 1.0), //(x,y)
+                            blurRadius: 2.0,
+                          ),
+                        ],
+                      ),
+                      height: isLandscape
+                          ? mq.size.height * 0.3
+                          : mq.size.height * 0.22,
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.grey,
+                            backgroundImage: _pickedImage != null
+                                ? FileImage(_pickedImage)
+                                : NetworkImage("$_imgURL"),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceAround,
+                            children: [
+                              buildIconWithTxt(
+                                iconData: Icons.camera,
+                                iconColor: AppColors.whiteColor,
+                                label: Text(_strController.labelCamera,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
+                                action: () =>
+                                    _pickImageLast(ImageSource.camera),
+                              ),
+                              buildIconWithTxt(
+                                iconData: Icons.image_outlined,
+                                iconColor: AppColors.whiteColor,
+                                label: Text(_strController.labelGallery,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
+                                action: () =>
+                                    _pickImageLast(ImageSource.gallery),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal:12.0,vertical: 8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.shade200,
-                                    offset: Offset(0.0, 1.0), //(x,y)
-                                    blurRadius: 2.0,
+                      child: Form(
+                        key:_formKeyEditProfile,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal:12.0,vertical: 8),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade200,
+                                      offset: Offset(0.0, 1.0), //(x,y)
+                                      blurRadius: 2.0,
+                                    ),
+                                  ],
+                                ),
+                                width: double.infinity,
+                                child: RaisedButton(
+                                  color: Colors.white,
+                                  onPressed: () {
+                                    _showTestDialog();
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(_selectedCountry),
+                                      buildIconWithTxt(
+                                          iconData: Icons.flag,
+                                          label: Text(""))
+                                    ],
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(4)),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                child: buildTextField(
+                                  hintTxt: _nickName.text.toString() != ""
+                                      ? _nickName.text.toString()
+                                      : appController.nickName,
+                                  textInputType: TextInputType.name,
+                                  label: appController.nickName,
+                                  controller: _nickName,
+                                  fromPhone: true,
+                                  validator: (value) =>
+                                  (value.length < 3 || value.isEmpty)
+                                      ? "Enter Valid Name"
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                  child: buildTextField(
+                                    hintTxt: _fullName.text.toString() != ""
+                                        ? _fullName.text.toString()
+                                        : appController.fullName,
+                                    textInputType: TextInputType.name,
+                                    label: appController.fullName,
+                                    controller: _fullName,
+                                    fromPhone: true,
+                                  )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                 child: buildTextField(
+                                  label: _strController.email,
+                                  hintTxt: _email.text.toString() != ""
+                                      ? _email.text.toString()
+                                      : appController.email,
+                                  textInputType: TextInputType.emailAddress,
+                                  controller: _email,
+                                  fromPhone: true,
+                                  validator: (value) =>
+                                  EmailValidator.validate(value)
+                                      ? null
+                                      : "Please enter a valid email",
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withOpacity(0.6),
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Colors.grey),
+                                            borderRadius:
+                                            BorderRadius.circular(8)),
+                                        child: CountryListPick(
+                                          appBar: AppBar(
+                                            backgroundColor: Colors.blue,
+                                            title: Text(
+                                                _strController.country,
+                                            style: appStyle(fontSize: 18,fontWeight: FontWeight.w400),),
+                                          ),
+                                          theme: CountryTheme(
+                                              isShowFlag: true,
+                                              isShowTitle: false,
+                                              isShowCode: true,
+                                              isDownIcon: false,
+                                              showEnglishName: true,
+                                              initialSelection: '+962'),
+                                          initialSelection: '+962',
+                                          useSafeArea: true,
+                                          onChanged: (CountryCode code) {
+                                            print(code.name);
+                                            print(code.code);
+                                            print(code.dialCode);
+                                            print(code.dialCode);
+                                            print(code.dialCode);
+                                            print(code.flagUri);
+                                            setState(() {
+                                              mobileCountryIsoCode.text =
+                                                  code.code;
+                                              _mobileCountryCode.text = code
+                                                  .dialCode
+                                                  .replaceAll('+', '')
+                                                  .toString();
+                                              print(
+                                                  'code : ${_mobileCountryCode.text}');
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: Container(
+                                      child: buildTextField(
+                                          hintTxt:
+                                          _mobile.text.toString() != ""
+                                              ? _mobile.text.toString()
+                                              : "79XXXXXXX",
+                                          textInputType:
+                                          TextInputType.phone,
+                                          fromPhone: true,
+                                          controller: _mobile,
+                                          label: _strController.mobile),
+                                    ),
                                   ),
                                 ],
                               ),
-                              width: double.infinity,
-                              child: RaisedButton(
-                                color: Colors.white,
-                                onPressed: () {
-                                  _showTestDialog();
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(_selectedCountry),
-                                    buildIconWithTxt(
-                                        iconData: Icons.flag,
-                                        label: Text(""))
-                                  ],
-                                ),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                    BorderRadius.circular(4)),
-                              ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                              child: buildTextField(
-                                hintTxt: _nickName.text.toString() != ""
-                                    ? _nickName.text.toString()
-                                    : appController.nickName,
-                                textInputType: TextInputType.name,
-                                label: appController.nickName,
-                                controller: _nickName,
-                                fromPhone: true,
-                                validator: (value) =>
-                                (value.length < 3 || value.isEmpty)
-                                    ? "Enter Valid Name"
-                                    : null,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                                child: buildTextField(
-                                  hintTxt: _fullName.text.toString() != ""
-                                      ? _fullName.text.toString()
-                                      : appController.fullName,
-                                  textInputType: TextInputType.name,
-                                  label: appController.fullName,
-                                  controller: _fullName,
-                                  fromPhone: true,
-                                )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                               child: buildTextField(
-                                label: _strController.email,
-                                hintTxt: _email.text.toString() != ""
-                                    ? _email.text.toString()
-                                    : appController.email,
-                                textInputType: TextInputType.emailAddress,
-                                controller: _email,
-                                fromPhone: true,
-                                validator: (value) =>
-                                EmailValidator.validate(value)
-                                    ? null
-                                    : "Please enter a valid email",
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white
-                                              .withOpacity(0.6),
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Colors.grey),
-                                          borderRadius:
-                                          BorderRadius.circular(8)),
-                                      child: CountryListPick(
-                                        appBar: AppBar(
-                                          backgroundColor: Colors.blue,
-                                          title: Text(
-                                              _strController.country,
-                                          style: appStyle(fontSize: 18,fontWeight: FontWeight.w400),),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withOpacity(0.6),
+                                            border: Border.all(
+                                                width: 1,
+                                                color: Colors.grey),
+                                            borderRadius:
+                                            BorderRadius.circular(8)),
+                                        child: CountryListPick(
+                                          appBar: AppBar(
+                                            backgroundColor: Colors.blue,
+                                            title: Text("Country"),
+                                          ),
+                                          theme: CountryTheme(
+                                              isShowFlag: true,
+                                              isShowTitle: false,
+                                              isShowCode: true,
+                                              isDownIcon: false,
+                                              showEnglishName: true,
+                                              initialSelection:
+                                              '+${additionalPhoneCountryCode.text}'),
+                                          initialSelection:
+                                          '+${additionalPhoneCountryCode.text}',
+                                          useSafeArea: true,
+                                          onChanged: (CountryCode code) {
+                                            print(code.name);
+                                            print(code.code);
+                                            print(code.dialCode);
+                                            print(code.dialCode);
+                                            print(code.dialCode);
+                                            print(code.flagUri);
+                                            setState(() {
+                                              additionalPhoneCountryIsoCode
+                                                  .text = code.code;
+                                              additionalPhoneCountryCode
+                                                  .text =
+                                                  code.dialCode
+                                                      .replaceAll('+', '')
+                                                      .toString();
+                                              print(
+                                                  'code : ${additionalPhoneCountryCode.text}');
+                                            });
+                                          },
                                         ),
-                                        theme: CountryTheme(
-                                            isShowFlag: true,
-                                            isShowTitle: false,
-                                            isShowCode: true,
-                                            isDownIcon: false,
-                                            showEnglishName: true,
-                                            initialSelection: '+962'),
-                                        initialSelection: '+962',
-                                        useSafeArea: true,
-                                        onChanged: (CountryCode code) {
-                                          print(code.name);
-                                          print(code.code);
-                                          print(code.dialCode);
-                                          print(code.dialCode);
-                                          print(code.dialCode);
-                                          print(code.flagUri);
-                                          setState(() {
-                                            mobileCountryIsoCode.text =
-                                                code.code;
-                                            _mobileCountryCode.text = code
-                                                .dialCode
-                                                .replaceAll('+', '')
-                                                .toString();
-                                            print(
-                                                'code : ${_mobileCountryCode.text}');
-                                          });
-                                        },
                                       ),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Container(
-                                    child: buildTextField(
-                                        hintTxt:
-                                        _mobile.text.toString() != ""
-                                            ? _mobile.text.toString()
-                                            : "79XXXXXXX",
-                                        textInputType:
-                                        TextInputType.phone,
-                                        fromPhone: true,
-                                        controller: _mobile,
-                                        label: _strController.mobile),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
+                                  Expanded(
+                                    flex: 4,
                                     child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white
-                                              .withOpacity(0.6),
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Colors.grey),
-                                          borderRadius:
-                                          BorderRadius.circular(8)),
-                                      child: CountryListPick(
-                                        appBar: AppBar(
-                                          backgroundColor: Colors.blue,
-                                          title: Text("Country"),
-                                        ),
-                                        theme: CountryTheme(
-                                            isShowFlag: true,
-                                            isShowTitle: false,
-                                            isShowCode: true,
-                                            isDownIcon: false,
-                                            showEnglishName: true,
-                                            initialSelection:
-                                            '+${additionalPhoneCountryCode.text}'),
-                                        initialSelection:
-                                        '+${additionalPhoneCountryCode.text}',
-                                        useSafeArea: true,
-                                        onChanged: (CountryCode code) {
-                                          print(code.name);
-                                          print(code.code);
-                                          print(code.dialCode);
-                                          print(code.dialCode);
-                                          print(code.dialCode);
-                                          print(code.flagUri);
-                                          setState(() {
-                                            additionalPhoneCountryIsoCode
-                                                .text = code.code;
-                                            additionalPhoneCountryCode
-                                                .text =
-                                                code.dialCode
-                                                    .replaceAll('+', '')
-                                                    .toString();
-                                            print(
-                                                'code : ${additionalPhoneCountryCode.text}');
-                                          });
-                                        },
-                                      ),
+                                      child: buildTextField(
+                                          hintTxt: additionalPhoneNumber
+                                              .text
+                                              .toString() !=
+                                              ""
+                                              ? additionalPhoneNumber.text
+                                              .toString()
+                                              : _strController
+                                              .additionalMobile,
+                                          textInputType:
+                                          TextInputType.phone,
+                                          fromPhone: true,
+                                          controller: additionalPhoneNumber,
+                                          label: _strController
+                                              .additionalMobile),
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  flex: 4,
-                                  child: Container(
-                                    child: buildTextField(
-                                        hintTxt: additionalPhoneNumber
-                                            .text
-                                            .toString() !=
-                                            ""
-                                            ? additionalPhoneNumber.text
-                                            .toString()
-                                            : _strController
-                                            .additionalMobile,
-                                        textInputType:
-                                        TextInputType.phone,
-                                        fromPhone: true,
-                                        controller: additionalPhoneNumber,
-                                        label: _strController
-                                            .additionalMobile),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                 child: buildTextField(
+                                    hintTxt: _strController.oldPassword,
+                                    textInputType:
+                                    TextInputType.visiblePassword,
+                                    controller: _oldPassword,
+                                    fromPhone: true,
+                                    validator: (value) =>
+                                    (value.isEmpty && (_newPassword.text.isNotEmpty || _confirmPassword.text.isNotEmpty))?
+                                    "كلمة المرور حقل مطلوب" :
+                                    (value.length < 8 && (value != null || value != ""))
+                                        ? "يجب ان لا تقل عن 8 حروف"
+                                        : null,
+                                    isPassword: isHiddenOld,
+                                     suffixIcon: InkWell(
+                                       onTap: (){setState(() {
+                                         isHiddenOld = !isHiddenOld;
+                                       });},
+                                       child: Icon(isHiddenOld?Icons.visibility
+                                           :Icons.visibility_off),
+                                     ),
+                                    label: _strController.oldPassword),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                 child: buildTextField(
+                                    hintTxt: _strController.newPassword,
+                                    textInputType:
+                                    TextInputType.visiblePassword,
+                                    controller: _newPassword,
+                                    validator: (value) =>
+                                    (value.isEmpty&& (_oldPassword.text.isNotEmpty || _confirmPassword.text.isNotEmpty))?
+                                    "كلمة المرور حقل مطلوب" :
+                                    (value.length < 8 && (value != null || value != ""))
+                                        ? "يجب ان لا تقل عن 8 حروف"
+                                        : null,
+                                    fromPhone: true,
+                                     isPassword: isHiddenNew,
+                                     suffixIcon: InkWell(
+                                       onTap: (){setState(() {
+                                         isHiddenNew = !isHiddenNew;
+                                       });},
+                                       child: Icon(isHiddenNew?Icons.visibility
+                                           :Icons.visibility_off),
+                                     ),
+                                     label: _strController.newPassword),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: Container(
+                                 child: buildTextField(
+                                    hintTxt: _strController.conPassword,
+                                    fromPhone: true,
+                                     validator: (value) =>
+                                     (value.isEmpty&& (_newPassword.text.isNotEmpty || _oldPassword.text.isNotEmpty))?
+                                     "كلمة المرور حقل مطلوب" :
+                                     (value != _newPassword.text
+                                         .toString() )
+                                         ? "يجب تطابق كلمتي السر"
+                                         : null,
+                                     isPassword: isHiddenConfirm,
+                                     suffixIcon: InkWell(
+                                       onTap: (){setState(() {
+                                         isHiddenConfirm = !isHiddenConfirm;
+                                       });},
+                                       child: Icon(isHiddenConfirm?Icons.visibility
+                                           :Icons.visibility_off),
+                                     ),
+                                     textInputType:
+                                    TextInputType.visiblePassword,
+                                    label: _strController.conPassword,
+                                    controller: _confirmPassword),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: MergeSemantics(
+                                child: ListTile(
+                                  title: Text(_strController.news,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
+                                  trailing: CupertinoSwitch(
+                                    value: _newsletter,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        _newsletter = value;
+                                      });
+                                    },
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                               child: buildTextField(
-                                  hintTxt: _strController.oldPassword,
-                                  textInputType:
-                                  TextInputType.visiblePassword,
-                                  controller: _oldPassword,
-                                  fromPhone: true,
-                                  isPassword: true,
-                                  label: _strController.oldPassword),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                               child: buildTextField(
-                                  hintTxt: _strController.newPassword,
-                                  textInputType:
-                                  TextInputType.visiblePassword,
-                                  controller: _newPassword,
-                                  fromPhone: true,
-                                   isPassword: true,
-                                  label: _strController.newPassword),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: Container(
-                               child: buildTextField(
-                                  hintTxt: _strController.conPassword,
-                                  fromPhone: true,
-                                   isPassword: true,
-                                   textInputType:
-                                  TextInputType.visiblePassword,
-                                  label: _strController.conPassword,
-                                  controller: _confirmPassword),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: MergeSemantics(
-                              child: ListTile(
-                                title: Text(_strController.news,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                trailing: CupertinoSwitch(
-                                  value: _newsletter,
-                                  onChanged: (bool value) {
+                                  onTap: () {
                                     setState(() {
-                                      _newsletter = value;
+                                      _newsletter = !_newsletter;
                                     });
                                   },
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    _newsletter = !_newsletter;
-                                  });
-                                },
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: MergeSemantics(
-                              child: ListTile(
-                                title: Text(_strController.promotion,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                trailing: CupertinoSwitch(
-                                  value: _promotion,
-                                  onChanged: (bool value) {
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: MergeSemantics(
+                                child: ListTile(
+                                  title: Text(_strController.promotion,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
+                                  trailing: CupertinoSwitch(
+                                    value: _promotion,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        _promotion = value;
+                                      });
+                                    },
+                                  ),
+                                  onTap: () {
                                     setState(() {
-                                      _promotion = value;
+                                      _promotion = !_promotion;
                                     });
                                   },
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    _promotion = !_promotion;
-                                  });
-                                },
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8),
-                            child: MergeSemantics(
-                              child: ListTile(
-                                title:
-                                Text(_strController.showContactInfo,style: appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                trailing: CupertinoSwitch(
-                                  value: _showContactInfo,
-                                  onChanged: (bool value) {
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8),
+                              child: MergeSemantics(
+                                child: ListTile(
+                                  title:
+                                  Text(_strController.showContactInfo,style: appStyle(fontSize: 16,color: AppColors.blackColor2),),
+                                  trailing: CupertinoSwitch(
+                                    value: _showContactInfo,
+                                    onChanged: (bool value) {
+                                      setState(() {
+                                        _showContactInfo = value;
+                                        print('SHOW~:$_showContactInfo');
+                                      });
+                                    },
+                                  ),
+                                  onTap: () {
                                     setState(() {
-                                      _showContactInfo = value;
+                                      _showContactInfo = !_showContactInfo;
                                       print('SHOW~:$_showContactInfo');
                                     });
                                   },
                                 ),
-                                onTap: () {
-                                  setState(() {
-                                    _showContactInfo = !_showContactInfo;
-                                    print('SHOW~:$_showContactInfo');
-                                  });
-                                },
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 8),
-                            child: Container(
-                              child: myButton(
-                                fontSize: 18,
-                                txtColor: AppColors.whiteColor,
-                                width: double.infinity,
-                                radius: 10,
-                                btnTxt: _strController.editProfile,
-                                btnColor: AppColors.blue,
-                                context: context,
-                                onPressed: () {
-                                  updateProfile(
-                                      context: context,
-                                      countryId: _myCountry.toString(),
-                                      nickName: _nickName.text.toString(),
-                                      fullName: _fullName.text.toString(),
-                                      email: _email.text.toString(),
-                                      mobileNumber:
-                                      _mobile.text.toString(),
-                                      mobileCountryIsoCode:
-                                      mobileCountryIsoCode.text
-                                          .toString(),
-                                      mobileCountryCode:
-                                      _mobileCountryCode.text
-                                          .toString(),
-                                      oldPassword:
-                                      _oldPassword.text.toString(),
-                                      newPassword:
-                                      _newPassword.text.toString(),
-                                      confirmPassword: _confirmPassword
-                                          .text
-                                          .toString(),
-                                      newsLetter: _newsletter ,
-                                      promotions: _promotion ,
-                                      showContactInfo: _showContactInfo ,
-                                      additionalPhoneCountryCode:
-                                      additionalPhoneCountryCode.text
-                                          .toString(),
-                                      additionalPhoneCountryIsoCode:
-                                      additionalPhoneCountryIsoCode
-                                          .text
-                                          .toString(),
-                                      additionalPhoneNumber:
-                                      additionalPhoneNumber.text
-                                          .toString(),
-                                      currentLang: "ar",
-                                      profileImage: _userImage != null
-                                          ? _userImage
-                                          : "https://i1.sndcdn.com/avatars-sruQLEBrNij9SCng-RstNhA-t500x500.jpg");
-                                },
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 8),
+                              child: Container(
+                                child: myButton(
+                                  fontSize: 18,
+                                  txtColor: AppColors.whiteColor,
+                                  width: double.infinity,
+                                  radius: 10,
+                                  btnTxt: _strController.editProfile,
+                                  btnColor: AppColors.blue,
+                                  context: context,
+                                  onPressed: () {
+                                    _validateAndSubmit();
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          )
-                        ],
+                            SizedBox(
+                              height: 15,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   )
@@ -744,52 +802,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             actions: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: MediaQuery.of(context).size.width * 0.16,
-                    child: RaisedButton(
-                      child: new Text(
-                        'Fund',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Color(0xFF121A21),
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                      onPressed: () {
-                        //saveIssue();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.01,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 70.0),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.20,
-                      child: RaisedButton(
-                        child: new Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment.center,
+                        width: MediaQuery.of(context).size.width * 0.20,
+                        child: RaisedButton(
+                          child: new Text(
+                            _strController.cancel,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Color(0xFF121A21),
+                          shape: new RoundedRectangleBorder(
+                            borderRadius: new BorderRadius.circular(30.0),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                         ),
-                        color: Color(0xFF121A21),
-                        shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
                       ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
                     ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                ],
+                  ],
+                ),
               )
             ],
           );

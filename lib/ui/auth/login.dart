@@ -163,7 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 buildTextField(
                                     controller: _emailController,
                                     label: _strController.email,
-
                                     textInputType: TextInputType.emailAddress,
                                     validator: (value) =>
                                         EmailValidator.validate(value)
@@ -176,10 +175,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ? _strController.errorPassword
                                             : null,
                                     controller: _passwordController,
-                                    textInputType:
-                                        TextInputType.visiblePassword,
+                                    textInputType: TextInputType.visiblePassword,
                                     label: _strController.password,
-                                    isPassword: true,
+                                    isPassword: _passwordHidden,
+                                    suffixIcon: InkWell(
+                                      onTap: _togglePasswordView,
+                                      child: Icon(_passwordHidden?Icons.visibility
+                                                  :Icons.visibility_off),
+                                    ),
                                     maxLines: 1,
                                     minLines: 1,
                                     hintTxt: _strController.password),
@@ -544,7 +547,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ).then((value) {
             print('VALUE : $value');
             if (value == 2095) {
-              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'google',countryData: _countryData,noEmail: email.isEmpty,fId: facebookLoginResult.accessToken.userId.toString(),fToken: facebookLoginResult.accessToken.token,fImage:profileData['picture']['data']['url'],fEmail:profileData['email']),),);
+              Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => SocialMediaScreen(comeFrom: 'facebook',countryData: _countryData,noEmail: profileData['email'].isEmpty,fId: facebookLoginResult.accessToken.userId.toString(),fToken: facebookLoginResult.accessToken.token,fImage:profileData['picture']['data']['url'],fEmail:profileData['email']),),);
               // _buildChoiceDialog(
               //     noEmail: profileData['email'].isEmpty, from: 'facebook');
             }
@@ -716,4 +719,10 @@ class _LoginScreenState extends State<LoginScreen> {
   // _dismissDialog({BuildContext context}) {
   //   Navigator.pop(context);
   // }
+bool _passwordHidden = true;
+  void _togglePasswordView() {
+    setState(() {
+      _passwordHidden = !_passwordHidden;
+    });
+  }
 }

@@ -1217,7 +1217,7 @@ class _AddAdFormState extends State<AddAdForm> {
               ),
               Container(
                 child: buildTextField(
-                    suffix: Icon(
+                    suffixIcon: Icon(
                       FontAwesomeIcons.youtube,
                       color: Colors.red,
                       size: 16,

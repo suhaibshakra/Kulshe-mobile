@@ -55,8 +55,6 @@ Future loginFunction(
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
   }else if(decodedData['custom_code'] == 2166){
-    viewToast(context, '${decodedData['custom_code']}', AppColors.redColor,
-        Toast.BOTTOM);
     return decodedData;
   } else {
     var mainToken = decodedData['token_data']['token'];
@@ -86,6 +84,7 @@ Future loginFunction(
 }
 
 Future changePasswordSocial(BuildContext context,String password,String confirmPassword,String newToken) async{
+  print('$newToken');
   SharedPreferences _pref = await SharedPreferences.getInstance();
 
   var map = Map<String, dynamic>();
@@ -104,6 +103,7 @@ Future changePasswordSocial(BuildContext context,String password,String confirmP
   }else  {
     viewToast(context, '${decodedData['custom_message']}', AppColors.green,
         Toast.BOTTOM);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),),);
   }
 }
 
@@ -586,10 +586,10 @@ Future logoutFunction({BuildContext context}) async {
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
   } else {
-    viewToast(context, '${decodedData['custom_message']}', AppColors.greenColor,
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
-    signOutGoogle();
-    _logoutFacebook();
+    // signOutGoogle();
+    // _logoutFacebook();
     AppSharedPreferences.saveTokenSP(null);
     AppSharedPreferences.saveRefreshTokenSP(null);
     Navigator.pushReplacement(

@@ -375,7 +375,7 @@ buildTextField({
   Function validator,
   Function onChanged,
   Function onSubmit,
-  Widget suffix,
+  Widget suffixIcon,
   int minLines,
   int maxLines,
   bool isPassword = false,
@@ -397,11 +397,11 @@ buildTextField({
         validator: validator,
         onChanged: onChanged,
         keyboardType: textInputType,
-        obscureText: isPassword ? true : false,
+        obscureText: isPassword ,
         decoration: InputDecoration(
           errorStyle: appStyle(fontSize: 15,color: AppColors.redColor,fontWeight: FontWeight.w400),
           contentPadding: EdgeInsets.symmetric(vertical: 8,horizontal: 8),
-          suffix: fromPhone ? suffix : null,
+          suffixIcon:  suffixIcon ,
           filled: true,
           fillColor: Colors.white.withOpacity(0.5),
           border: OutlineInputBorder(

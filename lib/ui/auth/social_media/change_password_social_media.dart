@@ -26,13 +26,16 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
   TextEditingController _confirmPasswordController = TextEditingController();
   
   final _strController = AppController.strings;
-  
+  bool isHiddenNew = true;
+  bool isHiddenConfirm = true;
+
   final GlobalKey<FormState> _formKeyChangePassword = GlobalKey<FormState>();
 
   void _validateAndSubmit() {
     final FormState form = _formKeyChangePassword.currentState;
     if (form.validate()) {
-      changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),widget.value['responseData']['token'].toString());
+      // print(widget.value);
+      changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),widget.value.toString());
     } else {
       print('Form is invalid');
     }
@@ -62,7 +65,10 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        buildLogo(height: mq.size.height*0.2),
+                        Hero(
+                          tag: 'logo',
+                          child: buildLogo(height: mq.size.height*0.2),
+                        ),
                         Container(
                           alignment: Alignment.bottomCenter,
                           height: mq.size.height*0.08,
@@ -78,14 +84,20 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                               child: buildTextField(
                                 label: _strController.newPassword,
                                 controller: _newPasswordController,
+                                isPassword: isHiddenNew,
+                                suffixIcon: InkWell(
+                                  onTap: (){setState(() {
+                                    isHiddenNew = !isHiddenNew;
+                                  });},
+                                  child: Icon(isHiddenNew?Icons.visibility
+                                      :Icons.visibility_off),
+                                ),
                                 textInputType: TextInputType.visiblePassword,
                                 validator: (value) =>
-                                (value.length < 8 || value.isEmpty)
-                                    ? "يجب ان لا تقل عن 8 حروف":(value !=
-                                    _confirmPasswordController.text
-                                        .toString() ||
-                                    value.isEmpty)
-                                    ? "يجب تطابق كلمتي السر"
+                                (value.isEmpty)?
+                                "كلمة المرور حقل مطلوب" :
+                                (value.length < 8)
+                                    ? "يجب ان لا تقل عن 8 حروف"
                                     : null,
                               ),
                             ),
@@ -94,10 +106,19 @@ class _ChangePasswordSocialMediaState extends State<ChangePasswordSocialMedia> {
                                 child: buildTextField(
                                     controller: _confirmPasswordController,
                                     label: _strController.confirmPassword,
-                                    textInputType: TextInputType.emailAddress,
+                                  isPassword: isHiddenConfirm,
+                                  suffixIcon: InkWell(
+                                    onTap: (){setState(() {
+                                      isHiddenConfirm = !isHiddenConfirm;
+                                    });},
+                                    child: Icon(isHiddenConfirm?Icons.visibility
+                                        :Icons.visibility_off),
+                                  ),
+                                  textInputType: TextInputType.emailAddress,
                                     validator: (value) =>
-                                    (value !=
-                                        _newPasswordController.text
+                                    (value.isEmpty)?
+                                    "كلمة المرور حقل مطلوب" :
+                                    (value != _newPasswordController.text
                                             .toString() ||
                                         value.isEmpty)
                                         ? "يجب تطابق كلمتي السر"
