@@ -59,13 +59,16 @@ Future loginFunction(
   } else {
     var mainToken = decodedData['token_data']['token'];
     var refreshToken = decodedData['token_data']['token'];
+    var id = decodedData['token_data']['user_id'];
     bool isEmailVerified = decodedData['token_data']['is_email_verified'];
 
     print('TOKEN: \n \n$mainToken \n \n');
     print('REFRESH TOKEN: \n \n$refreshToken \n \n');
     print('Is Email Verified:  $isEmailVerified \n \n');
+    print('Is ID:  $id \n \n');
 
     AppSharedPreferences.saveTokenSP(mainToken.toString());
+    AppSharedPreferences.saveUserId(id.toString());
     AppSharedPreferences.saveRefreshTokenSP(
         'bearer ${refreshToken.toString()}');
     AppSharedPreferences.saveIsEmailVerified(isEmailVerified);
@@ -79,6 +82,34 @@ Future loginFunction(
     );
     // print(response.body);
     // print(decodedData);
+  }
+  // return decodedData;
+}
+
+
+Future verifyEmail(
+    {@required BuildContext context}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var map = Map<String, dynamic>();
+  map['token'] = '${_pref.getString('token')}';
+  map['id'] = '${_pref.getString('uID')}';
+
+  http.Response response = await http.post('${baseURL}send-verify-email',
+      body: map,
+      headers:{
+      'lang': _pref.getString('lang')??'ar',
+      'Accept': 'application/json',
+      'token': '${_pref.getString('token')}',
+      'Authorization': 'bearer ${_pref.getString('token')}',
+      });
+  var decodedData = jsonDecode(response.body);
+
+  if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }else{
+    viewToast(context, '${decodedData['custom_message']}', AppColors.green,
+        Toast.BOTTOM);
   }
   // return decodedData;
 }

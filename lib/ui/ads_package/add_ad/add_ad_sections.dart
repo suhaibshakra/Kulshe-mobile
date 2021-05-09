@@ -154,7 +154,6 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
           ? buildLoading(color: AppColors.redColor)
           : Center(
         key: Key('builder ${selected.toString()}'),
-
         child: Directionality(
           textDirection: AppController.textDirection,
           child:ListView.builder(

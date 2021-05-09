@@ -27,7 +27,7 @@ class _LatestAdsState extends State<LatestAds> {
     LatestAdsServices.getLatestAdsData(iso: "JO").then((value) {
       setState(() {
         _adsData = value[0]['responseData'];
-        log('value $_adsData');
+        // log('value $_adsData');
         _loading = false;
 
         // print('Length ${_adsData.length}');

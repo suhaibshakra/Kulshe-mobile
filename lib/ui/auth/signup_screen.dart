@@ -75,6 +75,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _countryData = _countryData
           .where((element) => element['classified'] == true)
           .toList();
+
+      print('_cou: $_countryData');
+
     });
 
     print('_${_countryData.where((element) => element['classified'] == true)}');
@@ -175,7 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
-                                            flex: 4,
+                                            flex: 5,
                                             child: Container(
                                               height: 46,
                                               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -418,7 +421,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: InkWell(
                       onTap: () {
                         setState(() {
-                          _selectedCountry = list['name'];
+                          _selectedCountry = list['label']['ar'];
                           _myCountry = list['id'].toString();
                           print(_myCountry);
                           _dismissDialog(context: context);
@@ -433,8 +436,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Expanded(
                             flex: 4,
                             child: Text(
-                              list['name'],
-                              maxLines: 3,
+                              list['label']['ar'],
+                              maxLines: 1,
                             ),
                           ),
                           Expanded(

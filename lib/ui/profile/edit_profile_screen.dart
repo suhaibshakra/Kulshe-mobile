@@ -470,7 +470,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         child: CountryListPick(
                                           appBar: AppBar(
                                             backgroundColor: Colors.blue,
-                                            title: Text("Country"),
+                                            title: Text("الدولة"),
                                           ),
                                           theme: CountryTheme(
                                               isShowFlag: true,
@@ -478,10 +478,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               isShowCode: true,
                                               isDownIcon: false,
                                               showEnglishName: true,
-                                              initialSelection:
-                                              '+${additionalPhoneCountryCode.text}'),
-                                          initialSelection:
-                                          '+${additionalPhoneCountryCode.text}',
+                                              initialSelection: '+962'),
+                                          initialSelection: '+962',
                                           useSafeArea: true,
                                           onChanged: (CountryCode code) {
                                             print(code.name);
@@ -542,7 +540,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     validator: (value) =>
                                     (value.isEmpty && (_newPassword.text.isNotEmpty || _confirmPassword.text.isNotEmpty))?
                                     "كلمة المرور حقل مطلوب" :
-                                    (value.length < 8 && (value != null || value != ""))
+                                    (value.length < 8 && (value.toString().isNotEmpty))
                                         ? "يجب ان لا تقل عن 8 حروف"
                                         : null,
                                     isPassword: isHiddenOld,
@@ -568,7 +566,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     validator: (value) =>
                                     (value.isEmpty&& (_oldPassword.text.isNotEmpty || _confirmPassword.text.isNotEmpty))?
                                     "كلمة المرور حقل مطلوب" :
-                                    (value.length < 8 && (value != null || value != ""))
+                                    (value.length < 8 && (value.toString().isNotEmpty))
                                         ? "يجب ان لا تقل عن 8 حروف"
                                         : null,
                                     fromPhone: true,
@@ -611,72 +609,83 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     controller: _confirmPassword),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8),
-                              child: MergeSemantics(
-                                child: ListTile(
-                                  title: Text(_strController.news,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                  trailing: CupertinoSwitch(
-                                    value: _newsletter,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        _newsletter = value;
-                                      });
-                                    },
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _newsletter = !_newsletter;
+                                });
+                              },
+                              child: Transform.scale(
+                                scale: 0.8,
+                                child: MergeSemantics(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(_strController.news,style:appStyle(fontSize: 18,fontWeight: FontWeight.w500,color: AppColors.blackColor2),),                                      CupertinoSwitch(
+                                        value: _newsletter,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            _newsletter = value;
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  onTap: () {
-                                    setState(() {
-                                      _newsletter = !_newsletter;
-                                    });
-                                  },
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8),
-                              child: MergeSemantics(
-                                child: ListTile(
-                                  title: Text(_strController.promotion,style:appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                  trailing: CupertinoSwitch(
-                                    value: _promotion,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        _promotion = value;
-                                      });
-                                    },
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _promotion = !_promotion;
+                                });
+                              },
+                              child: Transform.scale(
+                                scale: 0.8,
+                                child: MergeSemantics(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(_strController.promotion,style:appStyle(fontSize: 18,fontWeight: FontWeight.w500,color: AppColors.blackColor2),),
+                                      CupertinoSwitch(
+                                        value: _promotion,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            _promotion = value;
+                                          });
+                                        },
+                                      )
+                                    ],
                                   ),
-                                  onTap: () {
-                                    setState(() {
-                                      _promotion = !_promotion;
-                                    });
-                                  },
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8),
-                              child: MergeSemantics(
-                                child: ListTile(
-                                  title:
-                                  Text(_strController.showContactInfo,style: appStyle(fontSize: 16,color: AppColors.blackColor2),),
-                                  trailing: CupertinoSwitch(
-                                    value: _showContactInfo,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        _showContactInfo = value;
-                                        print('SHOW~:$_showContactInfo');
-                                      });
-                                    },
+
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _showContactInfo = !_showContactInfo;
+                                  print('SHOW~:$_showContactInfo');
+                                });
+                              },
+                              child: Transform.scale(
+                                scale: 0.8,
+                                child: MergeSemantics(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                    Text(_strController.showContactInfo,style: appStyle(fontSize: 18,fontWeight: FontWeight.w500,color: AppColors.blackColor2),),
+                                      CupertinoSwitch(
+                                        value: _showContactInfo,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            _showContactInfo = value;
+                                            print('SHOW~:$_showContactInfo');
+                                          });
+                                        },
+                                      )
+                                    ],
                                   ),
-                                  onTap: () {
-                                    setState(() {
-                                      _showContactInfo = !_showContactInfo;
-                                      print('SHOW~:$_showContactInfo');
-                                    });
-                                  },
                                 ),
                               ),
                             ),
@@ -763,7 +772,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: InkWell(
                       onTap: () {
                         setState(() {
-                          _selectedCountry = list['name'];
+                          _selectedCountry = list['label']['ar'];
                           _myCountry = list['id'];
                           print(_myCountry);
                           _dismissDialog(ctx: ctx);
@@ -778,7 +787,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Expanded(
                             flex: 4,
                             child: Text(
-                              list['name'],
+                              list['label']['ar'],
                               maxLines: 3,
                             ),
                           ),

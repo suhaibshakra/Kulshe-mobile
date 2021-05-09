@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AppSharedPreferences{
   static String spToken = "token";
   static String spRefreshToken = "refresh_token";
+  static String userID = "uID";
   static String spCountries = "savedCountries";
   static String spSections = "allSectionsData";
   static String spCountryId = "countryId";
@@ -40,6 +41,11 @@ class AppSharedPreferences{
     SharedPreferences preferences = await SharedPreferences.getInstance();
     return await preferences.setString(
         spCountryId, savedCId);
+  }
+  static Future<bool> saveUserId(String savedUID) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    return await preferences.setString(
+        userID, savedUID);
   }
 
 }

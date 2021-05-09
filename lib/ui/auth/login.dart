@@ -94,7 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
               //
               //     })
               // );
-            }
+            }else{
+          return "";
+        }
       });
     } else {
       print('Form is invalid');
