@@ -48,7 +48,8 @@ class _MainSplashScreenState extends State<MainSplashScreen>
       if (status == AnimationStatus.completed) {
         // animationController.reverse();
         _startApp();
-       }
+        print('DATA');
+      }
     });
 
     animationController.forward();
@@ -82,8 +83,8 @@ class _MainSplashScreenState extends State<MainSplashScreen>
               padding: const EdgeInsets.only(bottom: 100),
               child: Center(
                 child: Container(
-                  height: (animationController.value * 30) + 150,
-                  width: (animationController.value * 30) + 150,
+                  height: (animationController.value * 70) + 150,
+                  width: (animationController.value * 70) + 150,
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(

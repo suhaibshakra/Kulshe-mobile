@@ -4,6 +4,7 @@ import 'package:bmprogresshud/progresshud.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kulshe/ui/about_pages/about_screen.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/ads_package/user_panel.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
@@ -192,12 +193,19 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
             title: _strController.contactWithUs,
             icon: Icons.arrow_forward_ios)),
         buildBorder(buildListTile(
+          tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'howWeAre',),)),
             context: context,
             title: _strController.whoAreWe,
             icon: Icons.arrow_forward_ios)),
         buildBorder(buildListTile(
+            tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 't&c',),)),
             context: context,
             title: _strController.termsAndCon,
+            icon: Icons.arrow_forward_ios)),
+        buildBorder(buildListTile(
+            tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'privacy',),)),
+            context: context,
+            title: _strController.privacyPolicy,
             icon: Icons.arrow_forward_ios)),
         buildBorder(buildListTile(
             context: context,
@@ -266,9 +274,8 @@ Widget buildListTile(
     ),
     title: Text(
       title,
-      style: TextStyle(
+      style: appStyle(
         color: Theme.of(context).textTheme.button.color,
-        fontFamily: 'RobotoCondensed',
         fontSize: 18,
         fontWeight: FontWeight.w400,
       ),

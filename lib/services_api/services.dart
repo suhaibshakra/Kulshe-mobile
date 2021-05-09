@@ -195,6 +195,38 @@ class FilterAdsServices {
   }
 }
 
+class GetAboutData {
+  static Future<List> getData({
+    int id,
+  }) async {
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(
+          '${baseURL}pages/$id',
+          headers: {
+            'lang': '${_pref.getString('lang')??'ar'}',
+            'Accept': 'application/json',
+            // 'token': '${_pref.getString('token')}',
+            // 'Authorization': 'bearer ${_pref.getString('token')}'
+          });
+      print(response.statusCode);
+      if (200 == response.statusCode) {
+        print(response.statusCode);
+        // print(response.body);
+
+        List ads = jsonDecode('[${response.body}]');
+        // AdsResponseData adsData = ads[0].responseData ;
+        // List<Ad> ad = adsData.ads;
+        return ads;
+      } else {
+        return List();
+      }
+    } catch (e) {
+      return List();
+    }
+  }
+}
+
 class SearchAdsServices {
   static Future<List> getSearchedAdsData({
     String txt,

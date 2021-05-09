@@ -83,19 +83,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final mq = MediaQuery.of(context);
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return SafeArea(
-      child: Scaffold(
-        // appBar: buildAppBar(
-        //     centerTitle: true,
-        //     bgColor: AppColors.whiteColor,
-        //     themeColor: Colors.grey),
-        // drawer: buildDrawer(context),
-        // backgroundColor: Colors.grey.shade200,
+    return Scaffold(
+      // appBar: buildAppBar(
+      //     centerTitle: true,
+      //     bgColor: AppColors.whiteColor,
+      //     themeColor: Colors.grey),
+      // drawer: buildDrawer(context),
+      // backgroundColor: Colors.grey.shade200,
 
-        endDrawer: buildDrawer(context, () => Navigator.of(context).pop()),
-        body: _loading
-            ? buildLoading(color: AppColors.redColor)
-            : Stack(
+      endDrawer: buildDrawer(context, () => Navigator.of(context).pop()),
+      body: _loading
+          ? buildLoading(color: AppColors.redColor)
+          : SafeArea(
+            child: Stack(
                 children: [
                   buildBg(),
                   NestedScrollView(
@@ -301,8 +301,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ),
                 ],
               ),
-        // body:_loading?buildLoading(color: AppColors.grey): buildListView(isLandscape, context),
-      ),
+          ),
+      // body:_loading?buildLoading(color: AppColors.grey): buildListView(isLandscape, context),
     );
   }
 
