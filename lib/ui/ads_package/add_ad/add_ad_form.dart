@@ -340,7 +340,7 @@ class _AddAdFormState extends State<AddAdForm> {
                 btnTxt: chosenDate,
                 txtColor: Colors.black54,
                 btnColor: Colors.white),
-          if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'radio')
+          if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups' || _type == 'radio')
             GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     mainAxisExtent: _type == 'radio' ? 50 :  null,
@@ -366,7 +366,7 @@ class _AddAdFormState extends State<AddAdForm> {
                       children: [
                         if (_type == 'radio')
                           _buildRadio(mainIndex, rcsIndex),
-                        if (_type == 'checkbox')
+                        if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
                           _buildCheckbox(mainIndex, rcsIndex),
                         if (_type == 'select')
                           _buildSelect(rcsIndex, mainIndex),
