@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_location_picker/simple_location_picker_screen.dart';
 import 'package:simple_location_picker/simple_location_result.dart';
 import 'package:simple_location_picker/utils/slp_constants.dart';
+import 'package:toast/toast.dart';
 
 class EditAdForm extends StatefulWidget {
   final String section;
@@ -759,6 +760,8 @@ class _EditAdFormState extends State<EditAdForm> {
                 currencyId: _currencyId);
           }else{
             print('Form is invalid');
+            viewToast(context, 'Form is invalid', AppColors.redColor,
+                Toast.BOTTOM);
 
           }
 
@@ -903,7 +906,7 @@ class _EditAdFormState extends State<EditAdForm> {
                       width: 399.0,
                       child: buildTextField(
                           validator: (value) =>
-                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  (_priceController.text.runtimeType.toString() != 'int' &&  _priceController.text.runtimeType.toString() != 'double'))
+                          (_priceController.text == null || _priceController.text.toString().isEmpty )
                               ? "يجب اختيار price"
                               : null,
                           label: _strController.price,

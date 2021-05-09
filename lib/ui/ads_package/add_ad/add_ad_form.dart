@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_location_picker/simple_location_picker_screen.dart';
 import 'package:simple_location_picker/simple_location_result.dart';
 import 'package:simple_location_picker/utils/slp_constants.dart';
-
+import 'package:toast/toast.dart';
 import '../select_multi_img.dart';
 
 class AddAdForm extends StatefulWidget {
@@ -709,7 +709,7 @@ class _AddAdFormState extends State<AddAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
-
+          print(double.parse(_priceController.text.toString()));
           final FormState form = _formKey.currentState;
           if(form.validate()){
             addAdFunction(
@@ -741,6 +741,8 @@ class _AddAdFormState extends State<AddAdForm> {
                 currencyId: _currencyId) ;
           }else{
             print('Form is invalid');
+            viewToast(context, 'Form is invalid', AppColors.redColor,
+                Toast.BOTTOM);
 
           }
 
@@ -885,7 +887,7 @@ class _AddAdFormState extends State<AddAdForm> {
                       width: 399.0,
                       child: buildTextField(
                           validator: (value) =>
-                          (_priceController.text == null || _priceController.text.toString().isEmpty ||  _priceController.text.runtimeType.toString() != 'int' ||  _priceController.text.runtimeType.toString() != 'doble')
+                          (_priceController.text == null || _priceController.text.toString().isEmpty)
                               ? "يجب اختيار price"
                               : null,
                           label: _strController.price,
