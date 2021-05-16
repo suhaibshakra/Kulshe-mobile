@@ -517,19 +517,24 @@ buildIcons(
     Color color,
     double size = 20,
     Function action,
+      double width,
+      double height,
     Color bgColor = Colors.white,
-    bool hasShadow = true}) {
+    bool hasShadow = false}) {
   return Container(
-    margin: EdgeInsets.all(2),
+    width: width,
+    height: height,
+    margin: EdgeInsets.all(4),
     decoration: BoxDecoration(
-      color: bgColor == Colors.white? Colors.white.withOpacity(0.4):bgColor,
+      color: bgColor == Colors.white? Colors.white:bgColor,
         borderRadius: BorderRadius.circular(30),
         boxShadow: hasShadow
             ? [
-                // BoxShadow(
-                //     offset: Offset(0, 0),
-                //     spreadRadius: 0.01,
-                //     blurRadius: 1)
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.6),
+                    offset: Offset(1, 1),
+                    spreadRadius: 0.01,
+                    blurRadius: 1)
               ]
             : []),
     child: IconButton(
@@ -592,55 +597,59 @@ buildDialog(
 }
 
 //ListItem
-Widget listItem(BuildContext context, LinearGradient gradient, String title,
+Widget listItem(BuildContext context, LinearGradient gradient,Color color, String title,
     var count, double width, double height,
     {String actionTitle, bool hasList}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 6),
-    child: GestureDetector(
-      onTap: () {
-        if (hasList != false)
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,isMain: false,):PrivateAdsListScreen(
-                actionTitle: actionTitle,
-              ),
+  return GestureDetector(
+    onTap: () {
+      if (hasList != false)
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => actionTitle == 'fav'?PublicAdsListScreen(isFav: true,isFilter: false,isMain: false,):PrivateAdsListScreen(
+              actionTitle: actionTitle,
             ),
-          );
-      },
+          ),
+        );
+    },
+    child: Card(
+      elevation: 1,
       child: Container(
         width: width != null ? width : MediaQuery.of(context).size.width * 0.4,
         height:
             height != null ? height : MediaQuery.of(context).size.height * 0.2,
-        margin: EdgeInsets.only(
-          bottom: 10,
-        ),
+         
         decoration: BoxDecoration(
-            gradient: gradient, borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(),
-            Text(
-              title,
-              style: appStyle(
-                  color: Colors.white,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
-            ),
-            if (count != "empty")
-              Text(
-                "$count",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800),
-              ),
-            Center(),
+            // gradient: gradient,
+          boxShadow: [
+            BoxShadow(color: AppColors.grey.withOpacity(0.4),offset: Offset(1,2))
           ],
+          color: color,
+            borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                title,
+                style: appStyle(
+                    color: AppColors.blackColor2.withOpacity(0.8),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w400),
+                textAlign: TextAlign.center,
+              ),
+              if (count != "empty")
+                Text(
+                  "$count",
+                  style: TextStyle(
+                      color: AppColors.blackColor2.withOpacity(0.6),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                ),
+             ],
+          ),
         ),
       ),
     ),

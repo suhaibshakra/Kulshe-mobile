@@ -11,6 +11,7 @@ import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/profile/advertiser_profile.dart';
 
 import 'ad_details_screen.dart';
+import 'details_screen.dart';
 
 class LatestAds extends StatefulWidget {
   @override
@@ -24,7 +25,7 @@ class _LatestAdsState extends State<LatestAds> {
 
   @override
   void initState() {
-    LatestAdsServices.getLatestAdsData(iso: "JO").then((value) {
+    LatestAdsServices.getLatestAdsData().then((value) {
       setState(() {
         _adsData = value[0]['responseData'];
         // log('value $_adsData');
@@ -66,7 +67,6 @@ class _LatestAdsState extends State<LatestAds> {
                          title: Padding(
                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                            child: CircleAvatar(
-
                              radius: 20.0,
                              backgroundImage: AssetImage('assets/images/logo_icon.png'),
                              backgroundColor: Colors.transparent,
@@ -122,8 +122,8 @@ class _LatestAdsState extends State<LatestAds> {
                                    onSubmit: (String val) {
                                      if(val.isNotEmpty)
                                        Navigator.push(context,MaterialPageRoute(builder: (context) => PublicAdsListScreen(isFav: false,isFilter: false,isMain: false,txt: val,),));
-                                     print('DONE ...');
-                                     print('val:$val');
+                                     // print('DONE ...');
+                                     // print('val:$val');
                                    },
                                  )
                              ),
@@ -171,9 +171,10 @@ class _LatestAdsState extends State<LatestAds> {
         physics: ClampingScrollPhysics(),
         itemBuilder: (context, index) {
           var _data = _adsData[index];
+          // log("DATA : ${_data['user_contact']['hash_id']}");
           bool hasImg = false;
           if (_data['images'] != [] || _data['images'] != null) hasImg = true;
-          print(hasImg);
+          // print(hasImg);
           return Card(
             elevation: 2.0,
             margin: EdgeInsets.only(bottom: 5.0),
@@ -187,8 +188,8 @@ class _LatestAdsState extends State<LatestAds> {
                     return Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AdDetailsScreen(
-                            adID: _data['id'], slug: _data['slug']),),);
+                        builder: (context) => DetailsScreen(
+                            adID: _data['id'], slug: _data['slug'],),),);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
@@ -278,8 +279,8 @@ class _LatestAdsState extends State<LatestAds> {
                               if (_data['show_contact'] != false)
                                 InkWell(
                                   onTap: (){
-
-                                    return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile('zoJyY'),));
+                                    print('hash_id: ${_data['hash_id']}');
+                                  return Navigator.push(context, MaterialPageRoute(builder: (context) => AdvertiserProfile(_data['user_contact']['hash_id']),));
                                   },
                                   child: Row(
                                     children: [
@@ -357,11 +358,12 @@ class _LatestAdsState extends State<LatestAds> {
                               : "add",
                         ).then((value) {
                           setState(() {
-                            LatestAdsServices.getLatestAdsData(iso: "JO").then((value) {
+                            LatestAdsServices.getLatestAdsData().then((value) {
                               setState(() {
                                 _adsData = value[0]['responseData'];
+                                // log(_adsData.toString());
                                 // log('value $_adsData');
-                                _loading = false;
+                                // _loading = false;
                               });
                             });
                           });

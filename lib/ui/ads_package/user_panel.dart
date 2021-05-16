@@ -46,6 +46,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.blueGrey.shade200,
               Colors.blueGrey.shade400,
             ]),
+            AppColors.whiteColor,
             _strController.myAds,
             _profileData['ads_summary']['all_ads_count'],
             null,
@@ -60,6 +61,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.red.shade200,
               Colors.red.shade400,
             ]),
+            AppColors.whiteColor,
             _strController.myFavAds,
             _profileData['ads_summary']['favorite_ads_count'],
             null,
@@ -74,6 +76,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.greenAccent.shade200,
             Colors.greenAccent.shade400,
           ]),
+          AppColors.whiteColor,
           _strController.postedAds,
           _profileData['ads_summary']['approved_ads_count'],
           null,
@@ -89,6 +92,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.lightBlueAccent.shade200,
             Colors.lightBlueAccent.shade400,
           ]),
+          AppColors.whiteColor,
           _strController.waitingAds,
           _profileData['ads_summary']['waiting_approval_ads_count'],
 
@@ -105,6 +109,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.orange.shade300,
             Colors.orange.shade400,
           ]),
+          AppColors.whiteColor,
           _strController.pausedAds,
           _profileData['ads_summary']['paused_ads_count'],
           null,
@@ -120,6 +125,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.blueGrey.shade200,
             Colors.blueGrey.shade400,
           ]),
+          AppColors.whiteColor,
           _strController.expiredAds,
           _profileData['ads_summary']['expired_ads_count'],
           null,
@@ -135,6 +141,7 @@ class _UserPanelState extends State<UserPanel> {
             Colors.redAccent.shade200,
             Colors.redAccent.shade400,
           ]),
+          AppColors.whiteColor,
           _strController.rejectedAds,
           _profileData['ads_summary']['rejected_ads_count'],
           null,
@@ -150,6 +157,7 @@ class _UserPanelState extends State<UserPanel> {
               Colors.pinkAccent.shade200,
               Colors.pinkAccent.shade400,
             ]),
+            AppColors.whiteColor,
             _strController.deletedAds,
             _profileData['ads_summary']['deleted_ads_count'],
             null,
@@ -166,6 +174,7 @@ class _UserPanelState extends State<UserPanel> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
+        appBar: buildAppBar(centerTitle: true,bgColor: AppColors.whiteColor),
         body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.redColor):Stack(
           children: [
             buildBg(),
@@ -175,55 +184,49 @@ class _UserPanelState extends State<UserPanel> {
                   SliverAppBar(
                     foregroundColor: Colors.lightBlue,
                     shadowColor: Colors.red,
-                    expandedHeight: isLandscape ?mq.size.height*0.3:mq.size.height*0.2,
-                    pinned: true,
+                    expandedHeight: isLandscape ?mq.size.height*0.1:mq.size.height*0.2,
+                    automaticallyImplyLeading: false,
                     floating: false,
-                    title: Text(_strController.userPanel,style: appStyle(color: AppColors.blackColor2,fontSize: 18),),
-                     actions: [ buildIconButton(icon: Icons.edit,color: AppColors.blackColor2,size: 26,onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(),));
-                    }, ),
-
-                    ],
+                    // title: Text(_strController.userPanel,style: appStyle(color: AppColors.blackColor2,fontSize: 18),),
+                    //  actions: [ buildIconButton(icon: Icons.edit,color: AppColors.blackColor2,size: 26,onPressed: (){
+                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(),));
+                    // }, ),
+                    //
+                    // ],
                      centerTitle: false,
                     backgroundColor: Colors.white,
-                    toolbarHeight: 50,
+                    toolbarHeight: 30,
                     flexibleSpace: FlexibleSpaceBar(
                       background: Container(
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              SizedBox(height: 4,),
-                              Divider(thickness: 0,color: AppColors.whiteColor,),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(_profileData['nick_name'],style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
-                                      SizedBox(height: 5,),
-                                      Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
-                                    ],
-                                  ),
-                                  InkWell(
-                                    onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
-                                    child: CircleAvatar(
-                                      radius: 40.0,
-                                      child: Container(
-                                      decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
-                                      image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
-                                      backgroundColor: Colors.transparent,
-                                    ),
-                                  )
+                                  Text(_profileData['nick_name'],style: appStyle(color: AppColors.whiteColor,fontSize: 24,fontWeight: FontWeight.w700),),
+                                  SizedBox(height: 5,),
+                                  Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
                                 ],
                               ),
+                              InkWell(
+                                onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
+                                child: CircleAvatar(
+                                  radius: 40.0,
+                                  child: Container(
+                                    decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
+                                        image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
+                                  backgroundColor: Colors.transparent,
+                                ),
+                              )
                             ],
                           ),
                         ),
                         decoration: BoxDecoration(
+                          color: AppColors.redColor,
                             boxShadow: [
                               BoxShadow(
                                   color: AppColors.grey,
@@ -232,17 +235,7 @@ class _UserPanelState extends State<UserPanel> {
                                   offset: Offset(1, 1)),
                             ],
                             // image: DecorationImage(image: NetworkImage(_profileData.profileImage)),
-                            gradient: LinearGradient(
-                              colors: [
-                                // Colors.lightBlueAccent.shade400,
-                                // Colors.lightBlueAccent.shade200,
-                                Colors.blue.shade400,
-                                Colors.blue.shade400,
-                                Colors.blue.shade400,
-                                // Colors.lightBlue.shade200,
-                                // Colors.lightBlueAccent.shade400,
-                              ],
-                            )),
+                             ),
                       ),
                     ),
                   ),

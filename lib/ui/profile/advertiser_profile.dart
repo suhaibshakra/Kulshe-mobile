@@ -6,6 +6,7 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/ad_details_screen.dart';
+import 'package:kulshe/ui/ads_package/details_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -99,17 +100,23 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                           crossAxisAlignment: CrossAxisAlignment.center,
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
+                                            _publicProfile['profile_image']!=null?
                                             CircleAvatar(
                                               backgroundImage: NetworkImage(
                                                 _publicProfile['profile_image'],
                                               ),
                                               radius: 50.0,
+                                            ):CircleAvatar(
+                                              backgroundImage: AssetImage(
+                                                "assets/images/no_img.png",
+                                              ),
+                                              radius: 30.0,
                                             ),
                                             SizedBox(
                                               height: 10.0,
                                             ),
                                             Text(
-                                              _publicProfile['full_name'],
+                                              _publicProfile['full_name']!=null?_publicProfile['full_name']:"",
                                               style: TextStyle(
                                                 fontSize: 22.0,
                                                 color: Colors.white,
@@ -157,24 +164,24 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                                       child: Column(
 
                                                         children: [
-                                                          Text(
-                                                            _publicProfile['email'],
-                                                            style: appStyle(
-                                                              color: Colors.redAccent,
-                                                              fontSize: 18.0,
-                                                              fontWeight: FontWeight.bold,
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 5.0,
-                                                          ),
+                                                          // Text(
+                                                          //   _publicProfile['email'],
+                                                          //   style: appStyle(
+                                                          //     color: Colors.redAccent,
+                                                          //     fontSize: 18.0,
+                                                          //     fontWeight: FontWeight.bold,
+                                                          //   ),
+                                                          // ),
+                                                          // SizedBox(
+                                                          //   height: 5.0,
+                                                          // ),
                                                           InkWell(
                                                             onTap: ()=>launch(
                                                                 "tel://${'+'+_publicProfile['mobile_country_code']+_publicProfile['mobile_number'].toString()}"),
                                                             child: CircleAvatar(
-                                                              backgroundColor: AppColors.greyTwo,
+                                                              backgroundColor: AppColors.grey.withOpacity(0.2),
                                                               radius: 25,
-                                                              child: buildIconButton(icon: FontAwesomeIcons.phoneAlt,size: 24,color: AppColors.greenColor.withOpacity(0.3)),
+                                                              child: buildIconButton(icon: FontAwesomeIcons.phoneAlt,size: 24,color: AppColors.greenColor.withOpacity(0.5)),
                                                             ),
                                                           )
 
@@ -241,7 +248,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AdDetailsScreen(adID: _data['id'], slug: _data['slug']),
+                        DetailsScreen(adID: _data['id'], slug: _data['slug']),
                   ),
                 );
               },

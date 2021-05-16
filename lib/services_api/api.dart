@@ -274,6 +274,42 @@ Future abuseAd({
         Toast.BOTTOM);
   }
 }
+
+// void showInSnackBar(String value,GlobalKey<ScaffoldState> _scaffoldKey) {
+//   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
+// }
+
+//abuse ad
+Future sendMessage({
+  @required BuildContext context,
+  @required int adId,
+  @required String txtBody,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  var body =
+  json.encode({'body': txtBody});
+  http.Response response =
+  await http.post('${baseURL}email-messages/$adId',
+      headers: {
+        'lang': _pref.getString('lang')??'ar',
+        'Content-Type': 'application/json',
+        'token': '${_pref.getString('token')}',
+        'Authorization': 'bearer ${_pref.getString('token')}',
+      },
+      body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+  }
+}
 // void showInSnackBar(String value,GlobalKey<ScaffoldState> _scaffoldKey) {
 //   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
 // }

@@ -6,11 +6,13 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/add_ad/add_ad_form.dart';
+import 'package:kulshe/ui/ads_package/time_ago.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ad_details_screen.dart';
 import 'add_ad/edit_ad_form.dart';
+import 'details_screen.dart';
 
 class PrivateAdsListScreen extends StatefulWidget {
   final String actionTitle;
@@ -175,7 +177,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AdDetailsScreen(adID: _data['id'], slug: _data['slug']),
+                        DetailsScreen(adID: _data['id'], slug: _data['slug']),
                   ),
                 );
               },
@@ -350,7 +352,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                             myIcon(context,
                                                 FontAwesomeIcons.windows,
                                                 color: Colors.black54,
-                                                size: 25,
+                                                size: 20,
                                                 hasDecoration: false),
                                             buildTxt(
                                                 txt: (_data['section_id'])
@@ -360,13 +362,16 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                                         ),
                                         Row(
                                           children: [
-                                            myIcon(context, Icons.alarm,
+                                            myIcon(context, Icons.access_time_outlined,
                                                 color: Colors.black54,
-                                                size: 25,
+                                                size: 22,
                                                 hasDecoration: false),
                                             buildTxt(
-                                                txt: _data['edited_at']
-                                                    .toString(),
+                                                txt:
+                                                TimeAgo.timeAgoSinceDate(_data['created_at'])
+                                                // (_data['created_at'])
+                                                //     .toString()
+                                                ,
                                                 txtColor: Colors.black54)
                                           ],
                                         ),
@@ -458,7 +463,7 @@ class _PrivateAdsListScreenState extends State<PrivateAdsListScreen> {
                   return Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AdDetailsScreen(
+                      builder: (context) => DetailsScreen(
                           adID: _data['id'], slug: _data['slug']),
                     ),
                   );

@@ -41,10 +41,15 @@ class _FilterScreenState extends State<FilterScreen> {
   List<dynamic> myAdAttributesArray = []; //edit
   List<dynamic> myAdAttributesMulti = []; //edit
   Map myAdAttributes = {}; //edit
+  String countryID;
 
   _getSections() async {
+    
     SharedPreferences _gp = await SharedPreferences.getInstance();
-
+    
+    setState(() {
+      countryID = _gp.getString('countryId');
+    });
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
     setState(() {
       _sectionData = sections[0]['responseData'];
@@ -53,9 +58,18 @@ class _FilterScreenState extends State<FilterScreen> {
         _sectionData = _sectionData.where((element) => element['id'] == widget.sectionId && (element['sub_sections'].where((i) => i['id'] == widget.subSectionId).toList().length > 0)).toList();
         _subSectionData = _sectionData[0]['sub_sections'].where((element) => (element['id'] == widget.subSectionId)).toList();
         _listAttributes = _subSectionData[0]['attributes'];
-        if (_subSectionData[0]['has_brand'])
-          _listBrands = _subSectionData[0]['brands'];
 
+        if (_subSectionData[0]['has_brand']) {
+         setState(() {
+           _listBrands = _subSectionData[0]['brands'];
+           final jsonList = _listBrands.map((item) => jsonEncode(item)).toList();
+           // using toSet - toList strategy
+           final uniqueJsonList = jsonList.toSet().toList();
+
+           // convert each item back to the original form using JSON decoding
+           _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+         });
+        }
       });
     });
     _loading = false;
@@ -132,10 +146,6 @@ class _FilterScreenState extends State<FilterScreen> {
                             _listAttributes[mainIndex]['options'];
                             _type = _listAttributes[mainIndex]['config']
                             ['searchType'];
-
-                            print("TYPE: $_type");
-                            // print(
-                            //     'Type: $_type     ${_listAttributes[mainIndex]['name']} ');
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 4),
@@ -150,17 +160,16 @@ class _FilterScreenState extends State<FilterScreen> {
                                   children: [
                                     Text(
                                       _listAttributes[mainIndex]['label']
-                                      ['ar'],
+                                      [_lang],
                                       style: appStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.blackColor2),
                                     ),
                                     Container(
-                                      child: ListView.builder(
-                                        itemCount: _type == 'select' ||
-                                            _type ==
-                                                'multiple_select' ||
+                                      child: GridView.builder(
+                                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,),
+                                        itemCount:
                                             _type == 'range'
                                             ? 1
                                             : _options.length,
@@ -172,19 +181,19 @@ class _FilterScreenState extends State<FilterScreen> {
                                             color: Colors.white,
                                             child: Column(
                                               children: [
-                                                if (_type == 'radio')
-                                                  _buildRadio(
-                                                      mainIndex, opIndex),
-                                                if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
+                                                // if (_type == 'radio')
+                                                //   _buildRadio(
+                                                //       mainIndex, opIndex),
+                                                if (_type!='range')
                                                   _buildCheckbox(
                                                       mainIndex, opIndex),
-                                                if (_type == 'select')
-                                                  _buildSelect(
-                                                      opIndex, mainIndex),
-                                                if (_type ==
-                                                    'multiple_select')
-                                                  buildMultiSelected(
-                                                      mainIndex),
+                                                // if (_type == 'select')
+                                                //   _buildSelect(
+                                                //       opIndex, mainIndex),
+                                                // if (_type ==
+                                                //     'multiple_select')
+                                                //   buildMultiSelected(
+                                                //       mainIndex),
                                                 if (_type == 'range')
                                                   _buildRange(
                                                       opIndex, mainIndex),
@@ -237,8 +246,7 @@ class _FilterScreenState extends State<FilterScreen> {
                                           ),
                                           hint: Text(
                                             // _brandId!=null?_brandId.toString():"choose type",
-                                            _listBrands[0]['label']
-                                            [_lang],
+                                            _listBrands[0]['label'][_lang],
                                             style: appStyle(
                                                 fontWeight:
                                                 FontWeight.bold,
@@ -614,44 +622,97 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  Container _buildPath() {
-    return Container(
-      width: double.infinity,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: buildTxt(
-                  fontSize: 18,
-                  txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w700,
-                  txt: "${_sectionData[0]['label'][_lang]}",
-                  textAlign: TextAlign.center),
+  // Container _buildPath() {
+  //   return Container(
+  //     width: double.infinity,
+  //     child: Row(
+  //       children: [
+  //         Expanded(
+  //           flex: 1,
+  //           child: Container(
+  //             padding: EdgeInsets.all(5),
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey.shade200,
+  //               borderRadius: BorderRadius.circular(20),
+  //             ),
+  //             child: buildTxt(
+  //                 fontSize: 18,
+  //                 txtColor: AppColors.blackColor2,
+  //                 fontWeight: FontWeight.w700,
+  //                 txt: "${_sectionData[0]['label'][_lang]}",
+  //                 textAlign: TextAlign.center),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           flex: 1,
+  //           child: Container(
+  //             padding: EdgeInsets.all(5),
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey.shade200,
+  //               borderRadius: BorderRadius.circular(20),
+  //             ),
+  //             child: buildTxt(
+  //                 fontSize: 20,
+  //                 txtColor: AppColors.blackColor2,
+  //                 fontWeight: FontWeight.w500,
+  //                 txt: "${_subSectionData[0]['label'][_lang]}",
+  //                 textAlign: TextAlign.center),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+  _buildPath() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Card(
+        elevation: 2,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Container(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: buildTxt(
+                        fontSize: 17,
+                        maxLine: 1,
+                        txtColor: AppColors.blackColor2,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w400,
+                        txt: "${_sectionData[0]['label'][_lang]}",
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: AppColors.grey,
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: buildTxt(
+                        fontSize: 17,
+                        maxLine: 1,
+                        txtColor: AppColors.blackColor2,
+                        fontWeight: FontWeight.w400,
+                        txt: "${_subSectionData[0]['label'][_lang]}",
+                        textAlign: TextAlign.center),
+                  ),
+                ),
+              ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: buildTxt(
-                  fontSize: 20,
-                  txtColor: AppColors.blackColor2,
-                  fontWeight: FontWeight.w500,
-                  txt: "${_subSectionData[0]['label'][_lang]}",
-                  textAlign: TextAlign.center),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -777,6 +838,8 @@ class _FilterScreenState extends State<FilterScreen> {
               "sectionId=${Uri.encodeComponent(widget.sectionId.toString())}");
           urlEncode.add(
               "subSectionId=${Uri.encodeComponent(widget.subSectionId.toString())}");
+          urlEncode.add(
+              "countryId=${Uri.encodeComponent(countryID.toString())}");
           if (_brandId != null)
             urlEncode.add(
                 "brand=${Uri.encodeComponent(widget.subSectionId.toString())}");

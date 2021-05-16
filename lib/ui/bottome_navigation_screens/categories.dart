@@ -162,19 +162,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             //     // );
                             //   },
                             // ),
-                            buildIconButton(
-                              icon: Icons.account_circle_rounded,
-                              color: Colors.black54,
-                              size: 25,
-                              onPressed: () {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => EditProfileScreen(),
-                                //     ),
-                                // );
-                              },
-                            ),
+                            // buildIconButton(
+                            //   icon: Icons.account_circle_rounded,
+                            //   color: Colors.black54,
+                            //   size: 25,
+                            //   onPressed: () {
+                            //     // Navigator.push(
+                            //     //     context,
+                            //     //     MaterialPageRoute(
+                            //     //       builder: (context) => EditProfileScreen(),
+                            //     //     ),
+                            //     // );
+                            //   },
+                            // ),
                           ],
                           centerTitle: true,
                           backgroundColor: Colors.white,
@@ -347,7 +347,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 style: appStyle(
                   fontSize: 18,
                   color: AppColors.blackColor2,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               leading: Container(
@@ -474,6 +474,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  List sampleList = ["ramadan", "ramadan 2", "ramadan 3"];
+  List sampleList = ["","ramadan", "ramadan 2", "ramadan 3"];
   var selection = "";
 }

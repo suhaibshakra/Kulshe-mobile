@@ -131,10 +131,12 @@ class LatestAdsServices {
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get(
-          '${baseURL}classifieds/latest?isoCountryCode=$iso',
+      final response = await http.get('${baseURL}classifieds/latest-mobile/${_pref.getString('countryId')}?limit=&offset=',
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
+            'Accept': 'application/json',
+            'token': '${_pref.getString('token')}',
+            'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -432,6 +434,7 @@ class AdDetailsServicesNew {
   static Future<List> getAdData({
     int adId,
     String slug,
+    int countryId,
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
 
@@ -441,7 +444,8 @@ class AdDetailsServicesNew {
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
-            'Country-id': '${_pref.getString('countryId')}',
+            'Country-id': countryId == null?'${_pref.getString('countryId')}':countryId,
+            // 'Country-id': '$countryId',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
           });

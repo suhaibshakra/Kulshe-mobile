@@ -65,7 +65,7 @@ dependencies:
   bmprogresshud: ^0.0.10
 #  flutter_absolute_path: ^1.0.6
   badges: ^1.2.0
-
+  youtube_player_flutter: ^8.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

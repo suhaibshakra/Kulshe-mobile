@@ -78,7 +78,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                   ),
                   child: ExpansionTile(
                     backgroundColor: AppColors.whiteColor,
-                    title: Text(_data['name']),
+                    title: Text(_data['name'],style: appStyle(fontWeight: FontWeight.w400,fontSize: 17,color: AppColors.blackColor2),),
                     leading: Container(
                       width: 28,
                       height: 28,
@@ -123,10 +123,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Center(
-                                    child: Text(data['name'].toString(),
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.black87),
+                                    child: Text(data['label']['ar'].toString(),style: appStyle(fontWeight: FontWeight.w400,fontSize: 15,color: AppColors.blackColor2),
                                         textAlign: TextAlign.center),
                                   ),
                                 ),

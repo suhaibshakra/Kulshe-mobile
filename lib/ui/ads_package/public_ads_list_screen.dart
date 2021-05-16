@@ -8,10 +8,12 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/ads_package/time_ago.dart';
 import 'package:kulshe/ui/profile/advertiser_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ad_details_screen.dart';
+import 'details_screen.dart';
 
 class PublicAdsListScreen extends StatefulWidget {
   final sectionId;
@@ -325,7 +327,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                   return Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AdDetailsScreen(
+                      builder: (context) => DetailsScreen(
                           adID: _data['id'], slug: _data['slug']),
                     ),
                   );
@@ -608,7 +610,7 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AdDetailsScreen(adID: _data['id'], slug: _data['slug']),
+                        DetailsScreen(adID: _data['id'], slug: _data['slug']),
                   ),
                 );
               },
@@ -768,43 +770,47 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
                                   ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          myIcon(
-                                              context, FontAwesomeIcons.windows,
-                                              color: Colors.black54,
-                                              size: 25,
-                                              hasDecoration: false),
-                                          buildTxt(
-                                              txt: (widget.section).toString(),
-                                              txtColor: Colors.black54)
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          myIcon(context, Icons.alarm,
-                                              color: Colors.black54,
-                                              size: 25,
-                                              hasDecoration: false),
-                                          buildTxt(
-                                              txt:
-                                                  // TimeAgo.timeAgoSinceDate
-                                                  (_data['created_at'])
-                                                      .toString(),
-                                              txtColor: Colors.black54)
-                                        ],
-                                      ),
-                                    ],
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 16.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius: BorderRadius.circular(10)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            myIcon(
+                                                context, FontAwesomeIcons.windows,
+                                                color: Colors.black54,
+                                                size: 20,
+                                                hasDecoration: false),
+                                            buildTxt(
+                                                txt: (widget.section).toString(),
+                                                txtColor: Colors.black54)
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            myIcon(context, Icons.access_time_outlined,
+                                                color: Colors.black54,
+                                                size: 22,
+                                                hasDecoration: false),
+                                            buildTxt(
+                                                txt:
+                                                   widget.isFav?"": TimeAgo.timeAgoSinceDate(_data['created_at'])
+                                                    // (_data['created_at'])
+                                                    //     .toString()
+                                                    ,
+                                                txtColor: Colors.black54)
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -923,144 +929,151 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
     return Container(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: widget.isFav?MainAxisAlignment.start:MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                margin: EdgeInsets.all(5),
-                height: 50,
-                color: AppColors.whiteColor,
-                child: Row(
-                  children: [
-                    buildIcons(
-                        iconData: FontAwesomeIcons.listUl,
-                        hasShadow: true,
-                        bgColor: AppColors.grey.withOpacity(0.2),
-                        color: isList ? iconListColor : AppColors.grey,
-                        action: () {
-                          setState(() {
-                            isList = true;
-                          });
-                        }),
-                    buildIcons(
-                        iconData: FontAwesomeIcons.windows,
-                        hasShadow: true,
-                        bgColor: AppColors.grey.withOpacity(0.2),
-                        color: isList ? AppColors.grey : iconListColor,
-                        action: () {
-                          setState(() {
-                            isList = false;
-                          });
-                        }),
-                  ],
-                ),
-              ),
-              if(!widget.isFav)
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: widget.isFav?MainAxisAlignment.start:MainAxisAlignment.spaceEvenly,
+              children: [
                 Container(
-                width: MediaQuery.of(context).size.width * 0.3,
-                color: AppColors.whiteColor,
-                child: Row(
-                  children: [
-                    buildTxt(txt: _strController.withImages),
-                    Transform.scale(
-                      scale: 1,
-                      child: Checkbox(
-                        value: isChecked,
-                        onChanged: (value) {
-                          toggleCheckbox(value);
-                        },
-                        activeColor: Colors.green,
-                        checkColor: Colors.white,
-                        tristate: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if(!widget.isFav)
-                Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                color: AppColors.whiteColor,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.whiteColor,
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: _chosenValue,
-                    //elevation: 5,
-                    style: TextStyle(color: Colors.black),
-                    items: <String>[
-                      _strController.oldToNew,
-                      _strController.newToOld,
-                      _strController.priceHighToLess,
-                      _strController.priceLessToHigh,
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: appStyle(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                    hint: Text(
-                      _strController.orderBy,
-                      style: appStyle(
-                          color: AppColors.blackColor2,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.center,
-                    ),
-                    onChanged: (String value) {
-                      setState(() {
-                        _chosenValue = value;
-                        sorting = (_chosenValue == _strController.oldToNew)
-                            ? "OldToNew"
-                            : (_chosenValue == _strController.newToOld)
-                                ? "NewToOld"
-                                : (_chosenValue ==
-                                        _strController.priceLessToHigh)
-                                    ? "priceLessToHigh"
-                                    : "priceHighToLess";
-                        if(widget.isFav)
-                            FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
-                                .then((value) {
-                              setState(() {
-                                _publicAd = value[0]['responseData']['ads'];
-                                countOfAds =
-                                    (value[0]['responseData']['total']).toString();
-                                print('count of ads : ${countOfAds.toString()}');
-                                _loading = false;
-                              });
+                  margin: EdgeInsets.all(5),
+                  height: 50,
+                  color: AppColors.whiteColor,
+                  child: Row(
+                    children: [
+                      buildIcons(
+                        width: 50,
+                          height: 50,
+                          iconData: FontAwesomeIcons.listUl,
+                          hasShadow: true,
+                          bgColor: AppColors.whiteColor,
+                          color: isList ? iconListColor : AppColors.grey,
+                          action: () {
+                            setState(() {
+                              isList = true;
                             });
-                        if(!widget.isFav)
-                        PublicAdsServicesNew.getPublicAdsData(
-                                sectionId: widget.sectionId,
-                                subSectionId: widget.subSectionId,
-                                txt: widget.txt,
-                                offset: '$offset',
-                                countryId: 110,
-                                hasImage: 0,
-                                sort: sorting.toString(),
-                                hasPrice: '',
-                                limit: '$limit')
-                            .then((value) {
-                          setState(() {
-                            _publicAd = value[0]['responseData']['ads'];
-                            countOfAds =
-                                (value[0]['responseData']['total']).toString();
-                            print('count of ads : ${countOfAds.toString()}');
-                            _loading = false;
-                          });
-                        });
-                        print('Sorting : $sorting');
-                      });
-                    },
+                          }),
+                      buildIcons(
+                          width: 50,
+                          height: 50,
+                          iconData: FontAwesomeIcons.windows,
+                          hasShadow: true,
+                          bgColor: AppColors.whiteColor,
+                          color: isList ? AppColors.grey : iconListColor,
+                          action: () {
+                            setState(() {
+                              isList = false;
+                            });
+                          }),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                if(!widget.isFav)
+                  Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  color: AppColors.whiteColor,
+                  child: Row(
+                    children: [
+                      buildTxt(txt: _strController.withImages),
+                      Transform.scale(
+                        scale: 1,
+                        child: Checkbox(
+                          value: isChecked,
+                          onChanged: (value) {
+                            toggleCheckbox(value);
+                          },
+                          activeColor: Colors.green,
+                          checkColor: Colors.white,
+                          tristate: false,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if(!widget.isFav)
+                  Container(
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  color: AppColors.whiteColor,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.whiteColor,
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: _chosenValue,
+                      //elevation: 5,
+                      style: TextStyle(color: Colors.black),
+                      items: <String>[
+                        _strController.oldToNew,
+                        _strController.newToOld,
+                        _strController.priceHighToLess,
+                        _strController.priceLessToHigh,
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: appStyle(fontSize: 14),
+                          ),
+                        );
+                      }).toList(),
+                      hint: Text(
+                        _strController.orderBy,
+                        style: appStyle(
+                            color: AppColors.blackColor2,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.center,
+                      ),
+                      onChanged: (String value) {
+                        setState(() {
+                          _chosenValue = value;
+                          sorting = (_chosenValue == _strController.oldToNew)
+                              ? "OldToNew"
+                              : (_chosenValue == _strController.newToOld)
+                                  ? "NewToOld"
+                                  : (_chosenValue ==
+                                          _strController.priceLessToHigh)
+                                      ? "priceLessToHigh"
+                                      : "priceHighToLess";
+                          if(widget.isFav)
+                              FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
+                                  .then((value) {
+                                setState(() {
+                                  _publicAd = value[0]['responseData']['ads'];
+                                  countOfAds =
+                                      (value[0]['responseData']['total']).toString();
+                                  print('count of ads : ${countOfAds.toString()}');
+                                  _loading = false;
+                                });
+                              });
+                          if(!widget.isFav)
+                          PublicAdsServicesNew.getPublicAdsData(
+                                  sectionId: widget.sectionId,
+                                  subSectionId: widget.subSectionId,
+                                  txt: widget.txt,
+                                  offset: '$offset',
+                                  countryId: 110,
+                                  hasImage: 0,
+                                  sort: sorting.toString(),
+                                  hasPrice: '',
+                                  limit: '$limit')
+                              .then((value) {
+                            setState(() {
+                              _publicAd = value[0]['responseData']['ads'];
+                              countOfAds =
+                                  (value[0]['responseData']['total']).toString();
+                              print('count of ads : ${countOfAds.toString()}');
+                              _loading = false;
+                            });
+                          });
+                          print('Sorting : $sorting');
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -1239,35 +1252,3 @@ class _PublicAdsListScreenState extends State<PublicAdsListScreen> {
     });
   }
 }
-
-// class TimeAgo {
-//   static String timeAgoSinceDate(String dateString,
-//       {bool numericDates = true}) {
-//     DateTime notificationDate =
-//         DateFormat("yyyy-dd-MM\Thh:mm:sssssssssssssss\Z").parse(dateString);
-//     final date2 = DateTime.now();
-//     final difference = date2.difference(notificationDate);
-//
-//     if (difference.inDays > 8) {
-//       return dateString;
-//     } else if ((difference.inDays / 7).floor() >= 1) {
-//       return (numericDates) ? '1 week ago' : 'Last week';
-//     } else if (difference.inDays >= 2) {
-//       return '${difference.inDays} days ago';
-//     } else if (difference.inDays >= 1) {
-//       return (numericDates) ? '1 day ago' : 'Yesterday';
-//     } else if (difference.inHours >= 2) {
-//       return '${difference.inHours} hours ago';
-//     } else if (difference.inHours >= 1) {
-//       return (numericDates) ? '1 hour ago' : 'An hour ago';
-//     } else if (difference.inMinutes >= 2) {
-//       return '${difference.inMinutes} minutes ago';
-//     } else if (difference.inMinutes >= 1) {
-//       return (numericDates) ? '1 minute ago' : 'A minute ago';
-//     } else if (difference.inSeconds >= 3) {
-//       return '${difference.inSeconds} seconds ago';
-//     } else {
-//       return 'Just now';
-//     }
-//   }
-// }

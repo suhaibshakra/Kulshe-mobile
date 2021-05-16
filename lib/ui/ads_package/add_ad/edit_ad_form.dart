@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -179,21 +180,34 @@ class _EditAdFormState extends State<EditAdForm> {
           .then((value) {
         setState(() {
           _adForm = value;
-          _titleController.text = value[0]['responseData']['title'];
+          _brandId = _adForm[0]['responseData']['brand_id'].toString();
+          _subBrandId = _adForm[0]['responseData']['sub_brand_id'].toString();
+          // log('${_adForm[0]['responseData']['brand_id'] }  BOOaaL');
+           _titleController.text = value[0]['responseData']['title'];
           _bodyController.text = value[0]['responseData']['body'];
           _videoController.text = value[0]['responseData']['video'];
-          print("value[0]['responseData']['has_price']");
+          // print("value[0]['responseData']['has_price']");
           print(_adForm[0]['responseData']['currency_id']);
           if(value[0]['responseData']['has_price'] == true)
             _priceController.text = value[0]['responseData']['price'].toString();
           _currenciesData = value[0]['responseData']['sub_section']['currencies'];
           _listAttributes = value[0]['responseData']['attributes'];
-          _listBrands = value[0]['responseData']['brands'];
+          _listBrands = value[0]['responseData']['sub_section']['brands'];
+
+          final jsonList = _listBrands.map((item) => jsonEncode(item)).toList();
+
+          // using toSet - toList strategy
+          final uniqueJsonList = jsonList.toSet().toList();
+
+          // convert each item back to the original form using JSON decoding
+          _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+
           _showContactInfo = value[0]['responseData']['show_contact'];
           _negotiable = value[0]['responseData']['negotiable'];
           _isFree = value[0]['responseData']['if_free'];
           _loading = false;
 
+          print("BRANDS : $_listAttributes");
           _currencyId = _adForm[0]['responseData']['currency_id'].toString();
           _lat = value[0]['responseData']['lat'];
           _lng = value[0]['responseData']['lag'];
@@ -248,8 +262,8 @@ class _EditAdFormState extends State<EditAdForm> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (!widget.fromEdit)
-                      _buildPath(mq),
+                    // if (!widget.fromEdit)
+                    //   _buildPath(),
                     _buildConstData(),
                     _buildDynamicData(mq),
                     Center(
@@ -334,7 +348,6 @@ class _EditAdFormState extends State<EditAdForm> {
                     children: [
                       if (_listAttributes[mainIndex]['id'] ==
                           _listUnits[unitIndex]['attribute_id'])
-
                         if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
                           _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
                     ],
@@ -354,41 +367,43 @@ class _EditAdFormState extends State<EditAdForm> {
                 txtColor: Colors.black54,
                 btnColor: Colors.white),
           if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups' || _type == 'radio')
-            GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: _type == 'radio' ? 50 :  null,
-                    childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select') ?( _options.length > 4 ?  1.5 :_options.length * 2.0):1.5,
-                    crossAxisCount:
-                    _type == 'select' || _type == 'multiple_select'
-                        ? 1
-                        : 3),
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemCount: _type == 'select' || _type == 'multiple_select'
-                    ? 1
-                    : _options.length,
-                itemBuilder: (context, rcsIndex) {
-                  return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: _type == 'select'
-                            ? BorderRadius.circular(8)
-                            : BorderRadius.circular(0)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        if (_type == 'radio')
-                          _buildRadio(mainIndex, rcsIndex),
-                        if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
-                          _buildCheckbox(mainIndex, rcsIndex),
-                        if (_type == 'select')
-                          _buildSelect(rcsIndex, mainIndex),
-                        if (_type == 'multiple_select')
-                          buildMultiSelected(mainIndex),
-                      ],
-                    ),
-                  );
-                }),
+            SingleChildScrollView(
+              child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisExtent: _type == 'radio' ? 50 :  null,
+                      childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select') ?( _options.length > 4 ?  01 :_options.length * 2.0):3,
+                      crossAxisCount:
+                      _type == 'select' || _type == 'multiple_select' || _type == 'multiple_buttons_groups'
+                          ? 1
+                          : 2),
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemCount: _type == 'select' || _type == 'multiple_select'
+                      ? 1
+                      : _options.length,
+                  itemBuilder: (context, rcsIndex) {
+                    return Container(
+                      decoration: BoxDecoration(
+                          borderRadius: _type == 'select'
+                              ? BorderRadius.circular(8)
+                              : BorderRadius.circular(0)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (_type == 'radio')
+                            _buildRadio(mainIndex, rcsIndex),
+                          if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
+                            _buildCheckbox(mainIndex, rcsIndex),
+                          if (_type == 'select')
+                            _buildSelect(rcsIndex, mainIndex),
+                          if (_type == 'multiple_select')
+                            buildMultiSelected(mainIndex),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
         ],
       ),
     );
@@ -683,39 +698,60 @@ class _EditAdFormState extends State<EditAdForm> {
     );
   }
 
-  Container _buildPath(MediaQueryData mq) {
-    return Container(
-      height: mq.size.height * 0.1,
-      child: Card(
-        margin: EdgeInsets.only(bottom: 20.0),
-        elevation: 7,
-        shadowColor: AppColors.grey,
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            children: [
-              Text(
-                "${widget.section}",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              SizedBox(
-                width: 25,
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 14,
-                  color: AppColors.grey,
-                ),
-              ),
-              Text(
-                "${_adForm[0]['responseData']['label']['ar']}",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // _buildPath() {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(bottom: 10),
+  //     child: Card(
+  //       elevation: 2,
+  //       child: Padding(
+  //         padding: const EdgeInsets.symmetric(vertical: 10),
+  //         child: Container(
+  //           width: double.infinity,
+  //           child: Row(
+  //             children: [
+  //               Expanded(
+  //                 flex: 6,
+  //                 child: Container(
+  //                   padding: EdgeInsets.all(5),
+  //                   child: buildTxt(
+  //                       fontSize: 17,
+  //                       maxLine: 1,
+  //                       txtColor: AppColors.blackColor2,
+  //                       overflow: TextOverflow.ellipsis,
+  //                       fontWeight: FontWeight.w400,
+  //                       txt: "${widget.section}",
+  //                       textAlign: TextAlign.center),
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 flex: 1,
+  //                 child: Icon(
+  //                   Icons.arrow_forward_ios,
+  //                   size: 16,
+  //                   color: AppColors.grey,
+  //                 ),
+  //               ),
+  //               Expanded(
+  //                 flex: 3,
+  //                 child: Container(
+  //                   padding: EdgeInsets.all(5),
+  //                   child: buildTxt(
+  //                       fontSize: 17,
+  //                       maxLine: 1,
+  //                       txtColor: AppColors.blackColor2,
+  //                       fontWeight: FontWeight.w400,
+  //                       txt: "${_adForm[0]['responseData']['label']['ar']}",
+  //                       textAlign: TextAlign.center),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
 
   Container _buildButton(BuildContext context) {
     // // print("AT:$myAdAttributes");
@@ -724,7 +760,7 @@ class _EditAdFormState extends State<EditAdForm> {
         context: context,
         height: 50,
         width: double.infinity,
-        btnTxt: _strController.postAd,
+        btnTxt: _strController.edit,
         fontSize: 20,
         txtColor: AppColors.whiteColor,
         radius: 10,
@@ -985,7 +1021,7 @@ class _EditAdFormState extends State<EditAdForm> {
               ],
             ),
           ),
-        if (!widget.fromEdit&&_adForm[0]['responseData']['has_brand'])
+        if (_adForm[0]['responseData']['sub_section']['has_brand'])
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
@@ -1011,11 +1047,11 @@ class _EditAdFormState extends State<EditAdForm> {
                             child: DropdownButtonFormField<String>(
                               isExpanded: false,
                               value: _brandId,
-                              iconSize: 30,
                               validator: (value) =>
                               (_brandId == null || _brandId.isEmpty)
                                   ? "يجب اختيار _brandId"
                                   : null,
+                              iconSize: 30,
                               icon: (null),
                               style: appStyle(
                                 color: Colors.black54,
@@ -1036,13 +1072,9 @@ class _EditAdFormState extends State<EditAdForm> {
                                   element['id'].toString() ==
                                       value.toString())
                                       .toList();
-
                                   _listSubBrands =
                                   _listSubBrands[0]['sub_brands'];
-
-
                                   _listSubBrands = _listSubBrands.toSet().toList();
-
                                   if (_listSubBrands != [] &&
                                       _listSubBrands != null &&
                                       _listSubBrands.isNotEmpty) {
@@ -1096,9 +1128,13 @@ class _EditAdFormState extends State<EditAdForm> {
                             child: DropdownButtonHideUnderline(
                               child: ButtonTheme(
                                 alignedDropdown: true,
-                                child: DropdownButton<String>(
+                                child: DropdownButtonFormField<String>(
                                   isExpanded: false,
                                   value: _subBrandId,
+                                  validator: (value) =>
+                                  (_subBrandId == null || _subBrandId.isEmpty)
+                                      ? "يجب اختيار _subBrandId"
+                                      : null,
                                   iconSize: 30,
                                   icon: (null),
                                   style: appStyle(
