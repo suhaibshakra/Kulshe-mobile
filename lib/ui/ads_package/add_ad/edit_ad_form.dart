@@ -182,6 +182,7 @@ class _EditAdFormState extends State<EditAdForm> {
           _adForm = value;
           _brandId = _adForm[0]['responseData']['brand_id'].toString();
           _subBrandId = _adForm[0]['responseData']['sub_brand_id'].toString();
+          _cityId = _adForm[0]['responseData']['city_id'].toString();
           // log('${_adForm[0]['responseData']['brand_id'] }  BOOaaL');
            _titleController.text = value[0]['responseData']['title'];
           _bodyController.text = value[0]['responseData']['body'];
@@ -819,8 +820,7 @@ class _EditAdFormState extends State<EditAdForm> {
         Padding(
           padding: const EdgeInsets.only(bottom: 20,top: 10),
           child: Container(
-            width: 395.0,
-
+            width:double.infinity,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black54),
                 borderRadius: BorderRadius.circular(10)),
@@ -939,7 +939,7 @@ class _EditAdFormState extends State<EditAdForm> {
                       appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
-                      width: 399.0,
+                      width:double.infinity,
                       child: buildTextField(
                           validator: (value) =>
                           (_priceController.text == null || _priceController.text.toString().isEmpty )
@@ -959,61 +959,64 @@ class _EditAdFormState extends State<EditAdForm> {
                       style:
                       appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                    Container(
-                      width: 395.0,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: DropdownButtonHideUnderline(
-                              child: ButtonTheme(
-                                alignedDropdown: true,
-                                child: DropdownButtonFormField<String>(
-                                  isExpanded: false,
-                                  value: _currencyId,
-                                  validator: (value) =>
-                                  (_currencyId == null || _currencyId.isEmpty)
-                                      ? "يجب اختيار _currencyId"
-                                      : null,
-                                  iconSize: 30,
-                                  icon: (null),
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontSize: 16,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4,right: 4),
+                      child: Container(
+                        width:double.infinity,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 1,
+                              child: DropdownButtonHideUnderline(
+                                child: ButtonTheme(
+                                  alignedDropdown: true,
+                                  child: DropdownButtonFormField<String>(
+                                    isExpanded: false,
+                                    value: _currencyId,
+                                    validator: (value) =>
+                                    (_currencyId == null || _currencyId.isEmpty)
+                                        ? "يجب اختيار _currencyId"
+                                        : null,
+                                    iconSize: 30,
+                                    icon: (null),
+                                    style: TextStyle(
+                                      color: Colors.black54,
+                                      fontSize: 16,
+                                    ),
+                                    hint: Text(
+                                      _currencyId.toString(),
+                                      style: appStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
+                                    onChanged: (String value) {
+                                      setState(() {
+                                        _currencyId = value;
+                                      });
+                                    },
+                                    items: _currenciesData.map((listCurrency) {
+                                      return new DropdownMenuItem(
+                                        child: new Text(
+                                          listCurrency['currency_label']
+                                          [_lang],
+                                          style: appStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        value: listCurrency['id'].toString(),
+                                      );
+                                    })?.toList() ??
+                                        [],
                                   ),
-                                  hint: Text(
-                                    _currencyId.toString(),
-                                    style: appStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18),
-                                  ),
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      _currencyId = value;
-                                    });
-                                  },
-                                  items: _currenciesData.map((listCurrency) {
-                                    return new DropdownMenuItem(
-                                      child: new Text(
-                                        listCurrency['currency_label']
-                                        [_lang],
-                                        style: appStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      value: listCurrency['id'].toString(),
-                                    );
-                                  })?.toList() ??
-                                      [],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

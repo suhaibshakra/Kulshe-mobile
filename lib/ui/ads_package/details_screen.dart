@@ -231,7 +231,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              flex: 6,
+                              flex: 5,
                               child: Padding(
                                 padding: const EdgeInsets.all(2.0),
                                 child: Text(
@@ -246,10 +246,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                             ),
                             Expanded(
-                              flex: 2,
+                              flex: 1,
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 18),
                                 child: buildIcons(
+                                  height: 50,width: 50,
                                     hasShadow: true,
                                     bgColor: AppColors.whiteColor,
                                     iconData: _details['is_favorite_ad'] == false
@@ -383,7 +383,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 },
                                 child: Row(
                                   children: [
-                                    if(_details['show_contact'] == true)
                                     _details['user_contact']['user_image'] != null
                                         ?CircleAvatar(
                                         radius: 22,
@@ -400,7 +399,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     SizedBox(
                                       width: 10,
                                     ),
-                                    if(_details['show_contact'] == true)
                                       Text(
                                         _details['user_contact']['nick_name'],
                                         style: appStyle(
@@ -412,14 +410,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 ),
                               ),
                             ),
-                            (_details['show_contact'] &&
-                                _details['user_contact'] != null &&
-                                _details['user_contact']['user_image'] !=
-                                    null)
+                            (_details['show_contact']==true &&
+                                _details['user_contact'] != null )
                                 ? Expanded(
-                                flex: 4,
+                                flex: (_details['user_contact']['mobile_number'] != null)?4:1,
                                 child: Row(
                                   children: [
+                                    if(_details['user_contact']['mobile_number'] != null)
                                     buildIcons(
                                       width: 35,
                                       height: 35,
@@ -433,6 +430,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                               .toString()),
                                       // _launchURLWhatsApp(_details['user_contact']['mobile_number'].toString());
                                     ),
+                                    if(_details['user_contact']['mobile_number'] != null)
                                     buildIcons(
                                         width: 35,
                                         height: 35,
@@ -570,7 +568,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
-                                      flex: 3,
+                                      flex: 2,
                                       child: Text(
                                         "النوع".toString(),
                                         style: appStyle(
@@ -580,7 +578,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      flex: 2,
+                                      flex: 3,
                                       child: Text(
                                         _adBrands[0]['label']['ar'].toString(),
                                         style: appStyle(
@@ -615,7 +613,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
-                                      flex: 3,
+                                      flex: 2,
                                       child: Text(
                                         "الفرع".toString(),
                                         style: appStyle(
@@ -625,7 +623,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ),
                                     ),
                                     Expanded(
-                                      flex: 2,
+                                      flex: 3,
                                       child: Text(
                                         _adSubBrands[0]['label']['ar'].toString(),
                                         style: appStyle(
@@ -685,7 +683,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       CrossAxisAlignment.center,
                                       children: [
                                         Expanded(
-                                            flex: 3,
+                                            flex: 2,
                                             child: Text(
                                               _myLabel['ar'].toString(),
                                               style: appStyle(
@@ -698,7 +696,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             .toString() !=
                                             "List<dynamic>")
                                           Expanded(
-                                            flex: 2,
+                                            flex: 3,
                                             child: Row(
                                               children: [
                                                 Text(
@@ -790,7 +788,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               if(_details['show_contact'] == true)
-                                if (_details['user_contact']['user_image'] != null)
+                                if (_details['user_contact']['user_phone'] != null)
                               Expanded(
                                 flex: 1,
                                 child: myButton(
@@ -809,6 +807,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       //   Navigator.push(context, MaterialPageRoute(builder: (context) => PlayVideo(videoUrl: _details['video'],),),);
                                     }),
                               ),
+                              if (_details['show_contact']==true &&
+                                  _details['user_contact']['phone_number'] != null )
                               SizedBox(
                                 width: 10,
                               ),

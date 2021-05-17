@@ -265,16 +265,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                     itemBuilder: (context, index) {
                                       return Container(
                                         color: Colors.grey.shade200,
-                                        child: InkWell(
-                                          onTap: ()=>verifyEmail(context: context),
-                                          child: ListTile(
-                                            title: Text(
-                                                " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",style: appStyle(color:index == 0? Colors.amber: AppColors.blackColor2,fontWeight: FontWeight.bold),),
-                                            subtitle: index == 0||index == 1?InkWell(child: Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: Text("ارسال رسالة التفعيل مرة اخرى",style: appStyle(fontWeight: FontWeight.bold,color: AppColors.green,fontSize: 20),textAlign: TextAlign.center,),
-                                            ),):"",
-                                          ),
+                                        child: ListTile(
+                                          title: Text(
+                                              " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",style: appStyle(color:index == 0? Colors.amber: AppColors.blackColor2,fontWeight: FontWeight.bold),),
+                                          subtitle: index == 0||index == 1?InkWell(child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: InkWell(
+                                                onTap: ()=>verifyEmail(context: context),
+                                                child: Text("تفعيل",style: appStyle(fontWeight: FontWeight.bold,color: AppColors.green,fontSize: 20),textAlign: TextAlign.center,)),
+                                          ),):"",
                                         ),
                                       );
                                     }, separatorBuilder: (BuildContext context, int index) { return Divider(); },),

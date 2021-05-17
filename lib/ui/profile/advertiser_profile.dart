@@ -67,18 +67,17 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     return SafeArea(
-      child: Directionality(
-
-        textDirection: _dirController,
-        child: Scaffold(
-          key: _scaffoldKey,
-           resizeToAvoidBottomInset: false,
-          body: _loading
-              ? buildLoading(color: AppColors.redColor)
-              : Stack(
-                  children: [
-                    buildBg(),
-                    SingleChildScrollView(
+      child: Scaffold(
+        key: _scaffoldKey,
+         resizeToAvoidBottomInset: false,
+        body: _loading
+            ? buildLoading(color: AppColors.redColor)
+            : Stack(
+                children: [
+                  buildBg(),
+                  Directionality(
+                    textDirection: _dirController,
+                    child: SingleChildScrollView(
                       child: Stack(
                         children: [
                           Container(
@@ -221,9 +220,9 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                         ],
                       ),
                     ),
-                  ],
-                ),
-        ),
+                  ),
+                ],
+              ),
       ),
     );
   }

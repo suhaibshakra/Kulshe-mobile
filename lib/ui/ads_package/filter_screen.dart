@@ -120,275 +120,279 @@ class _FilterScreenState extends State<FilterScreen> {
           // buildBg(),
           _loading
               ? buildLoading(color: AppColors.redColor)
-              : Directionality(
+              : Padding(
+                padding: const EdgeInsets.only(bottom: 28),
+                child: Directionality(
             textDirection: AppController.textDirection,
             child: SingleChildScrollView(
             child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _buildPath(),
-                    if (_subSectionData[0]['has_price'] == true)
-                      _buildPrice(),
-                    if (_listAttributes != null)
-                      Container(
-                        child: ListView.separated(
-                          separatorBuilder: (_, index) => Divider(
-                            color: AppColors.grey,
-                          ),
-                          itemCount: _listAttributes.length,
-                          physics: ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemBuilder: (ctx, mainIndex) {
-                            _options =
-                            _listAttributes[mainIndex]['options'];
-                            _type = _listAttributes[mainIndex]['config']
-                            ['searchType'];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 4),
-                              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildPath(),
+                      if (_subSectionData[0]['has_price'] == true)
+                        _buildPrice(),
+                      if (_listAttributes != null)
+                        Container(
+                          child: ListView.separated(
+                            separatorBuilder: (_, index) => Divider(
+                              color: AppColors.grey,
+                            ),
+                            itemCount: _listAttributes.length,
+                            physics: ClampingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (ctx, mainIndex) {
+                              _options =
+                              _listAttributes[mainIndex]['options'];
+                              _type = _listAttributes[mainIndex]['config']['searchType'];
+                              return Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 5),
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _listAttributes[mainIndex]['label']
-                                      [_lang],
-                                      style: appStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.blackColor2),
-                                    ),
-                                    Container(
-                                      child: GridView.builder(
-                                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,),
-                                        itemCount:
-                                            _type == 'range'
-                                            ? 1
-                                            : _options.length,
-                                        shrinkWrap: true,
-                                        physics: ClampingScrollPhysics(),
-                                        itemBuilder: (context, opIndex) {
-                                          return Card(
-                                            elevation: 1,
-                                            color: Colors.white,
-                                            child: Column(
-                                              children: [
-                                                // if (_type == 'radio')
-                                                //   _buildRadio(
-                                                //       mainIndex, opIndex),
-                                                if (_type!='range')
-                                                  _buildCheckbox(
-                                                      mainIndex, opIndex),
-                                                // if (_type == 'select')
-                                                //   _buildSelect(
-                                                //       opIndex, mainIndex),
-                                                // if (_type ==
-                                                //     'multiple_select')
-                                                //   buildMultiSelected(
-                                                //       mainIndex),
-                                                if (_type == 'range')
-                                                  _buildRange(
-                                                      opIndex, mainIndex),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    if (_subSectionData[0]['has_brand'])
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "النوع",
-                              style: appStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(4)),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 1,
-                                    child: DropdownButtonHideUnderline(
-                                      child: ButtonTheme(
-                                        alignedDropdown: true,
-                                        child: DropdownButton<String>(
-                                          isExpanded: false,
-                                          value: _brandId,
-                                          iconSize: 30,
-                                          icon: (null),
-                                          style: appStyle(
-                                            color: Colors.black54,
-                                            fontSize: 16,
-                                          ),
-                                          hint: Text(
-                                            // _brandId!=null?_brandId.toString():"choose type",
-                                            _listBrands[0]['label'][_lang],
-                                            style: appStyle(
-                                                fontWeight:
-                                                FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                          onChanged: (String value) {
-                                            setState(() {
-                                              _subBrandId = null;
-                                              _brandId = value;
-                                              _listSubBrands = _listBrands
-                                                  .where((element) =>
-                                              element['id']
-                                                  .toString() ==
-                                                  value.toString())
-                                                  .toList();
-                                              _listSubBrands =
-                                              _listSubBrands[0]
-                                              ['sub_brands'];
-                                              if (_listSubBrands != [] &&
-                                                  _listSubBrands !=
-                                                      null &&
-                                                  _listSubBrands
-                                                      .isNotEmpty) {
-                                                setState(() {
-                                                  hasSubBrands = true;
-                                                });
-                                              } else {
-                                                setState(() {
-                                                  hasSubBrands = false;
-                                                });
-                                              }
-                                              // print(" typeee ${hasSubBrands}");
-                                            });
-                                          },
-                                          items: _listBrands
-                                              .map((listBrand) {
-                                            // print("LIST BRAND ${listBrand['id']}");
-                                            return new DropdownMenuItem(
-                                              child: new Text(
-                                                listBrand['label']
-                                                [_lang],
-                                                style: appStyle(
-                                                    fontWeight:
-                                                    FontWeight
-                                                        .bold,
-                                                    fontSize: 16),
-                                              ),
-                                              value: listBrand['id']
-                                                  .toString(),
-                                            );
-                                          })?.toList() ??
-                                              [],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (hasSubBrands == true)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20, bottom: 20),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius:
-                                      BorderRadius.circular(4)),
-                                  child: Row(
+                                    horizontal: 4),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5),
+                                  child: Column(
                                     mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 1,
-                                        child:
-                                        DropdownButtonHideUnderline(
-                                          child: ButtonTheme(
-                                            alignedDropdown: true,
-                                            child: DropdownButton<String>(
-                                              isExpanded: false,
-                                              value: _subBrandId,
-                                              iconSize: 30,
-                                              icon: (null),
-                                              style: appStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                              ),
-                                              hint: Text(
-                                                // _subBrandId!=null?_subBrandId.toString():"choose sub type",
-                                                _listSubBrands[0]['label']
-                                                [_lang],
-                                                style: appStyle(
-                                                    fontWeight:
-                                                    FontWeight.bold,
-                                                    fontSize: 18),
-                                              ),
-                                              onChanged: (String value) {
-                                                setState(() {
-                                                  _subBrandId = value;
-                                                  // myAdAttributes[_listSubBrands[index]['name']] = value;
-                                                  // test(_listSubBrands[index]['id'], value);
-
-                                                  // print(" typeee ${value}");
-                                                });
-                                              },
-                                              items: _listSubBrands.map(
-                                                      (listSubBrand) {
-                                                    // print("LIST BRAND ${listSubBrand['id']}");
-                                                    return new DropdownMenuItem(
-                                                      child: new Text(
-                                                        listSubBrand[
-                                                        'label']
-                                                        [_lang],
-                                                        style: appStyle(
-                                                            fontWeight:
-                                                            FontWeight
-                                                                .bold,
-                                                            fontSize: 16),
-                                                      ),
-                                                      value: listSubBrand[
-                                                      'id']
-                                                          .toString(),
-                                                    );
-                                                  })?.toList() ??
-                                                  [],
-                                            ),
-                                          ),
-                                        ),
+                                    MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _listAttributes[mainIndex]['label']
+                                        [_lang],
+                                        style: appStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.blackColor2),
                                       ),
+                                      Container(
+                                        child: GridView.builder(
+                                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,),
+                                          itemCount:
+                                              _type == 'range'
+                                              ? 1
+                                              : _options.length,
+                                          shrinkWrap: true,
+                                          physics: ClampingScrollPhysics(),
+                                          itemBuilder: (context, opIndex) {
+                                            return Card(
+                                              elevation: 1,
+                                              color: Colors.white,
+                                              child: Column(
+                                                children: [
+                                                  // if (_type == 'radio')
+                                                  //   _buildRadio(
+                                                  //       mainIndex, opIndex),
+                                                  if (_type!='range')
+                                                    _buildCheckbox(
+                                                        mainIndex, opIndex),
+                                                  // if (_type == 'select')
+                                                  //   _buildSelect(
+                                                  //       opIndex, mainIndex),
+                                                  // if (_type ==
+                                                  //     'multiple_select')
+                                                  //   buildMultiSelected(
+                                                  //       mainIndex),
+                                                  if (_type == 'range')
+                                                    _buildRange(
+                                                        opIndex, mainIndex),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
-                              ),
-                          ],
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    _buildButton(context),
-                  ],
-                ),
+                      if (_subSectionData[0]['has_brand'])
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "النوع",
+                                style: appStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(4)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 1,
+                                      child: DropdownButtonHideUnderline(
+                                        child: ButtonTheme(
+                                          alignedDropdown: true,
+                                          child: DropdownButton<String>(
+                                            isExpanded: false,
+                                            value: _brandId,
+                                            iconSize: 30,
+                                            icon: (null),
+                                            style: appStyle(
+                                              color: Colors.black54,
+                                              fontSize: 16,
+                                            ),
+                                            hint: Text(
+                                              // _brandId!=null?_brandId.toString():"choose type",
+                                              _listBrands[0]['label'][_lang],
+                                              style: appStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontSize: 18),
+                                            ),
+                                            onChanged: (String value) {
+                                              setState(() {
+                                                _subBrandId = null;
+                                                _brandId = value;
+                                                _listSubBrands = _listBrands
+                                                    .where((element) =>
+                                                element['id']
+                                                    .toString() ==
+                                                    value.toString())
+                                                    .toList();
+                                                _listSubBrands =
+                                                _listSubBrands[0]
+                                                ['sub_brands'];
+                                                if (_listSubBrands != [] &&
+                                                    _listSubBrands !=
+                                                        null &&
+                                                    _listSubBrands
+                                                        .isNotEmpty) {
+                                                  setState(() {
+                                                    hasSubBrands = true;
+                                                  });
+                                                } else {
+                                                  setState(() {
+                                                    hasSubBrands = false;
+                                                  });
+                                                }
+                                                // print(" typeee ${hasSubBrands}");
+                                              });
+                                            },
+                                            items: _listBrands
+                                                .map((listBrand) {
+                                              // print("LIST BRAND ${listBrand['id']}");
+                                              return new DropdownMenuItem(
+                                                child: new Text(
+                                                  listBrand['label']
+                                                  [_lang],
+                                                  style: appStyle(
+                                                      fontWeight:
+                                                      FontWeight
+                                                          .bold,
+                                                      fontSize: 16),
+                                                ),
+                                                value: listBrand['id']
+                                                    .toString(),
+                                              );
+                                            })?.toList() ??
+                                                [],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (hasSubBrands == true)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 20, bottom: 20),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        borderRadius:
+                                        BorderRadius.circular(4)),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 1,
+                                          child:
+                                          DropdownButtonHideUnderline(
+                                            child: ButtonTheme(
+                                              alignedDropdown: true,
+                                              child: DropdownButton<String>(
+                                                isExpanded: false,
+                                                value: _subBrandId,
+                                                iconSize: 30,
+                                                icon: (null),
+                                                style: appStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                ),
+                                                hint: Text(
+                                                  // _subBrandId!=null?_subBrandId.toString():"choose sub type",
+                                                  _listSubBrands[0]['label']
+                                                  [_lang],
+                                                  style: appStyle(
+                                                      fontWeight:
+                                                      FontWeight.bold,
+                                                      fontSize: 18),
+                                                ),
+                                                onChanged: (String value) {
+                                                  setState(() {
+                                                    _subBrandId = value;
+                                                    // myAdAttributes[_listSubBrands[index]['name']] = value;
+                                                    // test(_listSubBrands[index]['id'], value);
+
+                                                    // print(" typeee ${value}");
+                                                  });
+                                                },
+                                                items: _listSubBrands.map(
+                                                        (listSubBrand) {
+                                                      // print("LIST BRAND ${listSubBrand['id']}");
+                                                      return new DropdownMenuItem(
+                                                        child: new Text(
+                                                          listSubBrand[
+                                                          'label']
+                                                          [_lang],
+                                                          style: appStyle(
+                                                              fontWeight:
+                                                              FontWeight
+                                                                  .bold,
+                                                              fontSize: 16),
+                                                        ),
+                                                        value: listSubBrand[
+                                                        'id']
+                                                            .toString(),
+                                                      );
+                                                    })?.toList() ??
+                                                    [],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
             ),
           ),
+         ),
               ),
+          if(!_loading)
+          Align(alignment: Alignment.bottomCenter,child: _buildButton(context),),
+
         ],
       ),
     );
@@ -827,10 +831,10 @@ class _FilterScreenState extends State<FilterScreen> {
         context: context,
         height: 50,
         width: double.infinity,
-        btnTxt: "Filter",
+        btnTxt: "بحث",
         fontSize: 20,
         txtColor: AppColors.whiteColor,
-        radius: 10,
+        radius: 2,
         btnColor: AppColors.redColor,
         onPressed: () {
           var urlEncode = [];

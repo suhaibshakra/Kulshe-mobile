@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
-import 'package:kulshe/models/profile.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,7 +144,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  ResponseProfileData _profileData;
+  // ResponseProfileData _profileData;
   List<Widget> _txtFieldList = [];
 
   _getCountries() async {
@@ -208,15 +207,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
 
     double height = mq.size.height * 0.2;
-    return Directionality(
-      textDirection: _drController,
-      child: SafeArea(
-        child: Scaffold(
-          body: Container(
-            child: _loading
-                ? Center(child: buildLoading(color: AppColors.green))
-                : SingleChildScrollView(
-              child: Column(
+    return SafeArea(
+      child: Scaffold(
+        appBar: buildAppBar(centerTitle: true,bgColor: AppColors.whiteColor),
+        body: Container(
+          child: _loading
+              ? Center(child: buildLoading(color: AppColors.green,))
+              : Directionality(
+            textDirection: _drController,
+            child: SingleChildScrollView(
+            child: Column(
                 children: [
                   Container(
                       padding: EdgeInsets.all(2),
@@ -719,9 +719,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   )
                 ],
-              ),
             ),
           ),
+              ),
         ),
       ),
     );

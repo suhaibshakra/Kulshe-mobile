@@ -127,11 +127,11 @@ class PublicAdsServicesNew {
 }
 class LatestAdsServices {
   static Future<List> getLatestAdsData({
-    String iso,
+    int offset
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get('${baseURL}classifieds/latest-mobile/${_pref.getString('countryId')}?limit=&offset=',
+      final response = await http.get('${baseURL}classifieds/latest-mobile/${_pref.getString('countryId')}?limit=10&offset=$offset',
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
@@ -141,8 +141,6 @@ class LatestAdsServices {
       print(response.statusCode);
       if (200 == response.statusCode) {
         print(response.statusCode);
-        // print(response.body);
-
         List ads = jsonDecode('[${response.body}]');
         // AdsResponseData adsData = ads[0].responseData ;
         // List<Ad> ad = adsData.ads;
@@ -401,33 +399,33 @@ class AdvertiserProfileServices {
   }
 }
 
-class ProfileServices {
-  static const String url = '${baseURL}profile';
-
-  static Future<List<Profile>> getProfileData() async {
-    SharedPreferences _pref = await SharedPreferences.getInstance();
-
-    try {
-      final response = await http.get(url, headers: {
-        'accept': 'application/json',
-        'token': "${_pref.getString('token')}",
-        'Authorization': 'bearer ${_pref.getString('token')}'
-      });
-      print(response.statusCode);
-      if (200 == response.statusCode) {
-        print(response.statusCode);
-        print(response.body);
-        List<Profile> profile = jsonDecode('[${response.body}]');
-        print('profileLLL: $profile');
-        return profile;
-      } else {
-        return List<Profile>();
-      }
-    } catch (e) {
-      return List<Profile>();
-    }
-  }
-}
+// class ProfileServices {
+//   static const String url = '${baseURL}profile';
+//
+//   static Future<List<Profile>> getProfileData() async {
+//     SharedPreferences _pref = await SharedPreferences.getInstance();
+//
+//     try {
+//       final response = await http.get(url, headers: {
+//         'accept': 'application/json',
+//         'token': "${_pref.getString('token')}",
+//         'Authorization': 'bearer ${_pref.getString('token')}'
+//       });
+//       print(response.statusCode);
+//       if (200 == response.statusCode) {
+//         print(response.statusCode);
+//         print(response.body);
+//         List<Profile> profile = jsonDecode('[${response.body}]');
+//         print('profileLLL: $profile');
+//         return profile;
+//       } else {
+//         return List<Profile>();
+//       }
+//     } catch (e) {
+//       return List<Profile>();
+//     }
+//   }
+// }
 
 
 class AdDetailsServicesNew {
