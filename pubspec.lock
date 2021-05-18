@@ -251,6 +251,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_absolute_path:
+    dependency: "direct main"
+    description:
+      name: flutter_absolute_path
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -478,13 +485,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  multi_image_picker:
+  multi_image_picker2:
     dependency: "direct main"
     description:
-      name: multi_image_picker
+      name: multi_image_picker2
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.8.01"
+    version: "5.0.00"
   nested:
     dependency: transitive
     description:

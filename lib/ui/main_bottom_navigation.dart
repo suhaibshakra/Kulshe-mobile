@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'ads_package/add_ad/add_ad_sections.dart';
 import 'ads_package/latest_ads_screen.dart';
 import 'ads_package/public_ads_list_screen.dart';
+import 'ads_package/public_ads_screen.dart';
 import 'ads_package/user_panel.dart';
 import 'bottome_navigation_screens/categories.dart';
 
@@ -35,7 +36,8 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
             : index == 1
                 ? CategoriesScreen()
                 : index == 2
-                    ? PublicAdsListScreen(
+                    ? PublicAdsScreen(
+          isPrivate: false,
                         isFav: true,
           isFilter: false,
             isMain:false,

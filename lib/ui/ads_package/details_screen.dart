@@ -25,8 +25,9 @@ class DetailsScreen extends StatefulWidget {
   final int adID;
   final int countryId;
   final String slug;
+  final bool isPrivate;
 
-  const DetailsScreen({Key key, @required this.adID, @required this.slug, this.countryId})
+  const DetailsScreen({Key key, @required this.adID, @required this.slug, this.countryId, this.isPrivate})
       : super(key: key);
 
   @override
@@ -125,6 +126,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     // // print('_${_countryData.where((element) => element.classified == true)}');
     // // print(sections[0].responseData[4].name);
   }
+  var _statusCode = -1;
 
   @override
   void initState() {
@@ -134,74 +136,88 @@ class _DetailsScreenState extends State<DetailsScreen> {
     AdDetailsServicesNew.getAdData(adId: widget.adID, slug: widget.slug,countryId: widget.countryId)
         .then((value) {
       setState(() {
-        _data = value;
-        
-        // print('DATA: ${value}');
-        _getCountries(_data[0]['responseData']['country_id'],
-            _data[0]['responseData']['city_id']);
-        if (_data[0]['responseData']['images'] != null)
-          for (var links in _data[0]['responseData']['images']) {
-            _listImg.add(links['medium']);
-          }
-        if (_listImg != null || _listImg != [])
-          imageSliders = _listImg
-              .map(
-                (item) => Container(
-                  child: Container(
-                    margin: EdgeInsets.all(5.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      child: Stack(
-                        children: <Widget>[
-                          Image.network(item, fit: BoxFit.cover, width: 1000.0),
-                          Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(200, 0, 0, 0),
-                                    Color.fromARGB(0, 0, 0, 0)
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
+        // customeCode = value[0]['custom_code'];
+        print("statusCode: $value");
+
+        if(value!= 410) {
+          _data = value;
+          // print('DATA: ${value}');
+          _getCountries(_data[0]['responseData']['country_id'],
+              _data[0]['responseData']['city_id']);
+          if (_data[0]['responseData']['images'] != null)
+            for (var links in _data[0]['responseData']['images']) {
+              _listImg.add(links['medium']);
+            }
+          if (_listImg != null || _listImg != [])
+            imageSliders = _listImg
+                .map(
+                  (item) =>
+                  Container(
+                    child: Container(
+                      margin: EdgeInsets.all(5.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        child: Stack(
+                          children: <Widget>[
+                            Image.network(
+                                item, fit: BoxFit.cover, width: 1000.0),
+                            Positioned(
+                              bottom: 0.0,
+                              left: 0.0,
+                              right: 0.0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromARGB(200, 0, 0, 0),
+                                      Color.fromARGB(0, 0, 0, 0)
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
                                 ),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 10.0),
-                              child: Text(
-                                '${_listImg.indexOf(item) + 1} / ${_listImg.length}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                child: Text(
+                                  '${_listImg.indexOf(item) + 1} / ${_listImg
+                                      .length}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              )
-              .toList();
-        _brandId = _data[0]['responseData']['brand_id'];
-        _subBrandId = _data[0]['responseData']['sub_brand_id'];
-        _details = _data[0]['responseData'];
-        log("DETAILS:${_details[1]}");
-        _attributes = _data[0]['responseData']['selected_attributes'];
-        abuseReasons = _details['abuse_reasons'];
-        // log('_sliderImages: $_sliderImages');
-        _getSections(
-          sec: _data[0]['responseData']['section_id'],
-          subSec: _data[0]['responseData']['sub_section_id'],
-          br: _data[0]['responseData']['brand_id'],
-          subBr: _data[0]['responseData']['sub_brand_id'],
-        );
-        _loading = false;
+            )
+                .toList();
+          _brandId = _data[0]['responseData']['brand_id'];
+          _subBrandId = _data[0]['responseData']['sub_brand_id'];
+          _details = _data[0]['responseData'];
+          log("DETAILS:${_details[1]}");
+          _attributes = _data[0]['responseData']['selected_attributes'];
+          abuseReasons = _details['abuse_reasons'];
+          // log('_sliderImages: $_sliderImages');
+          _getSections(
+            sec: _data[0]['responseData']['section_id'],
+            subSec: _data[0]['responseData']['sub_section_id'],
+            br: _data[0]['responseData']['brand_id'],
+            subBr: _data[0]['responseData']['sub_brand_id'],
+          );
+          _loading = false;
+        }else{
+          setState(() {
+            _statusCode = value;
+            print('Status: $_statusCode');
+            _loading = false;
+          });
+
+        }
       });
     });
     super.initState();
@@ -214,7 +230,35 @@ class _DetailsScreenState extends State<DetailsScreen> {
       key: _scaffoldKey,
       appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       body: _loading
-          ? buildLoading(color: AppColors.redColor)
+          ? buildLoading(color: AppColors.redColor):_statusCode == 410
+      ? Container(
+      color: Colors.white,
+      child: Center(
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.red,
+                    offset: Offset(2, 2),
+                    blurRadius: 1,
+                    spreadRadius: 2)
+              ]),
+          child: buildIconWithTxt(
+            label: Text(
+              "هذا الإعلان محذوف",
+              style: appStyle(
+                  color: AppColors.whiteColor, fontSize: 22),
+            ),
+            iconColor: AppColors.whiteColor,
+            iconData: Icons.arrow_back_outlined,
+            size: 30,
+            action: () => Navigator.of(context).pop(),
+          ),
+        ),
+      ),
+    )
           : Directionality(
               textDirection: AppController.textDirection,
               child: SingleChildScrollView(
@@ -223,7 +267,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ['selected_attributes'];
                   print('_details:${_details['user_contact']}');
                     var abuseReasons = _details['abuse_reasons'];
-                  return Column(
+                    String status = _data[0]['responseData']['status'];
+                    bool isPaused = _data[0]['responseData']['paused'];
+                  // print('status:$status');
+                        return Column(
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -374,6 +421,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            if('${_details['user_contact']}' != '[]')
                             Expanded(
                               flex: 6,
                               child: InkWell(
@@ -411,9 +459,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                             ),
                             (_details['show_contact']==true &&
-                                _details['user_contact'] != null )
+                                _details['user_contact'] != null && (widget.isPrivate && !isPaused && (status == 'approved' || status == 'new')))
                                 ? Expanded(
-                                flex: (_details['user_contact']['mobile_number'] != null)?4:1,
+                                flex: (_details['user_contact']['mobile_number'] != null)?5:1,
                                 child: Row(
                                   children: [
                                     if(_details['user_contact']['mobile_number'] != null)
@@ -467,6 +515,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               flex: 1,
                               child: Center(),
                             ),
+                            if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
                             buildIcons(
                                 width: 35,
                                 height: 35,
@@ -475,6 +524,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 bgColor: AppColors.greyFour,
                                 color: AppColors.whiteColor,
                                 action: ()=>shareData(context)),
+                            if(widget.isPrivate && isPaused)
+                              Container(
+                                color: AppColors.amberColor,
+                                padding: EdgeInsets.all(8),
+                                child: buildTxt(txt: "هذا العلان متوقف !",fontSize: 20,txtColor: AppColors.whiteColor),
+                              )
                           ],
                         ),
                       ),
@@ -557,7 +612,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-                      if (_adBrands.isNotEmpty)
+
+                      if(widget.isPrivate)
+                        if (_adBrands.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
@@ -715,8 +772,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                       SizedBox(
                                                         width: 5,
                                                       ),
-                                                      Text(_attributes[position][
-                                                      'selected_unit_name']['ar'].toString(),style: appStyle(
+                                                      Text(_attributes[position][//TODO : UNIT
+                                                      'selected_unit_name']['ar'] .toString(),style: appStyle(
                                                           fontSize: 15,
                                                           color: AppColors.greyFour,
                                                           fontWeight:
@@ -812,7 +869,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               SizedBox(
                                 width: 10,
                               ),
-                              Expanded(
+                              if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                                Expanded(
                                 flex: 1,
                                 child: myButton(
                                     btnTxt: _strController.sendEmail,
@@ -831,7 +889,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ],
                           ),
                         ),
-                      Padding(
+                      if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                        Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 8),
                         child: InkWell(
@@ -853,15 +912,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               horizontal: 10, vertical: 8),
                           child: Column(
                             children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: Divider(
-                                  thickness: 1,
-                                  color: AppColors.greyThree,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 8,
+                              if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                                Column(
+                                children: [
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: AppColors.greyThree,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                ],
                               ),
                               Container(
                                   width: double.infinity,
@@ -901,13 +965,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         child: Container(
                           width: double.infinity,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            // crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               if(_details['video']!= null)
                                 myButton(
                                     btnTxt: 'عرض الفيديو',
                                     fontSize: 16,
-                                    btnColor: Colors.amber,
+                                    btnColor: Colors.black26,
                                     radius: 8,
                                     context: context,
                                     txtColor: AppColors.whiteColor,

@@ -85,15 +85,15 @@ class MyAdsServicesNew {
 
 class PublicAdsServicesNew {
   static Future<List> getPublicAdsData({
-    int sectionId,
-    int subSectionId,
+    int sectionId = 1,
+    int subSectionId = 1,
     int countryId,
-    String cityId,
-    String brand,
-    String subBrand,
-    String hasPrice,
-    int hasImage,
-    String sort,
+    String cityId = "",
+    String brand = "",
+    String subBrand = "",
+    String hasPrice = "",
+    int hasImage = 0,
+    String sort="",
     String limit,
     String offset,
     String txt = "",
@@ -101,7 +101,7 @@ class PublicAdsServicesNew {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
-          '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=$limit&offset=$offset',
+          '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=10&offset=$offset',
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
@@ -429,7 +429,7 @@ class AdvertiserProfileServices {
 
 
 class AdDetailsServicesNew {
-  static Future<List> getAdData({
+  static Future getAdData({
     int adId,
     String slug,
     int countryId,
@@ -447,15 +447,15 @@ class AdDetailsServicesNew {
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
           });
-      print(response.statusCode);
+      // print(response.statusCode);
       if (200 == response.statusCode) {
-        print(response.statusCode);
-        print(response.body);
+        // print(response.statusCode);
+        // print(response.body);
 
         List ads = jsonDecode('[${response.body}]');
         return ads;
       } else {
-        return List();
+        return response.statusCode;
       }
     } catch (e) {
       return List();

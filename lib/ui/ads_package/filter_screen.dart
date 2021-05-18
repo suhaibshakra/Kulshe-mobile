@@ -6,6 +6,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
+import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FilterScreen extends StatefulWidget {
@@ -169,7 +170,8 @@ class _FilterScreenState extends State<FilterScreen> {
                                       ),
                                       Container(
                                         child: GridView.builder(
-                                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: _type == 'range'?1:2,childAspectRatio:_type == 'range'? 5 : 2.6,),
+                                          // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,crossAxisSpacing: 10,childAspectRatio: 50),
                                           itemCount:
                                               _type == 'range'
                                               ? 1
@@ -565,7 +567,7 @@ class _FilterScreenState extends State<FilterScreen> {
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
             .contains(_listAttributes[mainIndex]['options'][opIndex]['id']) ??
             null,
-        title: new Text("${_listAttributes[mainIndex]['options'][opIndex]['label'][_lang]}"),
+        title: new Text("${_listAttributes[mainIndex]['options'][opIndex]['label'][_lang]}",style: appStyle(fontSize: 14),),
         controlAffinity: ListTileControlAffinity.leading,
         tristate: true,
         onChanged: (bool val) {
@@ -883,7 +885,8 @@ class _FilterScreenState extends State<FilterScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PublicAdsListScreen(
+                builder: (context) => PublicAdsScreen(
+                  isPrivate: false,
                   isFav: false,
                   isMain: false,
                   section: widget.sectionId,

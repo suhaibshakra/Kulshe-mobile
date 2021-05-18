@@ -225,6 +225,7 @@ class _LatestAdsState extends State<LatestAds> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => DetailsScreen(
+                        isPrivate: false,
                         adID: _data['id'],
                         slug: _data['slug'],
                       ),
@@ -379,28 +380,28 @@ class _LatestAdsState extends State<LatestAds> {
               Align(
                 alignment: Alignment.topLeft,
                 child: buildIcons(
-                    iconData: _data['is_favorite_ad'] == false
+                    iconData: _adsData[index]['is_favorite_ad'] == false
                         ? Icons.favorite_border
                         : Icons.favorite,
                     color: Colors.red,
                     size: 26,
                     action: () {
                       favoriteAd(
-                        scaffoldKey: _scaffoldKey,
+                        // scaffoldKey: _scaffoldKey,
                         context: context,
                         adId: _data['id'],
-                        state:
-                            _data['is_favorite_ad'] == true ? "delete" : "add",
+                        state:_adsData[index]['is_favorite_ad'] == true ? "delete" : "add",
                       ).then((value) {
                         setState(() {
-                          LatestAdsServices.getLatestAdsData().then((value) {
-                            setState(() {
-                              _adsData = value[0]['responseData'];
-                              // log(_adsData.toString());
-                              // log('value $_adsData');
-                              // _loading = false;
-                            });
-                          });
+                          _adsData[index]['is_favorite_ad'] = !_adsData[index]['is_favorite_ad'];
+                          // LatestAdsServices.getLatestAdsData().then((value) {
+                          //   setState(() {
+                          //     _adsData = value[0]['responseData'];
+                          //     // log(_adsData.toString());
+                          //     // log('value $_adsData');
+                          //     // _loading = false;
+                          //   });
+                          // });
                         });
                       });
                     }),

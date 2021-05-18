@@ -8,6 +8,7 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/app_helpers/search_ui.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
+import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -362,7 +363,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PublicAdsListScreen(
+                                builder: (context) => PublicAdsScreen(
                                   sectionId: _data['id'],
                                   section: _data['label'][lang],
                                   subSectionId: data['id'],
@@ -371,6 +372,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   isFav: false,
                                   isFilter: false,
                                   isMain: false,
+                                  isPrivate: false,
                                 ),
                               ),
                             );

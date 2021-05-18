@@ -247,7 +247,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        DetailsScreen(adID: _data['id'], slug: _data['slug']),
+                        DetailsScreen(adID: _data['id'], slug: _data['slug'],isPrivate: false,),
                   ),
                 );
               },

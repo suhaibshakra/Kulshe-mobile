@@ -175,7 +175,6 @@ Future deleteAd({BuildContext context, @required int adId}) async {
   });
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
-    // print(await response.stream.bytesToString());
     print('********************************Done');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.CENTER);
@@ -336,15 +335,19 @@ Future favoriteAd({
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
     print('********************************Done');
-    scaffoldKey.currentState.showSnackBar(new SnackBar(action: SnackBarAction(
-      label: 'حسنا',
-      textColor: AppColors.whiteColor,
-      onPressed: () {
-        // Some code to undo the change.
-      },
-    ),duration: Duration(milliseconds: 2000),backgroundColor: Colors.green.shade300,content: new Text('${decodeData['custom_message']}',style: appStyle(fontWeight: FontWeight.bold,fontSize: 15,color: AppColors.whiteColor),)));
-    // viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
-    //     Toast.BOTTOM);
+    print('${decodeData['custom_code']}');
+    print('${decodeData['custom_message']}');
+    print('********************************Done');
+    // scaffoldKey.currentState.showSnackBar(new SnackBar(action: SnackBarAction(
+    //   label: 'حسنا',
+    //   textColor: AppColors.whiteColor,
+    //   onPressed: () {
+    //     // Some code to undo the change.
+    //   },
+    // ),duration: Duration(milliseconds: 2000),backgroundColor: Colors.green.shade300,content: new Text('${decodeData['custom_message']}',style: appStyle(fontWeight: FontWeight.bold,fontSize: 15,color: AppColors.whiteColor),)));
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+    return decodeData['custom_code'];
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,

@@ -55,7 +55,9 @@ dependencies:
   font_awesome_flutter: ^9.0.0
   page_view_indicator: ^2.0.4
   intl: ^0.16.1
-  multi_image_picker: ^4.6.9
+#  multi_image_picker: ^4.6.9
+  multi_image_picker2: ^5.0.0
+  flutter_absolute_path: ^1.0.6
   simple_location_picker: ^0.0.3
   video_player: ^0.10.1
   provider: ^5.0.0

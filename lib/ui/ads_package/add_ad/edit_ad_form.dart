@@ -267,23 +267,23 @@ class _EditAdFormState extends State<EditAdForm> {
                     //   _buildPath(),
                     _buildConstData(),
                     _buildDynamicData(mq),
-                    Center(
-                      child: buildIconWithTxt(
-                        iconData: Icons.image_outlined,
-                        iconColor: AppColors.redColor,
-                        label: Text(
-                          _strController.labelGallery,
-                          style: appStyle(
-                              fontSize: 16,
-                              color: AppColors.redColor,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        action: () => _pickImageLast(ImageSource.gallery),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
+                    // Center(
+                    //   child: buildIconWithTxt(
+                    //     iconData: Icons.image_outlined,
+                    //     iconColor: AppColors.redColor,
+                    //     label: Text(
+                    //       _strController.labelGallery,
+                    //       style: appStyle(
+                    //           fontSize: 16,
+                    //           color: AppColors.redColor,
+                    //           fontWeight: FontWeight.w400),
+                    //     ),
+                    //     action: () => _pickImageLast(ImageSource.gallery),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 20,
+                    // ),
                     _buildButton(context),
                   ],
                 ),
@@ -372,7 +372,7 @@ class _EditAdFormState extends State<EditAdForm> {
               child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       mainAxisExtent: _type == 'radio' ? 50 :  null,
-                      childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select') ?( _options.length > 4 ?  01 :_options.length * 2.0):3,
+                      childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select')?( _options.length > 4 ?  01 :_options.length * 2.0):3,
                       crossAxisCount:
                       _type == 'select' || _type == 'multiple_select' || _type == 'multiple_buttons_groups'
                           ? 1
