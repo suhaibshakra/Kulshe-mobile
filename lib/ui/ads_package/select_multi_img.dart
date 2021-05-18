@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -165,8 +166,16 @@ class _MultiTestState extends State<MultiTest> {
       var path2 = await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
       var file = await getImageFileFromAsset(path2);
       var base64Image = base64Encode(file.readAsBytesSync());
-      files.add(base64Image);
-      print('Files : $files');
+
+
+      String fileExe = path2.split('/').last;
+      fileExe = fileExe.split('.').last;
+
+      print(fileExe);
+      log("data:image/$fileExe;base64,$base64Image");
+
+      files.add("data:image/$fileExe;base64,$base64Image");
+     // ;
       // var data = {
       //   "files": files,
       // };
