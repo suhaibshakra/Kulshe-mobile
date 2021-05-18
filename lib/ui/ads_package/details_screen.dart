@@ -1057,8 +1057,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 abuseId: abuseID,
                 abuseDescription: _otherReason.text.isNotEmpty
                     ? _otherReason.text.toString()
-                    : null);
-            Navigator.of(context, rootNavigator: true).pop();
+                    : null).then((value){
+                      value == "done"?Navigator.of(context, rootNavigator: true).pop():null;
+            });
           },
           color: Color.fromRGBO(0, 179, 134, 1.0),
         ),

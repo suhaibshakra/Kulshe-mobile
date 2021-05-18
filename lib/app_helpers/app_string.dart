@@ -181,8 +181,8 @@ class EnglishString extends Strings {
     waitingAds = "Waiting Agree";
     pausedAds = "Paused";
     expiredAds = "Expired";
-    labelCamera = "Pick image \n from camera";
-    labelGallery = "choose image \n from gallery";
+    labelCamera = "from camera";
+    labelGallery = "from gallery";
     selectCity = "Select City";
     fullName = "Full Name";
     mobile = "Mobile";
@@ -311,8 +311,8 @@ class ArabicString extends Strings {
     waitingAds = "بانتظار الموافقة";
     pausedAds = "المعلقة";
     expiredAds = "منتهية الصلاحية";
-    labelCamera = "التقاط صور \n من الكاميرا";
-    labelGallery = "اختيار صور \n من المعرض";
+    labelCamera = "من الكاميرا";
+    labelGallery = "من المعرض";
     selectCity = "إختر المدينة";
     fullName = "الاسم الكامل";
     mobile = "رقم الهاتف";

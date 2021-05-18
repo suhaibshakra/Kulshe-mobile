@@ -237,8 +237,8 @@ class _AddAdFormState extends State<AddAdForm> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (!widget.fromEdit) _buildPath(),
-                          buildTxt(txt: "إختر من معرض الصور"),
-                          Container(height: 130, child: SingleImageUpload()),
+                          // buildTxt(txt: "إختر من معرض الصور"),
+                          // Container(height: 130, child: SingleImageUpload()),
                           _buildConstData(),
                           _buildDynamicData(mq),
                           // Center(

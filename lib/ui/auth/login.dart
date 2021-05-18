@@ -66,34 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.toString().trim(),
           password: _passwordController.text.toString(),
           context: context).then((value){
-        print('VAL:$value');
         if(value['custom_code'] == 2166){
           Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordSocialMedia(value: value['responseData']['token'],),),);
-              // buildDialog(desc: '',no: _strController.cancel,yes: _strController.done,title: "Enter New Password", context: context,content:
-              // Column(
-              //   children: [
-              //     buildTextField(
-              //       fromDialog: true,
-              //       label: _strController.newPassword,
-              //       controller: _newPasswordController,
-              //       textInputType: TextInputType.visiblePassword,
-              //       isPassword: true
-              //     ),
-              //     buildTextField(
-              //       fromDialog: true,
-              //       label: _strController.confirmPassword,
-              //       controller: _confirmPasswordController,
-              //       textInputType: TextInputType.visiblePassword,
-              //       isPassword: true
-              //     ),
-              //   ],
-              // ),
-              //   action:()=> changePasswordSocial(context, _newPasswordController.text.toString(), _confirmPasswordController.text.toString(),value['responseData']['token'].toString()).then((value) {
-              //     print('VALUE');
-              //     print(value['responseData']['token']);
-              //
-              //     })
-              // );
             }else{
           return "";
         }

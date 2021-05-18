@@ -5,13 +5,23 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/ui/ads_package/add_ad/add_ad_sections.dart';
 import 'package:kulshe/ui/ads_package/filter_screen.dart';
+import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/splash_screen.dart';
 
-class SearchWidget extends StatelessWidget {
+class SearchWidget extends StatefulWidget {
   //final performSearch;
-  final onSubmit;
+  // final onSubmit;
 
-  const SearchWidget({Key key, this.onSubmit}) : super(key: key);
+  const SearchWidget({Key key,}) : super(key: key);
+
+  @override
+  _SearchWidgetState createState() => _SearchWidgetState();
+}
+
+class _SearchWidgetState extends State<SearchWidget> {
+  IconData icon = Icons.search;
+  TextEditingController controller = TextEditingController();
+  var text = "";
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +37,55 @@ class SearchWidget extends StatelessWidget {
           children: <Widget>[
             GestureDetector(
               child: Icon(
-                Icons.search,
+                icon,
                 color: Colors.black54,
               ),
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  controller.clear();
+                });
+                if(icon == Icons.close)
+                  setState(() {
+                    icon = Icons.search;
+                  });
+              },
             ),
             SizedBox(
               width: 10.0,
             ),
             Expanded(
               child: TextField(
+                controller: controller,
                 decoration: InputDecoration(
                     border: InputBorder.none, hintText: AppController.strings.search,hintStyle: appStyle(color: AppColors.blackColor2,fontSize: 16)),
-                onSubmitted: onSubmit,
+                onSubmitted: (String val) {
+                  if (val.isNotEmpty) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsListScreen(
+                            isFav: false,
+                            isFilter: false,
+                            isMain: false,
+                            txt: val,
+                          ),
+                        ));
+                    setState(() {
+                      controller.clear();
+                      icon = Icons.search;
+                    });
+                  }
+                  print('DONE ...');
+                  print('val:$val');
+                },
+                onChanged: (String val){
+                  setState(() {
+                    if(val.isEmpty){
+                    icon = Icons.search;}else{
+                      icon = Icons.close;
+                    }
+                  });
+                },
               ),
             ),
             InkWell(

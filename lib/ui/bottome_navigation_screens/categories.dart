@@ -193,24 +193,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   ),
                                   child: Directionality(
                                       textDirection: _drController,
-                                      child: SearchWidget(
-                                        onSubmit: (String val) {
-                                          if (val.isNotEmpty)
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PublicAdsListScreen(
-                                                    isFav: false,
-                                                    isFilter: false,
-                                                    isMain: false,
-                                                    txt: val,
-                                                  ),
-                                                ));
-                                          print('DONE ...');
-                                          print('val:$val');
-                                        },
-                                      ),
+                                      child: SearchWidget(),
 
                                   )),
                               // decoration: BoxDecoration(

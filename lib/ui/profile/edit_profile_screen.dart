@@ -224,15 +224,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         borderRadius: BorderRadius.only(
                             bottomRight: Radius.circular(25),
                             bottomLeft: Radius.circular(25)),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.lightBlueAccent.shade400,
-                            Colors.lightBlueAccent.shade200,
-                            Colors.lightBlueAccent.shade200,
-                            Colors.lightBlueAccent.shade200,
-                            Colors.lightBlueAccent.shade400,
-                          ],
-                        ),
+                        // gradient: LinearGradient(
+                        //   colors: [
+                        //     // Colors.lightBlueAccent.shade400,
+                        //     // Colors.lightBlueAccent.shade200,
+                        //     // Colors.lightBlueAccent.shade200,
+                        //     // Colors.lightBlueAccent.shade200,
+                        //     // Colors.lightBlueAccent.shade400,
+                        //   ],
+                        // ),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.shade200,
@@ -262,15 +262,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             children: [
                               buildIconWithTxt(
                                 iconData: Icons.camera,
-                                iconColor: AppColors.whiteColor,
-                                label: Text(_strController.labelCamera,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
+                                iconColor: AppColors.grey,
+                                label: Text(_strController.labelCamera,style: appStyle(fontSize: 16,color: AppColors.grey,fontWeight: FontWeight.w400),),
                                 action: () =>
                                     _pickImageLast(ImageSource.camera),
                               ),
                               buildIconWithTxt(
                                 iconData: Icons.image_outlined,
-                                iconColor: AppColors.whiteColor,
-                                label: Text(_strController.labelGallery,style: appStyle(fontSize: 16,color: AppColors.whiteColor,fontWeight: FontWeight.w400),),
+                                iconColor: AppColors.grey,
+                                label: Text(_strController.labelGallery,style: appStyle(fontSize: 16,color: AppColors.grey,fontWeight: FontWeight.w400),),
                                 action: () =>
                                     _pickImageLast(ImageSource.gallery),
                               ),

@@ -266,12 +266,16 @@ Future abuseAd({
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
     print('********************************Done');
+
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
+    return "done";
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+    return "wrong";
+
   }
 }
 
