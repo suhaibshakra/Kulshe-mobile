@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kulshe/services_api/api.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 
 // import 'package:image_picker/image_picker.dart';
@@ -149,13 +150,9 @@ class MultiTest extends StatefulWidget {
 
 class _MultiTestState extends State<MultiTest> {
   List<Asset> images = List<Asset>();
-
   List files = [];
-
   List<Asset> resultList;
-
   String _error = 'No Error Dectected';
-
 
   @override
   void initState() {
@@ -172,9 +169,19 @@ class _MultiTestState extends State<MultiTest> {
       fileExe = fileExe.split('.').last;
 
       print(fileExe);
-      log("data:image/$fileExe;base64,$base64Image");
+      // log("data:image/$fileExe;base64,$base64Image");
 
+      if(files.contains("data:image/$fileExe;base64,$base64Image")){
+        print('already available');
+      }else{
       files.add("data:image/$fileExe;base64,$base64Image");
+      uploadImage(context,"data:image/$fileExe;base64,$base64Image");
+      }
+      for(int i =0;i<files.length;i++){
+        print('Files: ${files.length}');
+      }
+
+
      // ;
       // var data = {
       //   "files": files,

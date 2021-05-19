@@ -236,6 +236,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       child: Center(
         child: Container(
           height: 60,
+          padding: EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
@@ -319,13 +320,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                               slug: widget.slug,
                                           )
                                               .then((value) {
-                                            setState(() {
-                                              _data = value;
-                                              log(_data.toString());
-                                              // _adDetailsData = value[0]['responseData'];
-                                              // _detailsAttribute = value[0]['responseData']['selected_attributes'];
-                                              _loading = false;
-                                            });
+                                           setState(() {
+                                             _details['is_favorite_ad'] = !_details['is_favorite_ad'];
+                                           });
                                           });
                                         });
                                       });
@@ -345,25 +342,44 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               children: [
                                 Expanded(
                                   flex: 2,
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: _details['has_price'] &&
-                                        _details['price'] != 0 &&
-                                        _details['currency'] != null
-                                        ? Text(
-                                      '${_details['price'].toString() +"  "+ _details['currency']['ar'].toString()}',
-                                      style: appStyle(
-                                          color: Colors.green,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
-                                    )
-                                        : Text(
-                                      _strController.callAdvPrice,
-                                      style: appStyle(
-                                          color: Colors.green,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
-                                    ),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: double.infinity,
+                                        child: _details['has_price'] &&
+                                            _details['price'] != 0 &&
+                                            _details['currency'] != null
+                                            ? Text(
+                                          '${_details['price'].toString() +"  "+ _details['currency']['ar'].toString()}',
+                                          style: appStyle(
+                                              color: Colors.green,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                            : Text(
+                                          _strController.callAdvPrice,
+                                          style: appStyle(
+                                              color: Colors.green,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10,),
+                                      if(widget.isPrivate && isPaused)
+                                        Container(
+                                          width: double.infinity,
+                                          color: AppColors.amberColor,
+                                          padding: EdgeInsets.symmetric(vertical: 8),
+                                          child: Padding(padding: EdgeInsets.symmetric(horizontal: 4),child: buildTxt(txt: "هذا العلان متوقف !",fontSize: 20,txtColor: AppColors.whiteColor),),
+                                        ),
+                                      if(status == 'expired')
+                                        Container(
+                                          width: double.infinity,
+                                          color: AppColors.amberColor,
+                                          padding: EdgeInsets.symmetric(vertical: 8),
+                                          child: buildTxt(txt: "هذا العلان منتهي الصلاحية !",fontSize: 20,txtColor: AppColors.whiteColor),
+                                        )
+                                    ],
                                   ),
                                 ),
                                 if (_details['negotiable'])
@@ -524,12 +540,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 bgColor: AppColors.greyFour,
                                 color: AppColors.whiteColor,
                                 action: ()=>shareData(context)),
-                            if(widget.isPrivate && isPaused)
-                              Container(
-                                color: AppColors.amberColor,
-                                padding: EdgeInsets.all(8),
-                                child: buildTxt(txt: "هذا العلان متوقف !",fontSize: 20,txtColor: AppColors.whiteColor),
-                              )
                           ],
                         ),
                       ),

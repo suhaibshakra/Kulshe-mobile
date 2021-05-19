@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,12 +13,12 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:simple_location_picker/simple_location_picker_screen.dart';
 // import 'package:simple_location_picker/simple_location_result.dart';
 // import 'package:simple_location_picker/utils/slp_constants.dart';
 import 'package:toast/toast.dart';
-import '../select_multi_img.dart';
 
 class AddAdForm extends StatefulWidget {
   final String section;
@@ -87,28 +88,7 @@ class _AddAdFormState extends State<AddAdForm> {
   var _userImage;
   var _imgURL;
 
-  // void _pickImageLast(ImageSource src) async {
-  //   final pickedImageFile =
-  //   await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-  //   // // print('PC:$_picker');
-  //   if (pickedImageFile != null) {
-  //     setState(() {
-  //       _pickedImage = File(pickedImageFile.path);
-  //     });
-  //     _userImageFile = _pickedImage;
-  //     bytes = File(_userImageFile.path).readAsBytesSync();
-  //
-  //     String fileName = _userImageFile.path.split('/').last;
-  //     fileName = fileName.split('.').last;
-  //
-  //     // // print(fileName);
-  //     // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
-  //     _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
-  //     _images.add({"image": _userImage != null ? _userImage : "sss"});
-  //   } else {
-  //     // print('No Image Selected');
-  //   }
-  // }
+
 
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -173,6 +153,7 @@ class _AddAdFormState extends State<AddAdForm> {
       });
     });
   }
+  var statusCode = 0;
 
   @override
   void initState() {
@@ -182,33 +163,38 @@ class _AddAdFormState extends State<AddAdForm> {
     myAdAttributesArray = [];
     myAdAttributes = {};
     myAdAttributesMulti = [];
-
     AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
         .then((value) {
-      setState(() {
-        _adForm = value;
-        _currenciesData = value[0]['responseData']['currencies'];
-        _listAttributes = value[0]['responseData']['attributes'];
-        _listBrands = value[0]['responseData']['brands'];
-        final jsonList = value[0]['responseData']['brands']
-            .map((item) => jsonEncode(item))
-            .toList();
+          if(value == 412)
+            setState(() {
+              statusCode = value;
+              _loading = false;
+            });
+          if(value != 412)
+            setState(() {
+            _adForm = value;
+            _currenciesData = value[0]['responseData']['currencies'];
+            _listAttributes = value[0]['responseData']['attributes'];
+            _listBrands = value[0]['responseData']['brands'];
+            final jsonList = value[0]['responseData']['brands']
+                .map((item) => jsonEncode(item))
+                .toList();
 
-        // using toSet - toList strategy
-        final uniqueJsonList = jsonList.toSet().toList();
+            // using toSet - toList strategy
+            final uniqueJsonList = jsonList.toSet().toList();
 
-        // convert each item back to the original form using JSON decoding
-        _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+            // convert each item back to the original form using JSON decoding
+            _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
 
-        _showContactInfo = value[0]['responseData']['show_my_contact'];
-        _negotiable = value[0]['responseData']['negotiable'];
-        _isFree = value[0]['responseData']['if_free'];
-        _loading = false;
-        var _dataCurrency = _currenciesData
-            .where((element) => element['default'] == true)
-            .toList();
-        _currencyId = _dataCurrency[0]['id'].toString();
-      });
+            _showContactInfo = value[0]['responseData']['show_my_contact'];
+            _negotiable = value[0]['responseData']['negotiable'];
+            _isFree = value[0]['responseData']['if_free'];
+            _loading = false;
+            var _dataCurrency = _currenciesData
+                .where((element) => element['default'] == true)
+                .toList();
+            _currencyId = _dataCurrency[0]['id'].toString();
+          });
     });
 
     super.initState();
@@ -223,11 +209,40 @@ class _AddAdFormState extends State<AddAdForm> {
       appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Directionality(
+        child: _loading
+            ? Center(child: buildLoading(color: AppColors.redColor))
+            : statusCode == 412?
+        Container(
+          color: Colors.white,
+          child: Center(
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.red,
+                        offset: Offset(2, 2),
+                        blurRadius: 1,
+                        spreadRadius: 2)
+                  ]),
+              child: buildIconWithTxt(
+                label: Text(
+                  "لقد تجازوزت الحد المسموح \n لاضافة اعلانات لهذا الشهر ",
+                  style: appStyle(
+                      color: AppColors.whiteColor, fontSize: 20),
+                ),
+                iconColor: AppColors.whiteColor,
+                iconData: Icons.arrow_back_outlined,
+                size: 30,
+                action: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        )
+            :Directionality(
           textDirection: AppController.textDirection,
-          child: _loading
-              ? Center(child: buildLoading(color: AppColors.redColor))
-              : Form(
+          child: Form(
                   key: _formKey,
                   child: SingleChildScrollView(
                     child: Padding(
@@ -236,6 +251,7 @@ class _AddAdFormState extends State<AddAdForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          _buildImages(),
                           if (!widget.fromEdit) _buildPath(),
                           // buildTxt(txt: "إختر من معرض الصور"),
                           // Container(height: 130, child: SingleImageUpload()),
@@ -264,7 +280,7 @@ class _AddAdFormState extends State<AddAdForm> {
                     ),
                   ),
                 ),
-        ),
+            ),
       ),
     );
   }
@@ -1332,10 +1348,6 @@ class _AddAdFormState extends State<AddAdForm> {
     );
   }
 
-  void _onCancelTap() {}
-
-  void _onSubmitTap() {}
-
   void _onItemCheckedChange(itemValue, bool checked, attributeId) {
     setState(() {
       if (checked) {
@@ -1372,6 +1384,130 @@ class _AddAdFormState extends State<AddAdForm> {
         _onItemCheckedChange(
             item['id'], checked, _listAttributes[mainIndex]['id']);
       },
+    );
+  }
+
+  List<Asset> images = List<Asset>();
+  List files = [];
+  List<Asset> resultList;
+  String _error = 'No Error Dectected';
+
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(images.length,(index) {
+        Asset asset = images[index];
+        // asset.getByteData().then((value){
+        //   print('Value: $value');
+        // });
+        // print('byteData: ${byteData.toString()}');
+        _submit();
+        print('Assets: ${asset.identifier}');
+        FlutterAbsolutePath.getAbsolutePath(images[index].identifier).then((value){
+          print('val: $value');
+        });
+        return AssetThumb(
+          asset: asset,
+          width: 300,
+          height: 300,
+        );
+      }),
+    );
+  }
+
+  _submit() async {
+    for (int i = 0; i < images.length; i++) {
+      var path2 = await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
+      var file = await getImageFileFromAsset(path2);
+      var base64Image = base64Encode(file.readAsBytesSync());
+
+
+      String fileExe = path2.split('/').last;
+      fileExe = fileExe.split('.').last;
+
+      print(fileExe);
+      // log("data:image/$fileExe;base64,$base64Image");
+
+      if(files.contains("data:image/$fileExe;base64,$base64Image")){
+        print('already available');
+      }else{
+        files.add("data:image/$fileExe;base64,$base64Image");
+        uploadImage(context,"data:image/$fileExe;base64,$base64Image");
+      }
+      for(int i =0;i<files.length;i++){
+        print('Files: ${files.length}');
+      }
+
+
+      // ;
+      // var data = {
+      //   "files": files,
+      // };
+      // try {
+      //   var response = await http.post(data, 'url')
+      //   var body = jsonDecode(response.body);
+      //   print(body);
+      //   if (body['msg'] == "Success!") {
+      //     print('posted successfully!');
+      //   } else {
+      //     print(context, body['msg']);
+      //   }
+      // } catch (e) {
+      //   return e.message;
+      // }
+    }
+  }
+
+  getImageFileFromAsset(String path)async{
+    final file = File(path);
+    return file;
+  }
+  Future<void> loadAssets() async {
+    List<Asset> resultList = <Asset>[];
+    String error = 'No Error Detected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 20,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(
+          takePhotoIcon: "chat",
+          doneButtonTitle: "Fatto",
+        ),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+      print('resultList: $resultList');
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+    setState(() {
+      images = resultList;
+      print('images: $images');
+      _error = error;
+    });
+  }
+  Widget _buildImages(){
+    return Column(
+      children: <Widget>[
+        Center(child: Text('Error: $_error')),
+        ElevatedButton(
+          child: Text("Pick images"),
+          onPressed: loadAssets,
+        ),
+        SizedBox(height: 120,child: buildGridView())
+      ],
     );
   }
 

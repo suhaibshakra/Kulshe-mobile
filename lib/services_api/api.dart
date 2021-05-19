@@ -48,13 +48,16 @@ Future loginFunction(
 
   http.Response response = await http.post('${baseURL}login',
       body: map,
-      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Accept': 'application/json'
+      });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
-  }else if(decodedData['custom_code'] == 2166){
+  } else if (decodedData['custom_code'] == 2166) {
     return decodedData;
   } else {
     var mainToken = decodedData['token_data']['token'];
@@ -86,35 +89,33 @@ Future loginFunction(
   // return decodedData;
 }
 
-
-Future verifyEmail(
-    {@required BuildContext context}) async {
+Future verifyEmail({@required BuildContext context}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   var map = Map<String, dynamic>();
   map['token'] = '${_pref.getString('token')}';
   map['id'] = '${_pref.getString('uID')}';
 
-  http.Response response = await http.post('${baseURL}send-verify-email',
-      body: map,
-      headers:{
-      'lang': _pref.getString('lang')??'ar',
-      'Accept': 'application/json',
-      'token': '${_pref.getString('token')}',
-      'Authorization': 'bearer ${_pref.getString('token')}',
-      });
+  http.Response response =
+      await http.post('${baseURL}send-verify-email', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'token': '${_pref.getString('token')}',
+    'Authorization': 'bearer ${_pref.getString('token')}',
+  });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
-  }else{
+  } else {
     viewToast(context, '${decodedData['custom_message']}', AppColors.green,
         Toast.BOTTOM);
   }
   // return decodedData;
 }
 
-Future changePasswordSocial(BuildContext context,String password,String confirmPassword,String newToken) async{
+Future changePasswordSocial(BuildContext context, String password,
+    String confirmPassword, String newToken) async {
   print('$newToken');
   SharedPreferences _pref = await SharedPreferences.getInstance();
 
@@ -125,16 +126,24 @@ Future changePasswordSocial(BuildContext context,String password,String confirmP
 
   http.Response response = await http.post('${baseURL}change-password-social',
       body: map,
-      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Accept': 'application/json'
+      });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
     viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
-  }else  {
+  } else {
     viewToast(context, '${decodedData['custom_message']}', AppColors.green,
         Toast.BOTTOM);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),),);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(),
+      ),
+    );
   }
 }
 
@@ -146,19 +155,52 @@ Future forgetPasswordEmail(BuildContext context, String bodyData) async {
 
   http.Response response = await http.post('${baseURL}reset-password',
       body: map,
-      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Accept': 'application/json'
+      });
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
     print('********************************Done');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
-    Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => LoginScreen(),));
-
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+  }
+}
+
+//add image
+Future uploadImage(BuildContext context, String bodyData) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+  var map = Map<String, dynamic>();
+  map['image'] = bodyData;
+
+  http.Response response =
+      await http.post('${baseURL}classified/upload-image', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'token': _pref.getString('token'),
+    'Authorization': 'bearer ${_pref.getString('token')}'
+  });
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    // print(await response.stream.bytesToString());
+    print('********************************Done');
+    // viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+    //     Toast.BOTTOM);
+  } else {
+    print(decodeData['custom_message']);
+    print('********************************Wrong');
+    // viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+    //     Toast.BOTTOM);
   }
 }
 
@@ -168,7 +210,7 @@ Future deleteAd({BuildContext context, @required int adId}) async {
   var map = Map<String, dynamic>();
   http.Response response = await http
       .post('${baseURL}user/classifieds/$adId/delete', body: map, headers: {
-    'lang': _pref.getString('lang')??'ar',
+    'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -196,7 +238,7 @@ Future pauseAd({
   http.Response response = await http.get(
       '${baseURL}user/classifieds/$adId/paused?paused=$pausedStatus',
       headers: {
-        'lang': _pref.getString('lang')??'ar',
+        'lang': _pref.getString('lang') ?? 'ar',
         'Accept': 'application/json',
         'token': '${_pref.getString('token')}',
         'Authorization': 'bearer ${_pref.getString('token')}',
@@ -223,7 +265,7 @@ Future reNewAd({
 
   http.Response response =
       await http.get('${baseURL}user/classifieds/$adId/renew', headers: {
-    'lang': _pref.getString('lang')??'ar',
+    'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -255,7 +297,7 @@ Future abuseAd({
   http.Response response =
       await http.post('${baseURL}user/classifieds/$adId/abuse',
           headers: {
-            'lang': _pref.getString('lang')??'ar',
+            'lang': _pref.getString('lang') ?? 'ar',
             'Content-Type': 'application/json',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',
@@ -274,7 +316,6 @@ Future abuseAd({
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
     return "wrong";
-
   }
 }
 
@@ -290,12 +331,10 @@ Future sendMessage({
 }) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
 
-  var body =
-  json.encode({'body': txtBody});
-  http.Response response =
-  await http.post('${baseURL}email-messages/$adId',
+  var body = json.encode({'body': txtBody});
+  http.Response response = await http.post('${baseURL}email-messages/$adId',
       headers: {
-        'lang': _pref.getString('lang')??'ar',
+        'lang': _pref.getString('lang') ?? 'ar',
         'Content-Type': 'application/json',
         'token': '${_pref.getString('token')}',
         'Authorization': 'bearer ${_pref.getString('token')}',
@@ -313,20 +352,20 @@ Future sendMessage({
         Toast.BOTTOM);
   }
 }
+
 // void showInSnackBar(String value,GlobalKey<ScaffoldState> _scaffoldKey) {
 //   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
 // }
 //favorite
-Future favoriteAd({
-  @required BuildContext context,
-  @required int adId,
-  @required String state,
-  GlobalKey<ScaffoldState> scaffoldKey
-}) async {
+Future favoriteAd(
+    {@required BuildContext context,
+    @required int adId,
+    @required String state,
+    GlobalKey<ScaffoldState> scaffoldKey}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   http.Response response = await http
       .get('${baseURL}user/classifieds/$adId/favorite/$state', headers: {
-    'lang': _pref.getString('lang')??'ar',
+    'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
@@ -387,7 +426,10 @@ Future createAccountFunction({
   map['mobileCountryIsoCode'] = mobileCountryIsoCode;
   map['comeFrom'] = "m";
   var response = await http.post('${baseURL}register',
-      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'},
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Accept': 'application/json'
+      },
       body: map);
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
@@ -475,7 +517,7 @@ Future updateProfile({
       headers: {
         'token': _pref.getString('token'),
         'Authorization': "bearer ${_pref.getString('token')}",
-        'lang': _pref.getString('lang')??'ar',
+        'lang': _pref.getString('lang') ?? 'ar',
         'Content-Type': 'application/json'
       },
       body: body);
@@ -484,11 +526,16 @@ Future updateProfile({
     // print(await response.stream.bytesToString());
     print('********************************Done');
     AppSharedPreferences.saveCountryId(countryId);
-    if((oldPassword!=null && oldPassword.isNotEmpty && oldPassword != "")
-    && (newPassword!=null && newPassword.isNotEmpty && newPassword != "")
-    && (confirmPassword!=null && confirmPassword.isNotEmpty && confirmPassword != "")
-    ){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+    if ((oldPassword != null && oldPassword.isNotEmpty && oldPassword != "") &&
+        (newPassword != null && newPassword.isNotEmpty && newPassword != "") &&
+        (confirmPassword != null &&
+            confirmPassword.isNotEmpty &&
+            confirmPassword != "")) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ));
     }
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
@@ -526,7 +573,7 @@ Future addAdFunction({
   var headers = {
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
-    'lang': '${_pref.getString('lang')??'ar'}',
+    'lang': '${_pref.getString('lang') ?? 'ar'}',
     'Content-Type': 'application/json'
   };
 
@@ -598,7 +645,7 @@ Future updateAdFunction({
   var headers = {
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
-    'lang': '${_pref.getString('lang')??'ar'}',
+    'lang': '${_pref.getString('lang') ?? 'ar'}',
     'Content-Type': 'application/json'
   };
 
@@ -652,7 +699,10 @@ Future logoutFunction({BuildContext context}) async {
 
   http.Response response = await http.post('${baseURL}logout',
       body: map,
-      headers: {'lang': _pref.getString('lang')??'ar', 'Accept': 'application/json'});
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Accept': 'application/json'
+      });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -691,7 +741,7 @@ Future maxPrice({BuildContext context, @required int subSectionId}) async {
   SharedPreferences _pref = await SharedPreferences.getInstance();
   http.Response response =
       await http.get('${baseURL}classified/$subSectionId/max-price', headers: {
-    'lang': _pref.getString('lang')??'ar',
+    'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'Country-id': _pref.getString('countryId')
   });
@@ -735,7 +785,7 @@ Future createAccountFunctionGoogle(
   print('mobileCountryPhoneCode $mobileCountryPhoneCode');
   print('mobileCountryIsoCode $mobileCountryIsoCode');
   print('countryId $countryId');
-   SharedPreferences _pref = await SharedPreferences.getInstance();
+  SharedPreferences _pref = await SharedPreferences.getInstance();
   var body = jsonEncode({
     'email': email,
     'googleId': gId,
@@ -750,7 +800,7 @@ Future createAccountFunctionGoogle(
   });
   var response = await http.post('${baseURL}login/google',
       headers: {
-        'lang': _pref.getString('lang')??'ar',
+        'lang': _pref.getString('lang') ?? 'ar',
         'Content-Type': 'application/json'
       },
       body: body);
@@ -819,7 +869,7 @@ Future createAccountFunctionFacebook(
   var response = await http.post(
       'https://api.kulshe.nurdevops.com/api/v1/login/facebook',
       headers: {
-        'lang': _pref.getString('lang')??'ar',
+        'lang': _pref.getString('lang') ?? 'ar',
         'Content-Type': 'application/json'
       },
       body: body);
