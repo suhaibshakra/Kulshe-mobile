@@ -64,6 +64,7 @@ dependencies:
   map_pin_picker: ^0.0.1
   google_maps_flutter: ^1.1.1
   geocoder: ^0.2.1
+  geolocator: ^6.1.12
   video_player: ^0.10.1
   provider: ^5.0.0
   share: ^2.0.1

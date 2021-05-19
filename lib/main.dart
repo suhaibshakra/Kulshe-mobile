@@ -209,6 +209,7 @@
 
 import 'dart:async';
 import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_pin_picker/map_pin_picker.dart';
 import 'package:flutter/material.dart';
@@ -235,12 +236,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    getCurrentLocation();
+    super.initState();
+  }
+  String latitudeData ="";
+  String longitudeData ="";
+  Future getCurrentLocation() async {
+    final geoPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      latitudeData = '${geoPosition.latitude}';
+      longitudeData = '${geoPosition.longitude}';
+    });
+    return geoPosition;
+  }
+
   Completer<GoogleMapController> _controller = Completer();
   MapPickerController mapPickerController = MapPickerController();
 
   CameraPosition cameraPosition = CameraPosition(
     target: LatLng(31.2060916, 29.9187),
-    zoom: 14.4746,
+    zoom: 18,
   );
 
   Address address;
@@ -286,6 +305,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       .findAddressesFromCoordinates(Coordinates(
                       cameraPosition.target.latitude,
                       cameraPosition.target.longitude));
+                  print("cameraPosition.target.latitude");
+                  print(cameraPosition.target.latitude);
+                  print("cameraPosition.target.longitude");
+                  print(cameraPosition.target.longitude);
                   // update the ui with the address
                   textController.text = '${addresses.first?.addressLine ?? ''}';
                 },
@@ -294,6 +317,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
+      // floatingActionButton: FloatingActionButton(child:Text("done"),onPressed: (){
+      //   Navigator.of(context).pop();
+      // },),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         elevation: 0,
