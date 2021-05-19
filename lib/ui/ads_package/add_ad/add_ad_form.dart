@@ -199,10 +199,6 @@ class _AddAdFormState extends State<AddAdForm> {
   @override
   void initState() {
     // // print('adID : ${widget.adID}');
-    getCurrentLocation().then((value) {
-      print(" latitudeData : $latitudeData");
-      print(" longitudeData : $longitudeData");
-    });
     getLang();
     _getCountries();
     myAdAttributesArray = [];
@@ -239,6 +235,10 @@ class _AddAdFormState extends State<AddAdForm> {
               .where((element) => element['default'] == true)
               .toList();
           _currencyId = _dataCurrency[0]['id'].toString();
+          getCurrentLocation().then((value) {
+            print(" latitudeData : $latitudeData");
+            print(" longitudeData : $longitudeData");
+          });
         });
     });
 
