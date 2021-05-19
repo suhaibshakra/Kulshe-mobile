@@ -71,6 +71,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   _getSections({int sec, int subSec}) async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
+    if(!widget.isFav)
     setState(() {
       _sectionData = sections[0]['responseData'];
       _sectionData =
@@ -117,7 +118,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             offset: offset.toString())
         .then((value) {
       setState(() {
-        print('${_publicAd.toString()}');
+        // print('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -125,9 +126,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                print('DATA $index   ${_publicAd[index]['id']}');
+                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                print('offset: $offset');
+                // print('offset: $offset');
               }
             });
           }
@@ -144,7 +145,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             offset: offset.toString(), status: widget.actionTitle)
         .then((value) {
       setState(() {
-        print('${_publicAd.toString()}');
+        // print('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -152,7 +153,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                print('DATA $index   ${_publicAd[index]['id']}');
+                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
                 print('offset: $offset');
               }
@@ -166,17 +167,43 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
     });
   }
 
+  fetchFavoriteAds() {
+    return FavoriteAdsServices.getFavData(
+            offset: offset.toString(),)
+        .then((value) {
+      setState(() {
+        // print('${_publicAd.toString()}');
+        if (offset == 0) {
+          _publicAd = value[0]['responseData']['ads'];
+        } else {
+          if (_publicAd.length > 0) {
+            _num = value[0]['responseData']['ads'].length;
+            setState(() {
+              for (int index = 0; index < _num; index++) {
+                // print('DATA $index   ${_publicAd[index]['id']}');
+                _publicAd.add(value[0]['responseData']['ads'][index]);
+                print('offset: $offset');
+              }
+            });
+          }
+        }
+        offset += 10;
+        _loading = false;
+        // _getSections(sec: 1, subSec: 1);
+      });
+    });
+  }
+
   @override
   void initState() {
     _privateBool = widget.isPrivate ? true : false;
     _getLang();
-    widget.isPrivate ? fetchPrivateAds() : fetchAds();
-    widget.isFav = false;
+    widget.isPrivate? fetchPrivateAds() :widget.isFav?fetchFavoriteAds():fetchAds();
     widget.section = "section";
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
-        widget.isPrivate ? fetchPrivateAds() : fetchAds();
+        widget.isPrivate? fetchPrivateAds() :widget.isFav?fetchFavoriteAds():fetchAds();
         print('End of screen');
       }
     });
@@ -245,47 +272,13 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                     textDirection: TextDirection.rtl,
                     child: Stack(
                       children: [
-                        if (!_privateBool)
+                        if (!_privateBool && !widget.isFav)
                           SizedBox(
                             height: 60,
                             width: double.infinity,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                // Container(
-                                //   margin: EdgeInsets.all(5),
-                                //   height: 50,
-                                //   color: AppColors.whiteColor,
-                                //   child: Row(
-                                //     children: [
-                                //       buildIcons(
-                                //           width: 50,
-                                //           height: 50,
-                                //           iconData: FontAwesomeIcons.listUl,
-                                //           hasShadow: true,
-                                //           bgColor: AppColors.whiteColor,
-                                //           color: isList ? iconListColor : AppColors.grey,
-                                //           action: () {
-                                //             setState(() {
-                                //               isList = true;
-                                //             });
-                                //           }),
-                                //       buildIcons(
-                                //           width: 50,
-                                //           height: 50,
-                                //           iconData: FontAwesomeIcons.windows,
-                                //           hasShadow: true,
-                                //           bgColor: AppColors.whiteColor,
-                                //           color: isList ? AppColors.grey : iconListColor,
-                                //           action: () {
-                                //             setState(() {
-                                //               isList = false;
-                                //             });
-                                //           }),
-                                //     ],
-                                //   ),
-                                // ),
-                                // if(!widget.isFav)
                                 Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.3,
@@ -418,7 +411,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                             ),
                           ),
                         Padding(
-                          padding: !_privateBool
+                          padding: !_privateBool && !widget.isFav
                               ? const EdgeInsets.only(top: 60)
                               : const EdgeInsets.only(top: 4),
                           child: _buildList(mq),
@@ -441,6 +434,8 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                 ? _publicAd[index]['count_of_images']
                 : 0;
             var _data = _publicAd[index];
+            print('AAAA ${_data[
+            'user_contact']}');
 
             return InkWell(
               onTap: () {
@@ -519,6 +514,8 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                             ).then((value) {
                                               setState(() {
                                                 _data['is_favorite_ad'] = !_data['is_favorite_ad'];
+                                                if(widget.isFav)
+                                                    _publicAd.remove(_data);
                                               });
                                               // value == 1019 // add to fav
                                               // value == 2136 // already fav
@@ -580,7 +577,8 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                   ],
                                 ),
                               ),
-                              Padding(
+                              if(_data['created_at'] != null)
+                               Padding(
                                 padding:
                                     const EdgeInsets.only(top: 16.0, bottom: 8),
                                 child: Container(
@@ -798,165 +796,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
 
                               if (_privateBool)
                                 if (_data['status'] != 'deleted')
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        if (_data['status'] ==
-                                            'expired')
-                                          Expanded(
-                                            flex: 2,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Container(
-                                                  child: Column(
-                                                children: [
-                                                  buildIconButton(
-                                                    icon: Icons.autorenew,
-                                                    color: AppColors.blue,
-                                                    onPressed: () {
-                                                      reNewAd(
-                                                              context: context,
-                                                              adId: _data['id'])
-                                                          .then((value) {
-                                                        setState(() {
-                                                         _data['status'] = 'edited';
-                                                        });
-                                                      });
-                                                    },
-                                                    size: 25,
-                                                    // iconColor: _data['paused']
-                                                    //     ? pausedColor
-                                                    //     : unPausedColor
-                                                  ),
-                                                  buildTxt(txt: "إعادة تفعيل")
-                                                ],
-                                              )),
-                                            ),
-                                          ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Container(
-                                                child: Column(
-                                              children: [
-                                                buildIconButton(
-                                                  icon: _data['paused'] == true? Icons.play_arrow: Icons.pause,
-                                                  color: _data['paused'] == true?AppColors.amberColor:AppColors.greyFour,
-                                                  onPressed: () {
-                                                    pauseAd(
-                                                      context: context,
-                                                      adId: _data['id'],
-                                                      pausedStatus:
-                                                          _data['paused'] ==
-                                                                  true
-                                                              ? 0
-                                                              : 1,
-                                                    ).then((value){
-                                                      setState(() {
-                                                        // print('value: $value');
-                                                        _data['paused'] = !_data['paused'];
-                                                      });
-                                                    });
-                                                  },
-                                                  size: 25,
-                                                ),
-                                                buildTxt(txt: _data['paused'] == true?'تشغيل':'إيقاف',txtColor: _data['paused'] == true?AppColors.amberColor:AppColors.greyFour)
-                                              ],
-                                            )),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Container(
-                                                child: Column(
-                                              children: [
-                                                buildIconButton(
-                                                    icon: Icons.edit,
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    EditAdForm(
-                                                              fromEdit: true,
-                                                              sectionId: _data[
-                                                                      'section_id']
-                                                                  .toString(),
-                                                              subSectionId: _data[
-                                                                  'sub_section_id'],
-                                                              adID: _data['id'],
-                                                            ),
-                                                          ));
-                                                    },
-                                                    size: 25,
-                                                    color: AppColors.blue),
-                                                buildTxt(
-                                                    txt: _strController.edit)
-                                              ],
-                                            )),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Container(
-                                                child: Column(
-                                              children: [
-                                                buildIconButton(
-                                                  icon: Icons.delete,
-                                                  color: AppColors.redColor,
-                                                  size: 25,
-                                                  onPressed: () {
-                                                    buildDialog(
-                                                        context: context,
-                                                        title: _strController
-                                                            .deleteAd,
-                                                        desc: _strController
-                                                            .askDeleteAd,
-                                                        yes: _strController.ok,
-                                                        no: _strController
-                                                            .cancel,
-                                                        action: () {
-                                                          deleteAd(
-                                                            context: context,
-                                                            adId: _data['id'],
-                                                          ).then((value) {
-                                                            setState(() {
-                                                              _data['status'] ='deleted';
-                                                            });
-                                                          });
-
-                                                          Navigator.of(context,
-                                                                  rootNavigator:
-                                                                      true)
-                                                              .pop();
-                                                        });
-                                                  },
-                                                ),
-                                                buildTxt(txt: "حذف")
-                                              ],
-                                            )),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
+                                  buildUserSetting(_data, context),
                             ],
                           ),
                         ),
@@ -968,5 +808,209 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             );
           }),
     );
+  }
+
+  Column buildUserSetting(_data, BuildContext context) {
+    return Column(
+                                  children: [
+                                    Divider(
+                                      thickness: 1,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          if (_data['status'] == 'expired')
+                                            Expanded(
+                                              flex: 2,
+                                              child: Padding(
+                                                padding: const EdgeInsets
+                                                        .symmetric(
+                                                    horizontal: 8.0),
+                                                child: Container(
+                                                    child: Column(
+                                                  children: [
+                                                    buildIconButton(
+                                                      icon: Icons.autorenew,
+                                                      color: AppColors.blue,
+                                                      onPressed: () {
+                                                        reNewAd(
+                                                                context:
+                                                                    context,
+                                                                adId: _data[
+                                                                    'id'])
+                                                            .then((value) {
+                                                          setState(() {
+                                                            _data['status'] =
+                                                                'edited';
+                                                          });
+                                                        });
+                                                      },
+                                                      size: 25,
+                                                      // iconColor: _data['paused']
+                                                      //     ? pausedColor
+                                                      //     : unPausedColor
+                                                    ),
+                                                    buildTxt(
+                                                        txt: "إعادة تفعيل")
+                                                  ],
+                                                )),
+                                              ),
+                                            ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Container(
+                                                  child: Column(
+                                                children: [
+                                                  buildIconButton(
+                                                    icon: _data['paused'] ==
+                                                            true
+                                                        ? Icons.play_arrow
+                                                        : Icons.pause,
+                                                    color: _data['paused'] ==
+                                                            true
+                                                        ? AppColors.amberColor
+                                                        : AppColors.greyFour,
+                                                    onPressed: () {
+                                                      pauseAd(
+                                                        context: context,
+                                                        adId: _data['id'],
+                                                        pausedStatus:
+                                                            _data['paused'] ==
+                                                                    true
+                                                                ? 0
+                                                                : 1,
+                                                      ).then((value) {
+                                                        setState(() {
+                                                          // print('value: $value');
+                                                          _data['paused'] =
+                                                              !_data[
+                                                                  'paused'];
+                                                        });
+                                                      });
+                                                    },
+                                                    size: 25,
+                                                  ),
+                                                  buildTxt(
+                                                      txt: _data['paused'] ==
+                                                              true
+                                                          ? 'تشغيل'
+                                                          : 'إيقاف',
+                                                      txtColor:
+                                                          _data['paused'] ==
+                                                                  true
+                                                              ? AppColors
+                                                                  .amberColor
+                                                              : AppColors
+                                                                  .greyFour)
+                                                ],
+                                              )),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Container(
+                                                  child: Column(
+                                                children: [
+                                                  buildIconButton(
+                                                      icon: Icons.edit,
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      EditAdForm(
+                                                                fromEdit:
+                                                                    true,
+                                                                sectionId: _data[
+                                                                        'section_id']
+                                                                    .toString(),
+                                                                subSectionId:
+                                                                    _data[
+                                                                        'sub_section_id'],
+                                                                adID: _data[
+                                                                    'id'],
+                                                              ),
+                                                            ));
+                                                      },
+                                                      size: 25,
+                                                      color: AppColors.blue),
+                                                  buildTxt(
+                                                      txt:
+                                                          _strController.edit)
+                                                ],
+                                              )),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Container(
+                                                  child: Column(
+                                                children: [
+                                                  buildIconButton(
+                                                    icon: Icons.delete,
+                                                    color: AppColors.redColor,
+                                                    size: 25,
+                                                    onPressed: () {
+                                                      buildDialog(
+                                                          context: context,
+                                                          title:
+                                                              _strController
+                                                                  .deleteAd,
+                                                          desc: _strController
+                                                              .askDeleteAd,
+                                                          yes: _strController
+                                                              .ok,
+                                                          no: _strController
+                                                              .cancel,
+                                                          action: () {
+                                                            deleteAd(
+                                                              context:
+                                                                  context,
+                                                              adId:
+                                                                  _data['id'],
+                                                            ).then((value) {
+                                                              setState(() {
+                                                                _data['status'] =
+                                                                    'deleted';
+                                                              });
+                                                            });
+
+                                                            Navigator.of(
+                                                                    context,
+                                                                    rootNavigator:
+                                                                        true)
+                                                                .pop();
+                                                          });
+                                                    },
+                                                  ),
+                                                  buildTxt(txt: "حذف")
+                                                ],
+                                              )),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
   }
 }

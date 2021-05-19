@@ -14,9 +14,9 @@ import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_location_picker/simple_location_picker_screen.dart';
-import 'package:simple_location_picker/simple_location_result.dart';
-import 'package:simple_location_picker/utils/slp_constants.dart';
+// import 'package:simple_location_picker/simple_location_picker_screen.dart';
+// import 'package:simple_location_picker/simple_location_result.dart';
+// import 'package:simple_location_picker/utils/slp_constants.dart';
 import 'package:toast/toast.dart';
 
 class EditAdForm extends StatefulWidget {
@@ -57,7 +57,7 @@ class _EditAdFormState extends State<EditAdForm> {
   TextEditingController _videoController = TextEditingController()..text;
   TextEditingController _bodyController = TextEditingController()..text;
   TextEditingController _birthDateController = TextEditingController()..text;
-  SimpleLocationResult _selectedLocation;
+  // SimpleLocationResult _selectedLocation;
   List _adForm;
   List _countryData;
   List _citiesData;
@@ -779,12 +779,12 @@ class _EditAdFormState extends State<EditAdForm> {
                     ? double.parse(_priceController.text.toString())
                     : 0,
                 localityId: '1',
-                lat: _selectedLocation != null
-                    ? '${_selectedLocation.latitude}'
-                    : "",
-                lag: _selectedLocation != null
-                    ? '${_selectedLocation.longitude}'
-                    : "",
+                // lat: _selectedLocation != null
+                //     ? '${_selectedLocation.latitude}'
+                //     : "",
+                // lag: _selectedLocation != null
+                //     ? '${_selectedLocation.longitude}'
+                //     : "",
                 brandId: _brandId != null ? _brandId : "",
                 subBrandId: _subBrandId != null ? _subBrandId : "",
                 isDelivery: true,
@@ -1297,31 +1297,31 @@ class _EditAdFormState extends State<EditAdForm> {
                   style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 onPressed: () {
-                  double latitude = _selectedLocation != null
-                      ? _selectedLocation.latitude
-                      : SLPConstants.DEFAULT_LATITUDE;
-                  double longitude = _selectedLocation != null
-                      ? _selectedLocation.longitude
-                      : SLPConstants.DEFAULT_LONGITUDE;
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SimpleLocationPicker(
-                            zoomLevel: 18,
-                            markerColor: AppColors.grey,
-                            displayOnly: false,
-                            appBarTextColor: AppColors.blackColor,
-                            appBarColor: AppColors.whiteColor,
-                            initialLatitude: latitude,
-                            initialLongitude: longitude,
-                            appBarTitle: "Select Location",
-                          ))).then((value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedLocation = value;
-                      });
-                    }
-                  });
+                  // double latitude = _selectedLocation != null
+                  //     ? _selectedLocation.latitude
+                  //     : SLPConstants.DEFAULT_LATITUDE;
+                  // double longitude = _selectedLocation != null
+                  //     ? _selectedLocation.longitude
+                  //     : SLPConstants.DEFAULT_LONGITUDE;
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => SimpleLocationPicker(
+                  //           zoomLevel: 18,
+                  //           markerColor: AppColors.grey,
+                  //           displayOnly: false,
+                  //           appBarTextColor: AppColors.blackColor,
+                  //           appBarColor: AppColors.whiteColor,
+                  //           initialLatitude: latitude,
+                  //           initialLongitude: longitude,
+                  //           appBarTitle: "Select Location",
+                  //         ))).then((value) {
+                  //   if (value != null) {
+                  //     setState(() {
+                  //       _selectedLocation = value;
+                  //     });
+                  //   }
+                  // });
                 },
               ),
             ),

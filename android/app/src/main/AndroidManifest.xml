@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.CALL_PHONE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission  android:name="android.permission.ACCESS_FINE_LOCATION"  />
+    <uses-permission  android:name="android.permission.ACCESS_COARSE_LOCATION"  />
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -28,7 +30,7 @@
                  to determine the Window background behind the Flutter UI. -->
 
             <meta-data android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyBIzyGgjjDGsBg8J4A344DvT5PX9xr_1ME"/>
+                android:value="AIzaSyDhhXoAJDKWWSp0c2R0PYPXLu1Dnw3cfoU"/>
 
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"

@@ -325,13 +325,12 @@ class AdEditForm {
 
 class FavoriteAdsServices {
   static Future<List> getFavData({
-    String limit,
-    String offset,
+     String offset,
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
-          '${baseURL}user/classifieds/favorite?limit=$limit&offset=$offset',
+          '${baseURL}user/classifieds/favorite?limit=10&offset=$offset',
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',
