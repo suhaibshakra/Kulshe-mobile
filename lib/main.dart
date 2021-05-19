@@ -211,8 +211,11 @@ import 'dart:async';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:map_pin_picker/map_pin_picker.dart';
 import 'package:flutter/material.dart';
+
+import 'app_helpers/app_colors.dart';
 
 
 void main() {
@@ -239,17 +242,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     // TODO: implement initState
-    getCurrentLocation();
+    getCurrentLocation().then((value) {
+      print(" latitudeData : $latitudeData");
+      print(" longitudeData : $longitudeData");
+    });
     super.initState();
   }
-  String latitudeData ="";
-  String longitudeData ="";
+  bool _loading = true;
+  double latitudeData;
+  double longitudeData;
   Future getCurrentLocation() async {
     final geoPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      latitudeData = '${geoPosition.latitude}';
-      longitudeData = '${geoPosition.longitude}';
+      latitudeData = geoPosition.latitude;
+      longitudeData = geoPosition.longitude;
+      _loading = false;
     });
     return geoPosition;
   }
@@ -269,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: Column(
+      body: _loading?buildLoading(color: AppColors.redColor):Column(
         children: [
           Expanded(
             child: MapPicker(
@@ -286,7 +294,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 myLocationButtonEnabled: false,
                 mapType: MapType.normal,
                 //  camera position
-                initialCameraPosition: cameraPosition,
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(latitudeData,longitudeData),
+                  zoom: 18,
+                ),
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
                 },
