@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -6,6 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:geocoder/model.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
@@ -13,8 +19,10 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:map_pin_picker/map_pin_picker.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // import 'package:simple_location_picker/simple_location_picker_screen.dart';
 // import 'package:simple_location_picker/simple_location_result.dart';
 // import 'package:simple_location_picker/utils/slp_constants.dart';
@@ -63,6 +71,7 @@ class _AddAdFormState extends State<AddAdForm> {
   TextEditingController _videoController = TextEditingController()..text;
   TextEditingController _bodyController = TextEditingController()..text;
   TextEditingController _birthDateController = TextEditingController()..text;
+
   // SimpleLocationResult _selectedLocation;
   List _adForm;
   List _countryData;
@@ -74,7 +83,7 @@ class _AddAdFormState extends State<AddAdForm> {
   List _listUnits;
   String _values;
   List _options;
-  List _images;
+  Map<dynamic, dynamic> _images = {};
   String _type;
   var validation;
   List<dynamic> myAdAttributesArray = []; //edit
@@ -87,9 +96,30 @@ class _AddAdFormState extends State<AddAdForm> {
   File _pickedImage;
   var _userImage;
   var _imgURL;
+  double latitudeData;
+  double longitudeData;
+  Future getCurrentLocation() async {
+    final geoPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      latitudeData = geoPosition.latitude;
+      longitudeData = geoPosition.longitude;
+      _loading = false;
+    });
+    return geoPosition;
+  }
 
+  Completer<GoogleMapController> _controller = Completer();
+  MapPickerController mapPickerController = MapPickerController();
 
+  CameraPosition cameraPosition = CameraPosition(
+    target: LatLng(31.2060916, 29.9187),
+    zoom: 18,
+  );
 
+  Address address;
+
+  var textController = TextEditingController();
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -113,6 +143,16 @@ class _AddAdFormState extends State<AddAdForm> {
     });
     // // print('_${_countryData.where((element) => element.classified == true)}');
     // // print(sections[0].responseData[4].name);
+  }
+  bool _showMap = false;
+  _buildImagesMap(
+      {String imgBase64, bool isNew = true, bool isDeleted = false, bool isMain = false}) {
+     _images.addAll({
+       'new': isNew,
+       'deleted': isDeleted,
+       'main': isMain,
+       'name': imgBase64,
+     });
   }
 
   _buildMap(id, value, {unitID}) {
@@ -153,11 +193,16 @@ class _AddAdFormState extends State<AddAdForm> {
       });
     });
   }
+
   var statusCode = 0;
 
   @override
   void initState() {
     // // print('adID : ${widget.adID}');
+    getCurrentLocation().then((value) {
+      print(" latitudeData : $latitudeData");
+      print(" longitudeData : $longitudeData");
+    });
     getLang();
     _getCountries();
     myAdAttributesArray = [];
@@ -165,36 +210,36 @@ class _AddAdFormState extends State<AddAdForm> {
     myAdAttributesMulti = [];
     AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
         .then((value) {
-          if(value == 412)
-            setState(() {
-              statusCode = value;
-              _loading = false;
-            });
-          if(value != 412)
-            setState(() {
-            _adForm = value;
-            _currenciesData = value[0]['responseData']['currencies'];
-            _listAttributes = value[0]['responseData']['attributes'];
-            _listBrands = value[0]['responseData']['brands'];
-            final jsonList = value[0]['responseData']['brands']
-                .map((item) => jsonEncode(item))
-                .toList();
+      if (value == 412)
+        setState(() {
+          statusCode = value;
+          _loading = false;
+        });
+      if (value != 412)
+        setState(() {
+          _adForm = value;
+          _currenciesData = value[0]['responseData']['currencies'];
+          _listAttributes = value[0]['responseData']['attributes'];
+          _listBrands = value[0]['responseData']['brands'];
+          final jsonList = value[0]['responseData']['brands']
+              .map((item) => jsonEncode(item))
+              .toList();
 
-            // using toSet - toList strategy
-            final uniqueJsonList = jsonList.toSet().toList();
+          // using toSet - toList strategy
+          final uniqueJsonList = jsonList.toSet().toList();
 
-            // convert each item back to the original form using JSON decoding
-            _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
+          // convert each item back to the original form using JSON decoding
+          _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
 
-            _showContactInfo = value[0]['responseData']['show_my_contact'];
-            _negotiable = value[0]['responseData']['negotiable'];
-            _isFree = value[0]['responseData']['if_free'];
-            _loading = false;
-            var _dataCurrency = _currenciesData
-                .where((element) => element['default'] == true)
-                .toList();
-            _currencyId = _dataCurrency[0]['id'].toString();
-          });
+          _showContactInfo = value[0]['responseData']['show_my_contact'];
+          _negotiable = value[0]['responseData']['negotiable'];
+          _isFree = value[0]['responseData']['if_free'];
+          _loading = false;
+          var _dataCurrency = _currenciesData
+              .where((element) => element['default'] == true)
+              .toList();
+          _currencyId = _dataCurrency[0]['id'].toString();
+        });
     });
 
     super.initState();
@@ -206,82 +251,152 @@ class _AddAdFormState extends State<AddAdForm> {
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+      appBar: _showMap?null:buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: _loading
-            ? Center(child: buildLoading(color: AppColors.redColor))
-            : statusCode == 412?
-        Container(
-          color: Colors.white,
-          child: Center(
-            child: Container(
-              height: 80,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.red,
-                        offset: Offset(2, 2),
-                        blurRadius: 1,
-                        spreadRadius: 2)
-                  ]),
-              child: buildIconWithTxt(
-                label: Text(
-                  "لقد تجازوزت الحد المسموح \n لاضافة اعلانات لهذا الشهر ",
-                  style: appStyle(
-                      color: AppColors.whiteColor, fontSize: 20),
+            ? Center(child: buildLoading(color: AppColors.redColor)):_showMap?Container(child: Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: MapPicker(
+                  // pass icon widget
+                  iconWidget: Icon(
+                    Icons.location_pin,
+                    size: 50,
+                  ),
+                  //add map picker controller
+                  mapPickerController: mapPickerController,
+                  child: GoogleMap(
+                    zoomControlsEnabled: false,
+                    // hide location button
+                    myLocationButtonEnabled: false,
+                    mapType: MapType.normal,
+                    //  camera position
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(latitudeData,longitudeData),
+                      zoom: 18,
+                    ),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                    onCameraMoveStarted: () {
+                      // notify map is moving
+                      mapPickerController.mapMoving();
+                    },
+                    onCameraMove: (cameraPosition) {
+                      this.cameraPosition = cameraPosition;
+                    },
+                    onCameraIdle: () async {
+                      // notify map stopped moving
+                      mapPickerController.mapFinishedMoving();
+                      //get address name from camera position
+                      List<Address> addresses = await Geocoder.local
+                          .findAddressesFromCoordinates(Coordinates(
+                          cameraPosition.target.latitude,
+                          cameraPosition.target.longitude));
+                      print("cameraPosition.target.latitude");
+                      print(cameraPosition.target.latitude);
+                      print("cameraPosition.target.longitude");
+                      print(cameraPosition.target.longitude);
+                      // update the ui with the address
+                      textController.text = '${addresses.first?.addressLine ?? ''}';
+                    },
+                  ),
                 ),
-                iconColor: AppColors.whiteColor,
-                iconData: Icons.arrow_back_outlined,
-                size: 30,
-                action: () => Navigator.of(context).pop(),
               ),
-            ),
+            ],
           ),
-        )
-            :Directionality(
-          textDirection: AppController.textDirection,
-          child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildImages(),
-                          if (!widget.fromEdit) _buildPath(),
-                          // buildTxt(txt: "إختر من معرض الصور"),
-                          // Container(height: 130, child: SingleImageUpload()),
-                          _buildConstData(),
-                          _buildDynamicData(mq),
-                          // Center(
-                          //   child: buildIconWithTxt(
-                          //     iconData: Icons.image_outlined,
-                          //     iconColor: AppColors.redColor,
-                          //     label: Text(
-                          //       _strController.labelGallery,
-                          //       style: appStyle(
-                          //           fontSize: 16,
-                          //           color: AppColors.redColor,
-                          //           fontWeight: FontWeight.w400),
-                          //     ),
-                          //     action: () => _pickImageLast(ImageSource.gallery),
-                          //   ),
-                          // ),
-                          SizedBox(
-                            height: 20,
+        ),):  statusCode == 412
+                ? Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.red,
+                                  offset: Offset(2, 2),
+                                  blurRadius: 1,
+                                  spreadRadius: 2)
+                            ]),
+                        child: buildIconWithTxt(
+                          label: Text(
+                            "لقد تجازوزت الحد المسموح \n لاضافة اعلانات لهذا الشهر ",
+                            style: appStyle(
+                                color: AppColors.whiteColor, fontSize: 20),
                           ),
-                          _buildButton(context),
-                        ],
+                          iconColor: AppColors.whiteColor,
+                          iconData: Icons.arrow_back_outlined,
+                          size: 30,
+                          action: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                    ),
+                  )
+                : Directionality(
+                    textDirection: AppController.textDirection,
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildImages(),
+                              if (!widget.fromEdit) _buildPath(),
+                              // buildTxt(txt: "إختر من معرض الصور"),
+                              // Container(height: 130, child: SingleImageUpload()),
+                              _buildConstData(),
+                              _buildDynamicData(mq),
+                              // Center(
+                              //   child: buildIconWithTxt(
+                              //     iconData: Icons.image_outlined,
+                              //     iconColor: AppColors.redColor,
+                              //     label: Text(
+                              //       _strController.labelGallery,
+                              //       style: appStyle(
+                              //           fontSize: 16,
+                              //           color: AppColors.redColor,
+                              //           fontWeight: FontWeight.w400),
+                              //     ),
+                              //     action: () => _pickImageLast(ImageSource.gallery),
+                              //   ),
+                              // ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              _buildButton(context),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ),
       ),
+      bottomNavigationBar: !_showMap?null:BottomAppBar(
+        color: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          color: Colors.blue,
+          child: TextFormField(
+            readOnly: true,
+            decoration: InputDecoration(
+                contentPadding: EdgeInsets.zero, border: InputBorder.none),
+            controller: textController,
+            style: TextStyle(fontSize: 12, color: Colors.white),
+          ),
+          // icon: Icon(Icons.directions_boat),
+        ),
+      ),
+      floatingActionButton: _showMap?FloatingActionButton.extended(onPressed: (){setState(() {
+        _showMap = false;
+      });}, label: Text(_strController.done),icon: Icon(Icons.done),):null,
     );
   }
 
@@ -410,6 +525,7 @@ class _AddAdFormState extends State<AddAdForm> {
       ),
     );
   }
+
   Container _buildUnits(List _listUnits, int unitIndex, int mainIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
@@ -693,56 +809,56 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   _buildPath() {
-    return Padding(
+    return _loading?buildLoading(color: AppColors.green):Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Card(
-          elevation: 2,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Container(
-              width: double.infinity,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 6,
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      child: buildTxt(
-                          fontSize: 17,
-                          maxLine: 1,
-                          txtColor: AppColors.blackColor2,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.w400,
-                          txt: "${widget.section}",
-                          textAlign: TextAlign.center),
-                    ),
+        elevation: 2,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Container(
+            width: double.infinity,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: buildTxt(
+                        fontSize: 17,
+                        maxLine: 1,
+                        txtColor: AppColors.blackColor2,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w400,
+                        txt: "${widget.section}",
+                        textAlign: TextAlign.center),
                   ),
-                  Expanded(
-                    flex: 1,
-                    child: Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                      color: AppColors.grey,
-                    ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: AppColors.grey,
                   ),
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      child: buildTxt(
-                          fontSize: 17,
-                          maxLine: 1,
-                          txtColor: AppColors.blackColor2,
-                          fontWeight: FontWeight.w400,
-                          txt: "${_adForm[0]['responseData']['label']['ar']}",
-                          textAlign: TextAlign.center),
-                    ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    child: buildTxt(
+                        fontSize: 17,
+                        maxLine: 1,
+                        txtColor: AppColors.blackColor2,
+                        fontWeight: FontWeight.w400,
+                        txt: "${_adForm[0]['responseData']['label']['ar']}",
+                        textAlign: TextAlign.center),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -793,36 +909,41 @@ class _AddAdFormState extends State<AddAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
-          print(double.parse(_priceController.text.toString()));
+          // print(double.parse(_priceController.text.toString()));
           final FormState form = _formKey.currentState;
           if (form.validate()) {
-            addAdFunction(
-                context: context,
-                sectionId: widget.sectionId.toString(),
-                subSectionId: '${widget.subSectionId.toString()}',
-                title: _titleController.text.toString(),
-                bodyAd: _bodyController.text.toLowerCase(),
-                cityId: _cityId,
-                price: _priceController.text.toString().isNotEmpty
-                    ? double.parse(_priceController.text.toString())
-                    : 0,
-                localityId: '1',
-                // lat: _selectedLocation != null
-                //     ? '${_selectedLocation.latitude}'
-                //     : "",
-                // lag: _selectedLocation != null
-                //     ? '${_selectedLocation.longitude}'
-                //     : "",
-                brandId: _brandId != null ? _brandId : "",
-                subBrandId: _subBrandId != null ? _subBrandId : "",
-                isDelivery: true,
-                isFree: _isFree,
-                showContact: _showContactInfo,
-                negotiable: _negotiable,
-                zoom: 14,
-                adAttributes: myAdAttributesArray,
-                images: _images != null ? _images : [],
-                currencyId: _currencyId);
+            print(latitudeData.toString());
+            print(longitudeData.toString());
+            // addAdFunction(
+            //     context: context,
+            //     sectionId: widget.sectionId.toString(),
+            //     subSectionId: '${widget.subSectionId.toString()}',
+            //     title: _titleController.text.toString(),
+            //     bodyAd: _bodyController.text.toLowerCase(),
+            //     cityId: _cityId,
+            //     price: _priceController.text.toString().isNotEmpty
+            //         ? double.parse(_priceController.text.toString())
+            //         : 0,
+            //     localityId: '1',
+            //     lat:'32.222222' ,
+            //     lag: '32.222222',
+            //
+            //     // lat: _selectedLocation != null
+            //     //     ? '${_selectedLocation.latitude}'
+            //     //     : "",
+            //     // lag: _selectedLocation != null
+            //     //     ? '${_selectedLocation.longitude}'
+            //     //     : "",
+            //     brandId: _brandId != null ? _brandId : "",
+            //     subBrandId: _subBrandId != null ? _subBrandId : "",
+            //     isDelivery: true,
+            //     isFree: _isFree,
+            //     showContact: _showContactInfo,
+            //     negotiable: _negotiable,
+            //     zoom: 14,
+            //     adAttributes: myAdAttributesArray,
+            //     images: _images != null ? files : [],
+            //     currencyId: _currencyId);
           } else {
             print('Form is invalid');
             viewToast(
@@ -1308,13 +1429,18 @@ class _AddAdFormState extends State<AddAdForm> {
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Container(
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
               alignment: Alignment.center,
               child: RaisedButton(
+                color: AppColors.greyFour,
                 child: Text(
-                  "Pick a Location",
-                  style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  "يرجى تحديد الموقع",
+                  style: appStyle(fontWeight: FontWeight.w500, fontSize: 18,color: AppColors.whiteColor),
                 ),
                 onPressed: () {
+                  setState(() {
+                    _showMap = true;
+                  });
                   // double latitude = _selectedLocation != null
                   //     ? _selectedLocation.latitude
                   //     : SLPConstants.DEFAULT_LATITUDE;
@@ -1394,8 +1520,8 @@ class _AddAdFormState extends State<AddAdForm> {
 
   Widget buildGridView() {
     return GridView.count(
-      crossAxisCount: 3,
-      children: List.generate(images.length,(index) {
+      crossAxisCount: 4,
+      children: List.generate(images.length, (index) {
         Asset asset = images[index];
         // asset.getByteData().then((value){
         //   print('Value: $value');
@@ -1403,13 +1529,17 @@ class _AddAdFormState extends State<AddAdForm> {
         // print('byteData: ${byteData.toString()}');
         _submit();
         print('Assets: ${asset.identifier}');
-        FlutterAbsolutePath.getAbsolutePath(images[index].identifier).then((value){
+        FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
+            .then((value) {
           print('val: $value');
         });
-        return AssetThumb(
-          asset: asset,
-          width: 300,
-          height: 300,
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: AssetThumb(
+            asset: asset,
+            width: 300,
+            height: 300,
+          ),
         );
       }),
     );
@@ -1417,10 +1547,10 @@ class _AddAdFormState extends State<AddAdForm> {
 
   _submit() async {
     for (int i = 0; i < images.length; i++) {
-      var path2 = await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
+      var path2 =
+          await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
       var file = await getImageFileFromAsset(path2);
       var base64Image = base64Encode(file.readAsBytesSync());
-
 
       String fileExe = path2.split('/').last;
       fileExe = fileExe.split('.').last;
@@ -1428,16 +1558,15 @@ class _AddAdFormState extends State<AddAdForm> {
       print(fileExe);
       // log("data:image/$fileExe;base64,$base64Image");
 
-      if(files.contains("data:image/$fileExe;base64,$base64Image")){
+      if (files.contains("data:image/$fileExe;base64,$base64Image")) {
         print('already available');
-      }else{
+      } else {
         files.add("data:image/$fileExe;base64,$base64Image");
-        uploadImage(context,"data:image/$fileExe;base64,$base64Image");
+        uploadImage(context, "data:image/$fileExe;base64,$base64Image");
       }
-      for(int i =0;i<files.length;i++){
+      for (int i = 0; i < files.length; i++) {
         print('Files: ${files.length}');
       }
-
 
       // ;
       // var data = {
@@ -1458,10 +1587,11 @@ class _AddAdFormState extends State<AddAdForm> {
     }
   }
 
-  getImageFileFromAsset(String path)async{
+  getImageFileFromAsset(String path) async {
     final file = File(path);
     return file;
   }
+
   Future<void> loadAssets() async {
     List<Asset> resultList = <Asset>[];
     String error = 'No Error Detected';
@@ -1498,7 +1628,8 @@ class _AddAdFormState extends State<AddAdForm> {
       _error = error;
     });
   }
-  Widget _buildImages(){
+
+  Widget _buildImages() {
     return Column(
       children: <Widget>[
         Center(child: Text('Error: $_error')),
@@ -1506,7 +1637,7 @@ class _AddAdFormState extends State<AddAdForm> {
           child: Text("Pick images"),
           onPressed: loadAssets,
         ),
-        SizedBox(height: 120,child: buildGridView())
+        SizedBox(height: 120, child: buildGridView())
       ],
     );
   }

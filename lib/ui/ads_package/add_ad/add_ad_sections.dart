@@ -22,6 +22,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   int _questionIndex = 0;
   int selected = -1;
   List<Widget> _questionPages = [];
+
   // List<ResponseSectionDatum> _sectionData;
   List _sectionData;
   String _selectedCity;
@@ -29,9 +30,11 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
   bool _loading = true;
   var _strController = AppController.strings;
   Map<String, bool> expansionState = Map();
+
   //add data id's
   int sectionID;
   int subSectionID;
+
   // List _localityData;
   @override
   void initState() {
@@ -43,8 +46,7 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
 
   _getSections() async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
-    final List sections =
-        jsonDecode(_gp.getString("allSectionsData"));
+    final List sections = jsonDecode(_gp.getString("allSectionsData"));
     _sectionData = sections[0]['responseData'];
     _loading = false;
     callWidgets(_sectionData);
@@ -78,7 +80,13 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                   ),
                   child: ExpansionTile(
                     backgroundColor: AppColors.whiteColor,
-                    title: Text(_data['name'],style: appStyle(fontWeight: FontWeight.w400,fontSize: 17,color: AppColors.blackColor2),),
+                    title: Text(
+                      _data['name'],
+                      style: appStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 17,
+                          color: AppColors.blackColor2),
+                    ),
                     leading: Container(
                       width: 28,
                       height: 28,
@@ -105,13 +113,12 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddAdForm(
-                                            section: _data['label']['ar'],
-                                            sectionId: _data['id'],
-                                            subSectionId: data['id'],
-                                            fromEdit: false,
-                                          ),
+                                      builder: (context) => AddAdForm(
+                                        section: _data['label']['ar'],
+                                        sectionId: _data['id'],
+                                        subSectionId: data['id'],
+                                        fromEdit: false,
+                                      ),
                                     ),
                                   );
                                 },
@@ -123,7 +130,11 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Center(
-                                    child: Text(data['label']['ar'].toString(),style: appStyle(fontWeight: FontWeight.w400,fontSize: 15,color: AppColors.blackColor2),
+                                    child: Text(data['label']['ar'].toString(),
+                                        style: appStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15,
+                                            color: AppColors.blackColor2),
                                         textAlign: TextAlign.center),
                                   ),
                                 ),
@@ -150,110 +161,140 @@ class _AddAdSectionsScreenState extends State<AddAdSectionsScreen> {
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : Center(
-        key: Key('builder ${selected.toString()}'),
-        child: Directionality(
-          textDirection: AppController.textDirection,
-          child:ListView.builder(
-          itemCount: _sectionData.length,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (ctx, index) {
-            var _data = _sectionData[index];
-            var _subSections = _sectionData[index]['sub_sections'] as List;
+              key: Key('builder ${selected.toString()}'),
+              child: Directionality(
+                  textDirection: AppController.textDirection,
+                  child: ListView.builder(
+                    itemCount: _sectionData.length,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (ctx, index) {
+                      var _data = _sectionData[index];
+                      var _subSections =
+                          _sectionData[index]['sub_sections'] as List;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.whiteColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: Offset(1, 1),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: ExpansionTile(
-                  key: Key(index.toString()),
-                  initiallyExpanded: index==selected,
-                  onExpansionChanged: (expanded){
-                    if(expanded)
-                      setState(() {
-                        selected = index;
-                      });
-                    else setState(() {
-                      selected = -1;
-                    });
-                  },
-                  backgroundColor: AppColors.whiteColor,
-                  title: Text(_data['name']),
-                  leading: Container(
-                    width: 28,
-                    height: 28,
-                    child: Container(
-                        width: 35,
-                        height: 35,
-                        child:
-                        // _data[index]['icon']!=null?
-                        SvgPicture.network(
-                          // _data['icon']!=null?_data['icon']:
-                          "https://svgsilh.com/svg/1298734.svg",fit: BoxFit.fill,)
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.whiteColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 1,
+                                blurRadius: 2,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ExpansionTile(
+                            key: Key(index.toString()),
+                            initiallyExpanded: index == selected,
+                            onExpansionChanged: (expanded) {
+                              if (expanded)
+                                setState(() {
+                                  selected = index;
+                                });
+                              else
+                                setState(() {
+                                  selected = -1;
+                                });
+                            },
+                            backgroundColor: AppColors.whiteColor,
+                            title: Text(_data['name']),
+                            leading: Container(
+                              width: 28,
+                              height: 28,
+                              child: Container(
+                                  width: 35,
+                                  height: 35,
+                                  child:
+                                      // _data[index]['icon']!=null?
+                                      SvgPicture.network(
+                                    // _data['icon']!=null?_data['icon']:
+                                    "https://svgsilh.com/svg/1298734.svg",
+                                    fit: BoxFit.fill,
+                                  )
 //                     :SvgPicture.string(
 //                     ''' <svg style="width:24px;height:24px" viewBox="0 0 24 24">
 //   <path fill="#000" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
 // </svg> ''',color: AppColors.grey),
-                    ),
-                  ),
-                  children: [
-                    GridView.count(
-                      scrollDirection: Axis.vertical,
-                      padding: EdgeInsets.all(8),
-                      shrinkWrap: true,
-                      crossAxisCount: 3,
-                      childAspectRatio: (3 / 1.4),
-                      children: _subSections
-                          .map(
-                            (data) => GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              sectionID = _data['id'];
-                              subSectionID = data['id'];
-                              _questionIndex -= 1;
-                            });
-
-            widget.comeFrom == 'addAd'?Navigator.push(context,MaterialPageRoute(builder: (context) =>AddAdForm(section: _data['label']['ar'],sectionId: _data['id'],subSectionId: data['id'],fromEdit: false,),),):
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FilterScreen(sectionId: _data['id'],subSectionId: data['id']),));
-                             },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 1),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Center(
-                              child: Text(data['name'].toString(),
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black87),
                                   ),
                             ),
+                            children: [
+                              GridView.count(
+                                scrollDirection: Axis.vertical,
+                                padding: EdgeInsets.all(8),
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                childAspectRatio: (3 / 1.4),
+                                children: _subSections
+                                    .map(
+                                      (data) => GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            sectionID = _data['id'];
+                                            subSectionID = data['id'];
+                                            _questionIndex -= 1;
+                                          });
+
+                                          widget.comeFrom == 'addAd'
+                                              ? Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AddAdForm(
+                                                      section: _data['label']
+                                                          ['ar'],
+                                                      sectionId: _data['id'],
+                                                      subSectionId: data['id'],
+                                                      fromEdit: false,
+                                                    ),
+                                                  ),
+                                                )
+                                              : Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FilterScreen(
+                                                            sectionId:
+                                                                _data['id'],
+                                                            subSectionId:
+                                                                data['id']),
+                                                  ));
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 5, horizontal: 1),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              data['name'].toString(),
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black87),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
                           ),
                         ),
-                      )
-                          .toList(),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        )),
-      ),
+                      );
+                    },
+                  )),
+            ),
     );
   }
+
   // void _showCitiesDialog() {
   //   showDialog(
   //       context: context,

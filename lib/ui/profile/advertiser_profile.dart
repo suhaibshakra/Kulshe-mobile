@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
@@ -7,12 +9,15 @@ import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/ad_details_screen.dart';
 import 'package:kulshe/ui/ads_package/details_screen.dart';
+import 'package:kulshe/ui/ads_package/time_ago.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdvertiserProfile extends StatefulWidget {
   final String idHash;
+
   AdvertiserProfile(this.idHash);
+
   @override
   _AdvertiserProfileState createState() => _AdvertiserProfileState();
 }
@@ -28,6 +33,14 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
   String lang;
   List _publicAd;
   var _publicProfile;
+  String _sectionText;
+  String _subSectionText;
+  List _sectionData;
+  List _subSectionData;
+
+  num _num = 0;
+  ScrollController scrollController = ScrollController();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   _getLang() async {
@@ -37,27 +50,71 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
     });
   }
 
-  @override
-  void initState() {
-    _loading = true;
-    _getLang();
-    AdvertiserProfileServices.advertiserProfile(limit: '$limit', offset: '$offset',idHash: widget.idHash)
+  _getSections({int sec, int subSec}) async {
+    SharedPreferences _gp = await SharedPreferences.getInstance();
+    final List sections = jsonDecode(_gp.getString("allSectionsData"));
+    setState(() {
+      _sectionData = sections[0]['responseData'];
+      _sectionData =
+          _sectionData.where((element) => element['id'] == sec).toList();
+      _sectionText = _sectionData[0]['label']['ar'];
+      _subSectionData = _sectionData[0]['sub_sections']
+          .where((element) => (element['id'] == subSec))
+          .toList();
+      _subSectionText = _subSectionData[0]['label']['ar'];
+    });
+  }
+
+  fetchAds() {
+    return AdvertiserProfileServices.advertiserProfile(
+            limit: '$limit', offset: '$offset', idHash: widget.idHash)
         .then((value) {
       setState(() {
-        _publicAd = value[0]['responseData']['ads'];
-        _publicProfile = value[0]['responseData'];
-        countOfAds = (value[0]['responseData']['total']).toString();
-        print('count of ads : ${countOfAds.toString()}');
-        countOfPager = (double.parse(countOfAds) / 10);
-        countOfPager = countOfPager.ceil().toDouble();
+        print('${value[0]['responseData'].length}');
+        if (offset == 0) {
+          _publicAd = value[0]['responseData']['ads'];
+          _publicProfile = value[0]['responseData'];
+        } else {
+          if (_publicProfile.length > 0) {
+            _num = value[0]['responseData'].length;
+            _publicProfile = value[0]['responseData'];
+            setState(() {
+              for (int index = 0; index < _num; index++) {
+                // print('DATA $index   ${_publicAd[index]['id']}');
+                _publicProfile.add(value[0]['responseData'][index]);
+              }
+            });
+          }
+        }
+        offset += 10;
         _loading = false;
-        print('value : $_publicProfile');
+        _getSections(
+            sec: _publicProfile['section_id'],
+            subSec: _publicProfile['sub_section_id']);
       });
     });
-    setState(() {
-      isChecked = false;
-    });
+  }
+
+  @override
+  void initState() {
     super.initState();
+
+    _loading = true;
+    _getLang();
+    fetchAds();
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        fetchAds();
+        print('End of screen');
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 
   final _strController = AppController.strings;
@@ -69,176 +126,302 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
-         resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: false,
         body: _loading
             ? buildLoading(color: AppColors.redColor)
-            : Stack(
-                children: [
-                  buildBg(),
-                  Directionality(
-                    textDirection: _dirController,
-                    child: SingleChildScrollView(
-                      child: Stack(
-                        children: [
-                          Container(
+            : Directionality(
+                textDirection: TextDirection.rtl,
+                child: Stack(
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                              Colors.deepOrange,
+                              Colors.pinkAccent
+                            ])),
+                        child: Container(
+                          width: double.infinity,
+                          height: 220.0,
+                          child: Center(
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                    decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [Colors.deepOrange, Colors.pinkAccent]
-                                        )
-                                    ),
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 300.0,
-                                      child: Center(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            _publicProfile['profile_image']!=null?
-                                            CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                _publicProfile['profile_image'],
-                                              ),
-                                              radius: 50.0,
-                                            ):CircleAvatar(
-                                              backgroundImage: AssetImage(
-                                                "assets/images/no_img.png",
-                                              ),
-                                              radius: 30.0,
-                                            ),
-                                            SizedBox(
-                                              height: 10.0,
-                                            ),
-                                            Text(
-                                              _publicProfile['full_name']!=null?_publicProfile['full_name']:"",
-                                              style: TextStyle(
-                                                fontSize: 22.0,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 10.0,
-                                            ),
-                                            Card(
-                                              margin: EdgeInsets.symmetric(horizontal: 20.0,vertical: 5.0),
-                                              clipBehavior: Clip.antiAlias,
-                                              color: Colors.white,
-                                              elevation: 5.0,
-                                              child: Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 22.0),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Column(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                        children: [
-                                                          Text(
-                                                            _strController.ads,
-                                                            style: appStyle(
-                                                              color: Colors.redAccent,
-                                                              fontSize: 20.0,
-                                                              fontWeight: FontWeight.bold,
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 5.0,
-                                                          ),
-                                                          Text(
-                                                            _publicProfile['total'].toString() ,
-                                                            style: appStyle(
-                                                              fontSize: 20.0,
-                                                              color: Colors.pinkAccent,
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
-
-                                                        children: [
-                                                          // Text(
-                                                          //   _publicProfile['email'],
-                                                          //   style: appStyle(
-                                                          //     color: Colors.redAccent,
-                                                          //     fontSize: 18.0,
-                                                          //     fontWeight: FontWeight.bold,
-                                                          //   ),
-                                                          // ),
-                                                          // SizedBox(
-                                                          //   height: 5.0,
-                                                          // ),
-                                                          InkWell(
-                                                            onTap: ()=>launch(
-                                                                "tel://${'+'+_publicProfile['mobile_country_code']+_publicProfile['mobile_number'].toString()}"),
-                                                            child: CircleAvatar(
-                                                              backgroundColor: AppColors.grey.withOpacity(0.2),
-                                                              radius: 25,
-                                                              child: buildIconButton(icon: FontAwesomeIcons.phoneAlt,size: 24,color: AppColors.greenColor.withOpacity(0.5)),
-                                                            ),
-                                                          )
-
-                                                        ],
-                                                      ),
-                                                    ),
-                                                   ],
+                                _publicProfile['profile_image'] != null
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          _publicProfile['profile_image'],
+                                        ),
+                                        radius: 50.0,
+                                      )
+                                    : CircleAvatar(
+                                        backgroundImage: AssetImage(
+                                          "assets/images/no_img.png",
+                                        ),
+                                        radius: 30.0,
+                                      ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Text(
+                                  _publicProfile['full_name'] != null
+                                      ? _publicProfile['full_name']
+                                      : "",
+                                  style: TextStyle(
+                                    fontSize: 22.0,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Card(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 5.0),
+                                  clipBehavior: Clip.antiAlias,
+                                  color: Colors.white,
+                                  elevation: 5.0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 22.0),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                _strController.ads,
+                                                style: appStyle(
+                                                  color: Colors.redAccent,
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            )
-                                          ],
+                                              SizedBox(
+                                                height: 5.0,
+                                              ),
+                                              Text(
+                                                _publicProfile['total']
+                                                    .toString(),
+                                                style: appStyle(
+                                                  fontSize: 20.0,
+                                                  color: Colors.pinkAccent,
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                ),
-                                buildListOneItem(mq),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(countOfPager.toString()),
-                                    OutlineButton(
-                                      onPressed: goToPrevious,
-                                      child: Text("< previous"),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              // Text(
+                                              //   _publicProfile['email'],
+                                              //   style: appStyle(
+                                              //     color: Colors.redAccent,
+                                              //     fontSize: 18.0,
+                                              //     fontWeight: FontWeight.bold,
+                                              //   ),
+                                              // ),
+                                              // SizedBox(
+                                              //   height: 5.0,
+                                              // ),
+                                              InkWell(
+                                                onTap: () => launch(
+                                                    "tel://${'+' + _publicProfile['mobile_country_code'] + _publicProfile['mobile_number'].toString()}"),
+                                                child: CircleAvatar(
+                                                  backgroundColor: AppColors
+                                                      .grey
+                                                      .withOpacity(0.2),
+                                                  radius: 25,
+                                                  child: buildIconButton(
+                                                      icon: FontAwesomeIcons
+                                                          .phoneAlt,
+                                                      size: 24,
+                                                      color: AppColors
+                                                          .greenColor
+                                                          .withOpacity(0.5)),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    OutlineButton(
-                                      onPressed: goToNext,
-                                      child: Text(" next >"),
-                                    ),
-                                    Text(countOfAds.toString()),
-                                  ],
-                                ),
+                                  ),
+                                )
                               ],
                             ),
                           ),
-                          InkWell(child: Align(child: Container(width: 50,height: 50,child: Icon(Icons.arrow_back)),alignment: Alignment.topRight,),onTap: ()=>Navigator.of(context).pop(),)
-
-                        ],
-                      ),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 220),
+                      child: _buildList(mq),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                )),
+        // Stack(
+        //         children: [
+        //           buildBg(),
+        //           Directionality(
+        //             textDirection: _dirController,
+        //             child: Stack(
+        //               children: [
+        //                 Container(
+        //                   child:
+        //             // ListView(
+        //             //         children: [
+        //                       // Container(
+        //                       //     decoration: BoxDecoration(
+        //                       //         gradient: LinearGradient(
+        //                       //             begin: Alignment.topCenter,
+        //                       //             end: Alignment.bottomCenter,
+        //                       //             colors: [Colors.deepOrange, Colors.pinkAccent]
+        //                       //         )
+        //                       //     ),
+        //                       //     child: Container(
+        //                       //       width: double.infinity,
+        //                       //       height: 300.0,
+        //                       //       child: Center(
+        //                       //         child: Column(
+        //                       //           crossAxisAlignment: CrossAxisAlignment.center,
+        //                       //           mainAxisAlignment: MainAxisAlignment.center,
+        //                       //           children: [
+        //                       //             _publicProfile['profile_image']!=null?
+        //                       //             CircleAvatar(
+        //                       //               backgroundImage: NetworkImage(
+        //                       //                 _publicProfile['profile_image'],
+        //                       //               ),
+        //                       //               radius: 50.0,
+        //                       //             ):CircleAvatar(
+        //                       //               backgroundImage: AssetImage(
+        //                       //                 "assets/images/no_img.png",
+        //                       //               ),
+        //                       //               radius: 30.0,
+        //                       //             ),
+        //                       //             SizedBox(
+        //                       //               height: 10.0,
+        //                       //             ),
+        //                       //             Text(
+        //                       //               _publicProfile['full_name']!=null?_publicProfile['full_name']:"",
+        //                       //               style: TextStyle(
+        //                       //                 fontSize: 22.0,
+        //                       //                 color: Colors.white,
+        //                       //               ),
+        //                       //             ),
+        //                       //             SizedBox(
+        //                       //               height: 10.0,
+        //                       //             ),
+        //                       //             Card(
+        //                       //               margin: EdgeInsets.symmetric(horizontal: 20.0,vertical: 5.0),
+        //                       //               clipBehavior: Clip.antiAlias,
+        //                       //               color: Colors.white,
+        //                       //               elevation: 5.0,
+        //                       //               child: Padding(
+        //                       //                 padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 22.0),
+        //                       //                 child: Row(
+        //                       //                   children: [
+        //                       //                     Expanded(
+        //                       //                       child: Column(
+        //                       //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                       //                         crossAxisAlignment: CrossAxisAlignment.center,
+        //                       //                         children: [
+        //                       //                           Text(
+        //                       //                             _strController.ads,
+        //                       //                             style: appStyle(
+        //                       //                               color: Colors.redAccent,
+        //                       //                               fontSize: 20.0,
+        //                       //                               fontWeight: FontWeight.bold,
+        //                       //                             ),
+        //                       //                           ),
+        //                       //                           SizedBox(
+        //                       //                             height: 5.0,
+        //                       //                           ),
+        //                       //                           Text(
+        //                       //                             _publicProfile['total'].toString() ,
+        //                       //                             style: appStyle(
+        //                       //                               fontSize: 20.0,
+        //                       //                               color: Colors.pinkAccent,
+        //                       //                             ),
+        //                       //                           )
+        //                       //                         ],
+        //                       //                       ),
+        //                       //                     ),
+        //                       //                     Expanded(
+        //                       //                       child: Column(
+        //                       //
+        //                       //                         children: [
+        //                       //                           // Text(
+        //                       //                           //   _publicProfile['email'],
+        //                       //                           //   style: appStyle(
+        //                       //                           //     color: Colors.redAccent,
+        //                       //                           //     fontSize: 18.0,
+        //                       //                           //     fontWeight: FontWeight.bold,
+        //                       //                           //   ),
+        //                       //                           // ),
+        //                       //                           // SizedBox(
+        //                       //                           //   height: 5.0,
+        //                       //                           // ),
+        //                       //                           InkWell(
+        //                       //                             onTap: ()=>launch(
+        //                       //                                 "tel://${'+'+_publicProfile['mobile_country_code']+_publicProfile['mobile_number'].toString()}"),
+        //                       //                             child: CircleAvatar(
+        //                       //                               backgroundColor: AppColors.grey.withOpacity(0.2),
+        //                       //                               radius: 25,
+        //                       //                               child: buildIconButton(icon: FontAwesomeIcons.phoneAlt,size: 24,color: AppColors.greenColor.withOpacity(0.5)),
+        //                       //                             ),
+        //                       //                           )
+        //                       //
+        //                       //                         ],
+        //                       //                       ),
+        //                       //                     ),
+        //                       //                    ],
+        //                       //                 ),
+        //                       //               ),
+        //                       //             )
+        //                       //           ],
+        //                       //         ),
+        //                       //       ),
+        //                       //     )
+        //                       // ),
+        //                       _buildList(mq)
+        //                     // ],
+        //                   // ),
+        //                 ),
+        //                 InkWell(child: Align(child: Container(width: 50,height: 50,child: Icon(Icons.arrow_back)),alignment: Alignment.topRight,),onTap: ()=>Navigator.of(context).pop(),)
+        //
+        //               ],
+        //             ),
+        //           ),
+        //         ],
+        //       ),
       ),
     );
   }
 
-  Container buildListOneItem(MediaQueryData mq) {
+  Container _buildList(MediaQueryData mq) {
     return Container(
       child: ListView.builder(
+          controller: scrollController,
           itemCount: _publicAd.length,
           physics: ClampingScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            int imgStatus = _publicAd[index]['count_of_images'] != null
-                ? _publicAd[index]['count_of_images']
-                : 0;
+            print('_publicAd: ${_publicAd[index]['count_of_images']}');
+            int imgStatus = _publicAd[index] != null
+                ? _publicAd[index]['count_of_images'] != null
+                    ? _publicAd[index]['count_of_images']
+                    : 0
+                : '';
             var _data = _publicAd[index];
-            print("DATA:${_publicProfile['profile_image']}");
+            print('AAAA ${_data['user_contact']}');
+
             return InkWell(
               onTap: () {
                 print(_data['id'].toString());
@@ -246,8 +429,11 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                 return Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        DetailsScreen(adID: _data['id'], slug: _data['slug'],isPrivate: false,),
+                    builder: (context) => DetailsScreen(
+                      adID: _data['id'],
+                      slug: _data['slug'],
+                      isPrivate: false,
+                    ),
                   ),
                 );
               },
@@ -316,21 +502,12 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                                   : "add",
                                             ).then((value) {
                                               setState(() {
-                                                AdvertiserProfileServices
-                                                        .advertiserProfile(
-                                                            offset: '$offset',
-                                                            limit: '$limit')
-                                                    .then((value) {
-                                                  setState(() {
-                                                    _publicProfile = value[0]['responseData'];
-                                                    _publicAd = value[0]
-                                                        ['responseData']['ads'];
-                                                    // print('ADS Data: ${_publicAd}');
-                                                    _loading = false;
-                                                    // print('_publicAd : ${_publicAd.length}');
-                                                  });
-                                                });
+                                                _data['is_favorite_ad'] =
+                                                    !_data['is_favorite_ad'];
                                               });
+                                              // value == 1019 // add to fav
+                                              // value == 2136 // already fav
+                                              // value == 1020 // delete
                                             });
                                           }),
                                     ),
@@ -388,66 +565,138 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                   ],
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          myIcon(
-                                              context, FontAwesomeIcons.windows,
-                                              color: Colors.black54,
-                                              size: 25,
-                                              hasDecoration: false),
-                                          buildTxt(
-                                              txt: "category".toString(),
-                                              txtColor: Colors.black54)
-                                        ],
+                              if (_data['created_at'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 16.0, bottom: 8),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Center(
+                                              child: buildIconWithTxt(
+                                                label: Text(
+                                                  "$_subSectionText",
+                                                  style: appStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color:
+                                                          AppColors.descColor),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                iconData:
+                                                    FontAwesomeIcons.windows,
+                                                size: 18,
+                                              ),
+                                              // child: Text("$_sectionText",style: appStyle(fontSize: 15,fontWeight: FontWeight.w400),)
+                                            ),
+                                            SizedBox(
+                                              height: 25,
+                                              child: VerticalDivider(
+                                                thickness: 1,
+                                                color: AppColors.greyThree,
+                                              ),
+                                            ),
+                                            Center(
+                                              child: buildIconWithTxt(
+                                                label: Text(
+                                                  "${TimeAgo.timeAgoSinceDate(_data['created_at'])}",
+                                                  style: appStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color:
+                                                          AppColors.descColor),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                iconData:
+                                                    FontAwesomeIcons.clock,
+                                                size: 18,
+                                              ),
+                                              // child: Text("$_sectionText",style: appStyle(fontSize: 15,fontWeight: FontWeight.w400),)
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      Row(
-                                        children: [
-                                          myIcon(context, Icons.alarm,
-                                              color: Colors.black54,
-                                              size: 25,
-                                              hasDecoration: false),
-                                          buildTxt(
-                                              txt:
-                                                  // TimeAgo.timeAgoSinceDate
-                                                  (_data['created_at'])
-                                                      .toString(),
-                                              txtColor: Colors.black54)
-                                        ],
-                                      ),
-                                    ],
+                                    ),
+
+                                    // child: SingleChildScrollView(
+                                    //   scrollDirection: Axis.horizontal,
+                                    //   child: Row(
+                                    //     mainAxisAlignment:
+                                    //         MainAxisAlignment.spaceEvenly,
+                                    //     children: [
+                                    //       Row(
+                                    //         children: [
+                                    //           myIcon(
+                                    //               context, FontAwesomeIcons.windows,
+                                    //               color: Colors.black54,
+                                    //               size: 20,
+                                    //               hasDecoration: false),
+                                    //           buildTxt(
+                                    //               txt: ("شقق للبيع للبيع للبيع للبيع للبيع للبيعااااااااااااااااااااااااااا").toString(),
+                                    //               txtColor: Colors.black54)
+                                    //         ],
+                                    //       ),
+                                    //       SizedBox(width: 50,),
+                                    //       Row(
+                                    //         children: [
+                                    //           myIcon(context,
+                                    //               Icons.access_time_outlined,
+                                    //               color: Colors.black54,
+                                    //               size: 22,
+                                    //               hasDecoration: false),
+                                    //           buildTxt(
+                                    //               txt:
+                                    //                   // widget.isFav?"":
+                                    //                   TimeAgo.timeAgoSinceDate(
+                                    //                       _data['created_at'])
+                                    //               // (_data['created_at'])
+                                    //               //     .toString()
+                                    //               ,
+                                    //               txtColor: Colors.black54)
+                                    //         ],
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
                                   ),
                                 ),
-                              ),
                               Container(
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 16.0, bottom: 16.0),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.6,
-                                        child: Text(
-                                          _data['title'],
-                                          style: appStyle(
-                                              fontSize: 16,
-                                              color: AppColors.blackColor),
-                                          maxLines: 2,
-                                          textAlign: TextAlign.start,
-                                          overflow: TextOverflow.ellipsis,
+                                    Expanded(
+                                      flex: 5,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 16.0, bottom: 16.0),
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.6,
+                                          child: Text(
+                                            _data['title'],
+                                            style: appStyle(
+                                                fontSize: 16,
+                                                color: AppColors.blackColor),
+                                            maxLines: 2,
+                                            textAlign: TextAlign.start,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -464,7 +713,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                     style: appStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade700),
-                                    maxLines: 3,
+                                    maxLines: 2,
                                     textAlign: TextAlign.start,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -483,7 +732,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                       '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
                                       style: appStyle(
                                           fontSize: 18, color: AppColors.green),
-                                      maxLines: 3,
+                                      maxLines: 2,
                                       textAlign: TextAlign.start,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -520,54 +769,5 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
             );
           }),
     );
-  }
-
-  goToPrevious() {
-    setState(() {
-      _loading = true;
-      AdvertiserProfileServices.advertiserProfile(
-              offset: '${offset >= 10 && offset != 0 ? offset -= 10 : offset}',
-              limit: '$limit')
-          .then((value) {
-        setState(() {
-          _publicProfile = value[0]['responseData'];
-          _publicAd = value[0]['responseData']['ads'];
-          countOfAds = (value[0]['responseData']['total']).toString();
-          print('count of ads : ${countOfAds.toString()}');
-          countOfPager = (double.parse(countOfAds) / 10);
-          countOfPager = countOfPager.ceil().toDouble();
-          print("CEIL : " + countOfPager.toString());
-          print('OFFSET = $offset');
-          // print('ADS Data: ${_publicAd}');
-          _loading = false;
-          // print('_publicAd : ${_publicAd.length}');
-        });
-      });
-    });
-  }
-
-  goToNext() {
-    setState(() {
-      _loading = true;
-      AdvertiserProfileServices.advertiserProfile(
-              offset:
-                  '${int.parse(countOfAds) > (offset + 10) ? offset += 10 : offset}',
-              limit: '$limit')
-          .then((value) {
-        setState(() {
-          _publicProfile = value[0]['responseData'];
-          _publicAd = value[0]['responseData']['ads'];
-          countOfAds = (value[0]['responseData']['total']).toString();
-          print('count of ads : ${countOfAds.toString()}');
-          countOfPager = (double.parse(countOfAds) / 10);
-          countOfPager = countOfPager.ceil().toDouble();
-          print("CEIL : " + countOfPager.toString());
-          print('OFFSET = $offset');
-          // print('ADS Data: ${_publicAd}');
-          _loading = false;
-          // print('_publicAd : ${_publicAd.length}');
-        });
-      });
-    });
   }
 }
