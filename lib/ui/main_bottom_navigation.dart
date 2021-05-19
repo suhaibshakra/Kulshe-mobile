@@ -77,7 +77,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
         items: [
           FABBottomAppBarItem(iconData: Icons.home, text: AppController.strings.home),
           FABBottomAppBarItem(iconData: Icons.list, text: AppController.strings.categories),
-          FABBottomAppBarItem(iconData: FontAwesomeIcons.heartbeat, text: AppController.strings.fav),
+          FABBottomAppBarItem(iconData: FontAwesomeIcons.solidHeart, text: AppController.strings.fav),
           FABBottomAppBarItem(iconData: Icons.more_horiz, text: AppController.strings.more),
         ],
       ),
