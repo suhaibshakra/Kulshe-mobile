@@ -475,7 +475,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                             ),
                             (_details['show_contact']==true &&
-                                _details['user_contact'] != null && (widget.isPrivate && !isPaused && (status == 'approved' || status == 'new')))
+                                _details['user_contact'] != null && (!widget.isPrivate && !isPaused && (status == 'approved' || status == 'new')))
                                 ? Expanded(
                                 flex: (_details['user_contact']['mobile_number'] != null)?5:1,
                                 child: Row(
@@ -531,7 +531,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               flex: 1,
                               child: Center(),
                             ),
-                            if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                            if(!isPaused && (status == 'approved' || status == 'new'))
                             buildIcons(
                                 width: 35,
                                 height: 35,
@@ -875,11 +875,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     }),
                               ),
                               if (_details['show_contact']==true &&
-                                  _details['user_contact']['phone_number'] != null )
+                                  _details['user_contact']['email'] != null )
                               SizedBox(
                                 width: 10,
                               ),
-                              if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                              if(!widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
                                 Expanded(
                                 flex: 1,
                                 child: myButton(
@@ -899,7 +899,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ],
                           ),
                         ),
-                      if(widget.isPrivate && !isPaused && (status == 'approved' || status == 'new'))
+                      if(!isPaused && (status == 'approved' || status == 'new' || status == 'edited'))
                         Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 8),

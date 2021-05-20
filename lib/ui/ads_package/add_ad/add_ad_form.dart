@@ -19,6 +19,7 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/ads_package/user_panel.dart';
 import 'package:map_pin_picker/map_pin_picker.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:simple_location_picker/simple_location_result.dart';
 // import 'package:simple_location_picker/utils/slp_constants.dart';
 import 'package:toast/toast.dart';
+
+import '../public_ads_screen.dart';
 
 class AddAdForm extends StatefulWidget {
   final String section;
@@ -58,7 +61,10 @@ class _AddAdFormState extends State<AddAdForm> {
   double _lng;
   String chosenDate = AppController.strings.chooseDate;
   bool _negotiable = false;
+  bool _negotiableVis = true;
+  bool _isDeliveryVis = true;
   bool _isFree = false;
+  bool _isFreeVis = true;
   bool _showContactInfo = true;
   bool _isDelivery = false;
   bool _loading = true;
@@ -83,7 +89,9 @@ class _AddAdFormState extends State<AddAdForm> {
   List _listUnits;
   String _values;
   List _options;
-  Map<dynamic, dynamic> _images = {};
+  List<dynamic> _images = [];
+
+  List<dynamic> pickedImages = [];
   String _type;
   var validation;
   List<dynamic> myAdAttributesArray = []; //edit
@@ -146,13 +154,14 @@ class _AddAdFormState extends State<AddAdForm> {
   }
   bool _showMap = false;
   _buildImagesMap(
-      {String imgBase64, bool isNew = true, bool isDeleted = false, bool isMain = false}) {
-     _images.addAll({
-       'new': isNew,
-       'deleted': isDeleted,
-       'main': isMain,
-       'name': imgBase64,
-     });
+      {String imgName ='', bool isNew = true, bool isDeleted = false, bool isMain = false,String identifier =''}) {
+    pickedImages.add({
+      'new': isNew,
+      'deleted': isDeleted,
+      'main': isMain,
+      'name': imgName,
+      'identifier': identifier
+    });
   }
 
   _buildMap(id, value, {unitID}) {
@@ -194,11 +203,12 @@ class _AddAdFormState extends State<AddAdForm> {
     });
   }
 
-  var statusCode = 0;
+  var _customMessage = 0;
 
   @override
   void initState() {
     // // print('adID : ${widget.adID}');
+
     getLang();
     _getCountries();
     myAdAttributesArray = [];
@@ -208,12 +218,14 @@ class _AddAdFormState extends State<AddAdForm> {
         .then((value) {
       if (value == 412)
         setState(() {
-          statusCode = value;
+          _customMessage = value;
           _loading = false;
         });
       if (value != 412)
         setState(() {
           _adForm = value;
+          pickedImages = [];
+
           _currenciesData = value[0]['responseData']['currencies'];
           _listAttributes = value[0]['responseData']['attributes'];
           _listBrands = value[0]['responseData']['brands'];
@@ -228,16 +240,17 @@ class _AddAdFormState extends State<AddAdForm> {
           _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
 
           _showContactInfo = value[0]['responseData']['show_my_contact'];
-          _negotiable = value[0]['responseData']['negotiable'];
-          _isFree = value[0]['responseData']['if_free'];
+          _negotiableVis = value[0]['responseData']['negotiable'];
+          _isFreeVis = value[0]['responseData']['is_free'];
+          _isDeliveryVis = value[0]['responseData']['is_delivery'];
           _loading = false;
           var _dataCurrency = _currenciesData
               .where((element) => element['default'] == true)
               .toList();
           _currencyId = _dataCurrency[0]['id'].toString();
           getCurrentLocation().then((value) {
-            print(" latitudeData : $latitudeData");
-            print(" longitudeData : $longitudeData");
+            // print(" latitudeData : $latitudeData");
+            // print(" longitudeData : $longitudeData");
           });
         });
     });
@@ -295,10 +308,10 @@ class _AddAdFormState extends State<AddAdForm> {
                           .findAddressesFromCoordinates(Coordinates(
                           cameraPosition.target.latitude,
                           cameraPosition.target.longitude));
-                      print("cameraPosition.target.latitude");
-                      print(cameraPosition.target.latitude);
-                      print("cameraPosition.target.longitude");
-                      print(cameraPosition.target.longitude);
+                      // print("cameraPosition.target.latitude");
+                      // print(cameraPosition.target.latitude);
+                      // print("cameraPosition.target.longitude");
+                      // print(cameraPosition.target.longitude);
                       // update the ui with the address
                       textController.text = '${addresses.first?.addressLine ?? ''}';
                     },
@@ -307,36 +320,9 @@ class _AddAdFormState extends State<AddAdForm> {
               ),
             ],
           ),
-        ),):  statusCode == 412
-                ? Container(
-                    color: Colors.white,
-                    child: Center(
-                      child: Container(
-                        height: 80,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.red,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 1,
-                                  spreadRadius: 2)
-                            ]),
-                        child: buildIconWithTxt(
-                          label: Text(
-                            "لقد تجازوزت الحد المسموح \n لاضافة اعلانات لهذا الشهر ",
-                            style: appStyle(
-                                color: AppColors.whiteColor, fontSize: 20),
-                          ),
-                          iconColor: AppColors.whiteColor,
-                          iconData: Icons.arrow_back_outlined,
-                          size: 30,
-                          action: () => Navigator.of(context).pop(),
-                        ),
-                      ),
-                    ),
-                  )
-                : Directionality(
+        ),):  _customMessage != 412
+                ?
+                Directionality(
                     textDirection: AppController.textDirection,
                     child: Form(
                       key: _formKey,
@@ -347,8 +333,9 @@ class _AddAdFormState extends State<AddAdForm> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (!widget.fromEdit)
+                                _buildPath(),
                               _buildImages(),
-                              if (!widget.fromEdit) _buildPath(),
                               // buildTxt(txt: "إختر من معرض الصور"),
                               // Container(height: 130, child: SingleImageUpload()),
                               _buildConstData(),
@@ -376,7 +363,34 @@ class _AddAdFormState extends State<AddAdForm> {
                         ),
                       ),
                     ),
-                  ),
+                  ):Container(
+        color: Colors.white,
+        child: Center(
+          child: Container(
+            height: 80,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.red,
+                      offset: Offset(2, 2),
+                      blurRadius: 1,
+                      spreadRadius: 2)
+                ]),
+            child: buildIconWithTxt(
+              label: Text(
+                "$_customMessage",
+                style: appStyle(
+                    color: AppColors.whiteColor, fontSize: 20,),maxLines: 2,
+              ),
+              iconColor: AppColors.whiteColor,
+              iconData: Icons.arrow_back_outlined,
+              size: 30,
+              action: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+      ),
       ),
       bottomNavigationBar: !_showMap?null:BottomAppBar(
         color: Colors.transparent,
@@ -862,40 +876,6 @@ class _AddAdFormState extends State<AddAdForm> {
     );
   }
 
-  // Container _buildPath(MediaQueryData mq) {
-  //   return Container(
-  //     height: mq.size.height * 0.1,
-  //     child: Card(
-  //       margin: EdgeInsets.only(bottom: 20.0),
-  //       elevation: 7,
-  //       shadowColor: AppColors.grey,
-  //       child: Padding(
-  //         padding: const EdgeInsets.all(10.0),
-  //         child: Row(
-  //           children: [
-  //             Text(
-  //               "${widget.section}",
-  //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-  //             ),
-  //             SizedBox(
-  //               width: 25,
-  //               child: Icon(
-  //                 Icons.arrow_forward_ios,
-  //                 size: 14,
-  //                 color: AppColors.grey,
-  //               ),
-  //             ),
-  //             Text(
-  //               "${_adForm[0]['responseData']['label']['ar']}",
-  //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Container _buildButton(BuildContext context) {
     // // print("AT:$myAdAttributes");
     return Container(
@@ -909,45 +889,51 @@ class _AddAdFormState extends State<AddAdForm> {
         radius: 10,
         btnColor: AppColors.redColor,
         onPressed: () {
-          // print(double.parse(_priceController.text.toString()));
           final FormState form = _formKey.currentState;
+          pickedImages.where((pickedImagesElement){
+            if(!_images.contains(pickedImagesElement['identifier'])){
+              pickedImagesElement['deleted']= true;
+            }
+            return true;
+          }).toList();
+
+          print(pickedImages.length.toString());
+          print(pickedImages.where((element) => element['deleted']).toList().length);
           if (form.validate()) {
-            print(latitudeData.toString());
-            print(longitudeData.toString());
-            // addAdFunction(
-            //     context: context,
-            //     sectionId: widget.sectionId.toString(),
-            //     subSectionId: '${widget.subSectionId.toString()}',
-            //     title: _titleController.text.toString(),
-            //     bodyAd: _bodyController.text.toLowerCase(),
-            //     cityId: _cityId,
-            //     price: _priceController.text.toString().isNotEmpty
-            //         ? double.parse(_priceController.text.toString())
-            //         : 0,
-            //     localityId: '1',
-            //     lat:'32.222222' ,
-            //     lag: '32.222222',
-            //
-            //     // lat: _selectedLocation != null
-            //     //     ? '${_selectedLocation.latitude}'
-            //     //     : "",
-            //     // lag: _selectedLocation != null
-            //     //     ? '${_selectedLocation.longitude}'
-            //     //     : "",
-            //     brandId: _brandId != null ? _brandId : "",
-            //     subBrandId: _subBrandId != null ? _subBrandId : "",
-            //     isDelivery: true,
-            //     isFree: _isFree,
-            //     showContact: _showContactInfo,
-            //     negotiable: _negotiable,
-            //     zoom: 14,
-            //     adAttributes: myAdAttributesArray,
-            //     images: _images != null ? files : [],
-            //     currencyId: _currencyId);
+             addAdFunction(
+                context: context,
+                sectionId: widget.sectionId.toString(),
+                subSectionId: '${widget.subSectionId.toString()}',
+                title: _titleController.text.toString(),
+                bodyAd: _bodyController.text.toLowerCase(),
+                cityId: _cityId,
+                price: _priceController.text.toString().isNotEmpty
+                    ? double.parse(_priceController.text.toString())
+                    : 0,
+                localityId: '1',
+                lat:latitudeData.toString(),
+                lag: longitudeData.toString(),
+                brandId: _brandId != null ? _brandId : "",
+                subBrandId: _subBrandId != null ? _subBrandId : "",
+                isDelivery: true,
+                isFree: _isFree,
+                showContact: _showContactInfo,
+                negotiable: _negotiable,
+                zoom: 14,
+                adAttributes: myAdAttributesArray,
+                images: pickedImages != null ? pickedImages : [],
+                currencyId: _currencyId).then((value) {
+                  if(value==200)
+               Navigator.pushReplacement(
+                 context,
+                 MaterialPageRoute(
+                   builder: (context) => UserPanel(),
+                 ),
+               );
+             });
           } else {
             print('Form is invalid');
-            viewToast(
-                context, 'Form is invalid', AppColors.redColor, Toast.BOTTOM);
+            viewToast(context, 'Form is invalid', AppColors.redColor, Toast.BOTTOM);
           }
 
           // _validateAndSubmit();
@@ -1331,33 +1317,99 @@ class _AddAdFormState extends State<AddAdForm> {
               SizedBox(
                 height: 20,
               ),
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: MergeSemantics(
-                      child: ListTile(
-                        title: Text(
-                          _strController.showContactInfo,
-                          style: appStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        trailing: CupertinoSwitch(
-                          value: _showContactInfo,
-                          onChanged: (bool value) {
-                            setState(() {
-                              _showContactInfo = value;
-                            });
-                          },
-                        ),
-                        onTap: () {
+                  MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                        _strController.showContactInfo,
+                        style: appStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      trailing: CupertinoSwitch(
+                        value: _showContactInfo,
+                        onChanged: (bool value) {
                           setState(() {
-                            _showContactInfo = !_showContactInfo;
+                            _showContactInfo = value;
                           });
                         },
                       ),
+                      onTap: () {
+                        setState(() {
+                          _showContactInfo = !_showContactInfo;
+                        });
+                      },
                     ),
-                  )
+                  ),
+                  if(_isFreeVis)
+                  MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                        _strController.free,
+                        style: appStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      trailing: CupertinoSwitch(
+                        value: _isFree,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _isFree = value;
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _isFree = !_isFree;
+                        });
+                      },
+                    ),
+                  ),
+                  if(_negotiableVis)
+                  MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                        _strController.negotiable,
+                        style: appStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      trailing: CupertinoSwitch(
+                        value: _negotiable,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _negotiable = value;
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _negotiable = !_negotiable;
+                        });
+                      },
+                    ),
+                  ),
+                  if(_isDeliveryVis)
+                  MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                        _strController.negotiable,
+                        style: appStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      trailing: CupertinoSwitch(
+                        value: _negotiable,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _negotiable = value;
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _negotiable = !_negotiable;
+                        });
+                      },
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -1523,69 +1575,54 @@ class _AddAdFormState extends State<AddAdForm> {
       crossAxisCount: 4,
       children: List.generate(images.length, (index) {
         Asset asset = images[index];
+        var lastImages =[];
+        images.forEach((element) {
+          lastImages.add(element.identifier);
+
+        });
+        _images = lastImages;
+        print("_images ${_images.length}");
+
         // asset.getByteData().then((value){
         //   print('Value: $value');
         // });
         // print('byteData: ${byteData.toString()}');
-        _submit();
-        print('Assets: ${asset.identifier}');
+        // _submit();
+        // print('Assets: ${asset.identifier}');
         FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
-            .then((value) {
+            .then((value) async {
           print('val: $value');
-        });
+          var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
+          var file = await getImageFileFromAsset(path2);
+          String fileExt = path2.split('/').last;
+          fileExt = fileExt.split('.').last;
+          var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+
+          var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
+          if(alreadyChoose.length == 0){
+
+            await uploadImage(context,base64Image).then((value){
+              _buildImagesMap(isMain: index == 0?true:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
+            });
+            print(pickedImages);
+          }
+       });
         return Padding(
           padding: const EdgeInsets.all(4.0),
-          child: AssetThumb(
-            asset: asset,
-            width: 300,
-            height: 300,
+          child: Stack(
+            children: [
+              AssetThumb(
+                asset: asset,
+                width: 300,
+                height: 300,
+              ),
+            ],
           ),
         );
       }),
     );
   }
 
-  _submit() async {
-    for (int i = 0; i < images.length; i++) {
-      var path2 =
-          await FlutterAbsolutePath.getAbsolutePath(images[i].identifier);
-      var file = await getImageFileFromAsset(path2);
-      var base64Image = base64Encode(file.readAsBytesSync());
-
-      String fileExe = path2.split('/').last;
-      fileExe = fileExe.split('.').last;
-
-      print(fileExe);
-      // log("data:image/$fileExe;base64,$base64Image");
-
-      if (files.contains("data:image/$fileExe;base64,$base64Image")) {
-        print('already available');
-      } else {
-        files.add("data:image/$fileExe;base64,$base64Image");
-        uploadImage(context, "data:image/$fileExe;base64,$base64Image");
-      }
-      for (int i = 0; i < files.length; i++) {
-        print('Files: ${files.length}');
-      }
-
-      // ;
-      // var data = {
-      //   "files": files,
-      // };
-      // try {
-      //   var response = await http.post(data, 'url')
-      //   var body = jsonDecode(response.body);
-      //   print(body);
-      //   if (body['msg'] == "Success!") {
-      //     print('posted successfully!');
-      //   } else {
-      //     print(context, body['msg']);
-      //   }
-      // } catch (e) {
-      //   return e.message;
-      // }
-    }
-  }
 
   getImageFileFromAsset(String path) async {
     final file = File(path);
@@ -1613,7 +1650,7 @@ class _AddAdFormState extends State<AddAdForm> {
           selectCircleStrokeColor: "#000000",
         ),
       );
-      print('resultList: $resultList');
+      // print('resultList: $resultList');
     } on Exception catch (e) {
       error = e.toString();
     }
@@ -1630,24 +1667,18 @@ class _AddAdFormState extends State<AddAdForm> {
   }
 
   Widget _buildImages() {
-    return Column(
+     return Column(
+       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Center(child: Text('Error: $_error')),
+        // Center(child: Text('Error: $_error')),
         ElevatedButton(
-          child: Text("Pick images"),
+          child: Text("إختر صور"),
           onPressed: loadAssets,
         ),
-        SizedBox(height: 120, child: buildGridView())
+        // if (files.isNotEmpty)
+          SizedBox(height: 120, child: buildGridView())
       ],
     );
   }
-
-// void _validateAndSubmit(bool isRequired,String validationType) {
-//   final isValid  = _formKey.currentState;
-//   if(validationType == 'radio')
-//   if (form.validate()) {
-//
-//   }
-// }
-
 }

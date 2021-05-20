@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,6 +14,8 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
+import 'package:kulshe/ui/ads_package/user_panel.dart';
+import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:simple_location_picker/simple_location_picker_screen.dart';
 // import 'package:simple_location_picker/simple_location_result.dart';
@@ -44,7 +47,10 @@ class _EditAdFormState extends State<EditAdForm> {
   double _lng;
   String chosenDate = AppController.strings.chooseDate;
   bool _negotiable = false;
+  bool _negotiableVis = true;
+  bool _isDeliveryVis = true;
   bool _isFree = false;
+  bool _isFreeVis = true;
   bool _showContactInfo = true;
   bool _isDelivery = false;
   bool _loading = true;
@@ -68,7 +74,7 @@ class _EditAdFormState extends State<EditAdForm> {
   List _listUnits;
   String _values;
   List _options;
-  List _images;
+  // List _images;
   String _type;
   var validation;
   List<dynamic> myAdAttributesArray = []; //edit
@@ -81,29 +87,43 @@ class _EditAdFormState extends State<EditAdForm> {
   File _pickedImage;
   var _userImage;
   var _imgURL;
+  List<dynamic> _images = [];
+  List<dynamic> _imagesNetwork = [];
 
-  void _pickImageLast(ImageSource src) async {
-    final pickedImageFile =
-    await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-    // // print('PC:$_picker');
-    if (pickedImageFile != null) {
-      setState(() {
-        _pickedImage = File(pickedImageFile.path);
-      });
-      _userImageFile = _pickedImage;
-      bytes = File(_userImageFile.path).readAsBytesSync();
-
-      String fileName = _userImageFile.path.split('/').last;
-      fileName = fileName.split('.').last;
-
-      // // print(fileName);
-      // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
-      _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
-      _images.add({"image": _userImage != null ? _userImage : "sss"});
-    } else {
-      // print('No Image Selected');
-    }
+  List<dynamic> pickedImages = [];
+  _buildImagesMap(
+      {String imgName ='', bool isNew = true, bool isDeleted = false, bool isMain = false,String identifier =''}) {
+    pickedImages.add({
+      'new': isNew,
+      'deleted': isDeleted,
+      'main': isMain,
+      'name': imgName,
+      'identifier': identifier
+    });
   }
+
+  // void _pickImageLast(ImageSource src) async {
+  //   final pickedImageFile =
+  //   await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
+  //   // // print('PC:$_picker');
+  //   if (pickedImageFile != null) {
+  //     setState(() {
+  //       _pickedImage = File(pickedImageFile.path);
+  //     });
+  //     _userImageFile = _pickedImage;
+  //     bytes = File(_userImageFile.path).readAsBytesSync();
+  //
+  //     String fileName = _userImageFile.path.split('/').last;
+  //     fileName = fileName.split('.').last;
+  //
+  //     // // print(fileName);
+  //     // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
+  //     _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
+  //     _images.add({"image": _userImage != null ? _userImage : "sss"});
+  //   } else {
+  //     // print('No Image Selected');
+  //   }
+  // }
 
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -125,6 +145,7 @@ class _EditAdFormState extends State<EditAdForm> {
       element['id'].toString() == _gp.getString('countryId'))
           .toList();
       _citiesData = _citiesData[0]['cities'];
+      // print('CITIES DATA:${_citiesData}');
     });
     // // print('_${_countryData.where((element) => element.classified == true)}');
     // // print(sections[0].responseData[4].name);
@@ -183,6 +204,9 @@ class _EditAdFormState extends State<EditAdForm> {
           _brandId = _adForm[0]['responseData']['brand_id'].toString();
           _subBrandId = _adForm[0]['responseData']['sub_brand_id'].toString();
           _cityId = _adForm[0]['responseData']['city_id'].toString();
+          _images = _adForm[0]['responseData']['images'].toList();
+          _imagesNetwork = _adForm[0]['responseData']['images'].toList();
+          print('Images ${_images}');
           // log('${_adForm[0]['responseData']['brand_id'] }  BOOaaL');
            _titleController.text = value[0]['responseData']['title'];
           _bodyController.text = value[0]['responseData']['body'];
@@ -204,6 +228,9 @@ class _EditAdFormState extends State<EditAdForm> {
           _listBrands = uniqueJsonList.map((item) => jsonDecode(item)).toList();
 
           _showContactInfo = value[0]['responseData']['show_contact'];
+          _negotiableVis = value[0]['responseData']['negotiable'];
+          _isFreeVis = value[0]['responseData']['is_free'];
+          _isDeliveryVis = value[0]['responseData']['is_delivery'];
           _negotiable = value[0]['responseData']['negotiable'];
           _isFree = value[0]['responseData']['if_free'];
           _loading = false;
@@ -265,6 +292,32 @@ class _EditAdFormState extends State<EditAdForm> {
                   children: [
                     // if (!widget.fromEdit)
                     //   _buildPath(),
+                    _buildImages(),
+                    Container(
+                      height: 100,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemCount: _imagesNetwork.length,
+                          itemBuilder: (context, i) {
+                            print(_imagesNetwork[i]['small']);
+                            return _imagesNetwork[i]['deleted'] != false? InkWell(
+                              onTap: (){
+                                setState(() {
+
+                                  _imagesNetwork[i]['deleted'] = false;
+                                  _imagesNetwork.removeAt(i);
+                                });
+                                },
+                              child: Container(
+                                width: 100,height: 100,
+                                decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"))),
+                              ),
+                            ): Container()
+                            ;
+                          }),
+                    ),
                     _buildConstData(),
                     _buildDynamicData(mq),
                     // Center(
@@ -769,6 +822,36 @@ class _EditAdFormState extends State<EditAdForm> {
         onPressed: () {
           final FormState form = _formKey.currentState;
           if(form.validate()){
+            setState(() {
+              if(_imagesNetwork.length!=0)
+                for(int i = 0;i<_imagesNetwork.length;i++){
+                  _imagesNetwork[i]['main'] = false;
+                  _imagesNetwork[i]['new'] = false;
+                  _imagesNetwork[i]['identifier'] = _imagesNetwork[i]['small'];
+
+                  if(_imagesNetwork[i]['deleted'] != true)
+                    _imagesNetwork[i]['deleted'] = false;
+
+
+                  _images.add(_imagesNetwork[i]['small']);
+                  pickedImages.add(_imagesNetwork[i]);
+
+                }
+              pickedImages.where((pickedImagesElement){
+                if(!_images.contains(pickedImagesElement['identifier'])){
+                  pickedImagesElement['deleted']= true;
+                }
+                return true;
+              }).toList();
+
+
+              print('IMAGES LAST: $_images');
+
+            });
+            final FormState form = _formKey.currentState;
+
+            print(pickedImages);
+            print(_images);
             updateAdFunction(
                 context: context,
                 adID: widget.adID.toString(),
@@ -779,12 +862,6 @@ class _EditAdFormState extends State<EditAdForm> {
                     ? double.parse(_priceController.text.toString())
                     : 0,
                 localityId: '1',
-                // lat: _selectedLocation != null
-                //     ? '${_selectedLocation.latitude}'
-                //     : "",
-                // lag: _selectedLocation != null
-                //     ? '${_selectedLocation.longitude}'
-                //     : "",
                 brandId: _brandId != null ? _brandId : "",
                 subBrandId: _subBrandId != null ? _subBrandId : "",
                 isDelivery: true,
@@ -793,16 +870,17 @@ class _EditAdFormState extends State<EditAdForm> {
                 negotiable: _negotiable,
                 zoom: 14,
                 adAttributes: myAdAttributesArray,
-                images: _images != null ? _images : [],
-                currencyId: _currencyId);
+                images: pickedImages != null ? pickedImages : [],
+                currencyId: _currencyId).then((value){
+              print(' status code $value');
+              if(value == 200)
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserPanel(),));
+            });
           }else{
             print('Form is invalid');
             viewToast(context, 'Form is invalid', AppColors.redColor,
                 Toast.BOTTOM);
-
           }
-
-
           // _validateAndSubmit();
         },
       ),
@@ -827,9 +905,9 @@ class _EditAdFormState extends State<EditAdForm> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
+
                 Expanded(
                   flex: 1,
-
                   child: DropdownButtonHideUnderline(
                     child: ButtonTheme(
                       alignedDropdown: true,
@@ -860,7 +938,7 @@ class _EditAdFormState extends State<EditAdForm> {
                         items: _citiesData.map((listCity) {
                           return new DropdownMenuItem(
                             child: new Text(
-                              listCity['label'][_lang],
+                              listCity['label'][_lang??'ar'],
                               style: appStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16),
@@ -1192,33 +1270,99 @@ class _EditAdFormState extends State<EditAdForm> {
               SizedBox(
                 height: 20,
               ),
-              Row(
+              Column(
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: MergeSemantics(
+                  MergeSemantics(
+                    child: ListTile(
+                      title: Text(
+                        _strController.showContactInfo,
+                        style: appStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      trailing: CupertinoSwitch(
+                        value: _showContactInfo,
+                        onChanged: (bool value) {
+                          setState(() {
+                            _showContactInfo = value;
+                          });
+                        },
+                      ),
+                      onTap: () {
+                        setState(() {
+                          _showContactInfo = !_showContactInfo;
+                        });
+                      },
+                    ),
+                  ),
+                  if(_isFreeVis)
+                    MergeSemantics(
                       child: ListTile(
                         title: Text(
-                          _strController.showContactInfo,
+                          _strController.free,
                           style: appStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         trailing: CupertinoSwitch(
-                          value: _showContactInfo,
+                          value: _isFree,
                           onChanged: (bool value) {
                             setState(() {
-                              _showContactInfo = value;
+                              _isFree = value;
                             });
                           },
                         ),
                         onTap: () {
                           setState(() {
-                            _showContactInfo = !_showContactInfo;
+                            _isFree = !_isFree;
                           });
                         },
                       ),
                     ),
-                  )
+                  if(_negotiableVis)
+                    MergeSemantics(
+                      child: ListTile(
+                        title: Text(
+                          _strController.negotiable,
+                          style: appStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        trailing: CupertinoSwitch(
+                          value: _negotiable,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _negotiable = value;
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _negotiable = !_negotiable;
+                          });
+                        },
+                      ),
+                    ),
+                  if(_isDeliveryVis)
+                    MergeSemantics(
+                      child: ListTile(
+                        title: Text(
+                          _strController.negotiable,
+                          style: appStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        trailing: CupertinoSwitch(
+                          value: _negotiable,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _negotiable = value;
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _negotiable = !_negotiable;
+                          });
+                        },
+                      ),
+                    ),
                 ],
               ),
             ],
@@ -1389,5 +1533,123 @@ class _EditAdFormState extends State<EditAdForm> {
 //
 //   }
 // }
+  List<Asset> images = List<Asset>();
+  List files = [];
+  List<Asset> resultList;
+  String _error = 'No Error Dectected';
+
+  Widget buildGridView() {
+    return GridView.count(
+      crossAxisCount: 4,
+      children: List.generate(images.length, (index) {
+        Asset asset = images[index];
+        var lastImages =[];
+        images.forEach((element) {
+          lastImages.add(element.identifier);
+
+        });
+        _images = lastImages;
+        print("_images ${_images.length}");
+
+        // asset.getByteData().then((value){
+        //   print('Value: $value');
+        // });
+        // print('byteData: ${byteData.toString()}');
+        // _submit();
+        // print('Assets: ${asset.identifier}');
+        FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
+            .then((value) async {
+          print('val: $value');
+          var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
+          var file = await getImageFileFromAsset(path2);
+          String fileExt = path2.split('/').last;
+          fileExt = fileExt.split('.').last;
+          var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+          // log('base64Encode : ${base64Image.toString()}');
+          var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
+          if(alreadyChoose.length == 0){
+
+            await uploadImage(context,base64Image).then((value){
+              _buildImagesMap(isMain:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
+            });
+            print(pickedImages);
+          }
+        });
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Stack(
+            children: [
+               AssetThumb(
+                asset: asset,
+                width: 300,
+                height: 300,
+              ),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+
+  getImageFileFromAsset(String path) async {
+    final file = File(path);
+    return file;
+  }
+
+  Future<void> loadAssets() async {
+    List<Asset> resultList = <Asset>[];
+    String error = 'No Error Detected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 20,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(
+          takePhotoIcon: "chat",
+          doneButtonTitle: "Fatto",
+        ),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+      // print('resultList: $resultList');
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+    setState(() {
+      images = resultList;
+      print('images: $images');
+      _error = error;
+    });
+  }
+
+  Widget _buildImages() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        // Center(child: Text('Error: $_error')),
+        ElevatedButton(
+          child: Text("إختر صور"),
+          onPressed:(){ loadAssets();
+          print('___images : $_images');
+          },
+        ),
+        // if (files.isNotEmpty)
+        SizedBox(height: 120, child: buildGridView())
+      ],
+    );
+  }
 
 }

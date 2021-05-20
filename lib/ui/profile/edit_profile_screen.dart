@@ -839,4 +839,5 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   _dismissDialog({BuildContext ctx}) {
     Navigator.pop(ctx);
   }
+
 }

@@ -287,7 +287,7 @@ class AdAddForm {
         // print('ads : $ads');
         return ads;
       } else {
-        return response.statusCode;
+        return jsonDecode('[${response.body}]')[0]['custom_message'];
       }
     } catch (e) {
       return List();

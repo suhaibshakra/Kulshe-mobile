@@ -170,6 +170,12 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
             hasLeading: true,
             iconL: Icons.favorite,
             title: _strController.myFavAds,
+            tapHandler: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,isMain: false,)
+              ),
+            ),
             icon: Icons.arrow_forward_ios)),
         buildBorder(buildListTile(
             context: context,
@@ -607,7 +613,7 @@ Widget listItem(BuildContext context, LinearGradient gradient,Color color, Strin
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => actionTitle == 'fav'?PublicAdsScreen(isPrivate: true,isFav: true,isFilter: false,isMain: false,):PublicAdsScreen(isPrivate:true,
+            builder: (context) => actionTitle == 'fav'?PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,isMain: false,):PublicAdsScreen(isPrivate:true,
               actionTitle: actionTitle,
             ),
           ),

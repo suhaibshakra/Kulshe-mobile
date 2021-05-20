@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -196,6 +197,7 @@ Future uploadImage(BuildContext context, String bodyData) async {
     print('********************************Done');
     // viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
     //     Toast.BOTTOM);
+    return jsonDecode('[${response.body}]');
   } else {
     print(decodeData['custom_message']);
     print('********************************Wrong');
@@ -607,15 +609,20 @@ Future addAdFunction({
       body: body);
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
+    print('body');
+    print(body);
+    print('body');
     print('********************************${decodeData['custom_message']}');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
+    return response.body;
   } else {
     print(decodeData['custom_message']);
     print(body);
     print(decodeData);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+    return response.body;
   }
 }
 
@@ -671,22 +678,28 @@ Future updateAdFunction({
     //https://www.youtube.com/watch?v=kSDJZTzCl8k
     "ad_attributes": adAttributes,
     "images": images
+
   });
   var response = await http.post(
       'https://api.kulshe.nurdevops.com/api/v1/classified/update',
       headers: headers,
       body: body);
+  log(body);
+
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
+
     print('********************************${decodeData['custom_message']}');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
+    return response.statusCode;
   } else {
     print(decodeData['custom_message']);
     print(body);
     print(decodeData);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+    return response.statusCode;
   }
 }
 
