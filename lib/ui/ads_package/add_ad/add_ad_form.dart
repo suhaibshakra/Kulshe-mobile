@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:bmprogresshud/bmprogresshud.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
@@ -106,6 +107,9 @@ class _AddAdFormState extends State<AddAdForm> {
   var _imgURL;
   double latitudeData;
   double longitudeData;
+  GlobalKey<ProgressHudState> _hudKey = GlobalKey();
+
+
   Future getCurrentLocation() async {
     final geoPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -208,8 +212,9 @@ class _AddAdFormState extends State<AddAdForm> {
   @override
   void initState() {
     // // print('adID : ${widget.adID}');
-
     getLang();
+    pickedImages = [];
+    _images = [];
     _getCountries();
     myAdAttributesArray = [];
     myAdAttributes = {};
@@ -224,7 +229,6 @@ class _AddAdFormState extends State<AddAdForm> {
       if (value != 412)
         setState(() {
           _adForm = value;
-          pickedImages = [];
 
           _currenciesData = value[0]['responseData']['currencies'];
           _listAttributes = value[0]['responseData']['attributes'];
@@ -322,48 +326,53 @@ class _AddAdFormState extends State<AddAdForm> {
           ),
         ),):  _customMessage != 412
                 ?
-                Directionality(
-                    textDirection: AppController.textDirection,
-                    child: Form(
-                      key: _formKey,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (!widget.fromEdit)
-                                _buildPath(),
-                              _buildImages(),
-                              // buildTxt(txt: "إختر من معرض الصور"),
-                              // Container(height: 130, child: SingleImageUpload()),
-                              _buildConstData(),
-                              _buildDynamicData(mq),
-                              // Center(
-                              //   child: buildIconWithTxt(
-                              //     iconData: Icons.image_outlined,
-                              //     iconColor: AppColors.redColor,
-                              //     label: Text(
-                              //       _strController.labelGallery,
-                              //       style: appStyle(
-                              //           fontSize: 16,
-                              //           color: AppColors.redColor,
-                              //           fontWeight: FontWeight.w400),
-                              //     ),
-                              //     action: () => _pickImageLast(ImageSource.gallery),
-                              //   ),
-                              // ),
-                              SizedBox(
-                                height: 20,
+                ProgressHud(
+                  isGlobalHud: true,
+                  key: _hudKey,
+                  child: Directionality(
+                      textDirection: AppController.textDirection,
+                      child: LayoutBuilder(builder: (ctx,constraints)=>Form(
+                          key: _formKey,
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (!widget.fromEdit)
+                                    _buildPath(),
+                                  _buildImages(),
+                                  // buildTxt(txt: "إختر من معرض الصور"),
+                                  // Container(height: 130, child: SingleImageUpload()),
+                                  _buildConstData(),
+                                  _buildDynamicData(mq),
+                                  // Center(
+                                  //   child: buildIconWithTxt(
+                                  //     iconData: Icons.image_outlined,
+                                  //     iconColor: AppColors.redColor,
+                                  //     label: Text(
+                                  //       _strController.labelGallery,
+                                  //       style: appStyle(
+                                  //           fontSize: 16,
+                                  //           color: AppColors.redColor,
+                                  //           fontWeight: FontWeight.w400),
+                                  //     ),
+                                  //     action: () => _pickImageLast(ImageSource.gallery),
+                                  //   ),
+                                  // ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  _buildButton(context,ctx),
+                                ],
                               ),
-                              _buildButton(context),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ):Container(
+                ):Container(
         color: Colors.white,
         child: Center(
           child: Container(
@@ -876,7 +885,7 @@ class _AddAdFormState extends State<AddAdForm> {
     );
   }
 
-  Container _buildButton(BuildContext context) {
+  Container _buildButton(BuildContext context,ctx) {
     // // print("AT:$myAdAttributes");
     return Container(
       child: myButton(
@@ -900,7 +909,9 @@ class _AddAdFormState extends State<AddAdForm> {
           print(pickedImages.length.toString());
           print(pickedImages.where((element) => element['deleted']).toList().length);
           if (form.validate()) {
-             addAdFunction(
+            showLoadingHud(context: ctx,hudKey: _hudKey,time: 5000);
+
+            addAdFunction(
                 context: context,
                 sectionId: widget.sectionId.toString(),
                 subSectionId: '${widget.subSectionId.toString()}',

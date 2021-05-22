@@ -95,9 +95,12 @@ class _SearchWidgetState extends State<SearchWidget> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => AddAdSectionsScreen()));
               },
-              child: Icon(
-                FontAwesomeIcons.slidersH,
-                color: Colors.black54,
+              child: CircleAvatar(
+                backgroundColor: AppColors.redColor,
+                child: Icon(
+                  FontAwesomeIcons.slidersH,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],

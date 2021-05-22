@@ -9,6 +9,7 @@ import 'package:kulshe/ui/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './services_api/services.dart';
 import 'app_helpers/app_controller.dart';
+import 'package:bmprogresshud/bmprogresshud.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();//
@@ -47,14 +48,17 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppController.strings.appName,
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return ProgressHud(
+      isGlobalHud: true,
+      child: MaterialApp(
+        title: AppController.strings.appName,
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MainSplashScreen(),
       ),
-      home: MainSplashScreen(),
     );
   }
 }

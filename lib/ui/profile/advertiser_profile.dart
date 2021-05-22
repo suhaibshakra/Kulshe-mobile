@@ -123,7 +123,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    return SafeArea(
+     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
@@ -133,18 +133,20 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                 textDirection: TextDirection.rtl,
                 child: Stack(
                   children: [
+                    buildBg(),
                     Container(
                         decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                              Colors.deepOrange,
-                              Colors.pinkAccent
-                            ])),
+                            // gradient: LinearGradient(
+                            //     begin: Alignment.topCenter,
+                            //     end: Alignment.bottomCenter,
+                            //     colors: [
+                            //   Colors.deepOrange,
+                            //   Colors.pinkAccent
+                            // ])
+                        ),
                         child: Container(
                           width: double.infinity,
-                          height: 220.0,
+                          height: MediaQuery.of(context).size.height*0.3,
                           child: Center(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -170,9 +172,9 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                   _publicProfile['full_name'] != null
                                       ? _publicProfile['full_name']
                                       : "",
-                                  style: TextStyle(
+                                  style: appStyle(
                                     fontSize: 22.0,
-                                    color: Colors.white,
+                                    color: AppColors.blackColor2,
                                   ),
                                 ),
                                 SizedBox(
@@ -186,7 +188,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                                   elevation: 5.0,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 22.0),
+                                        horizontal: 8.0, vertical: 5.0),
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -261,7 +263,8 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                           ),
                         )),
                     Padding(
-                      padding: const EdgeInsets.only(top: 220),
+                      padding: const EdgeInsets.only(top: 225,
+                    ),
                       child: _buildList(mq),
                     ),
                   ],

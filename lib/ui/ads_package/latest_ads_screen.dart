@@ -187,7 +187,7 @@ class _LatestAdsState extends State<LatestAds> {
                           padding: const EdgeInsets.only(
                             top: 5,
                           ),
-                          child: buildListView(mq,scrollController)),
+                          child: buildListView(mq, scrollController)),
                     ),
                   ],
                 ),
@@ -196,11 +196,11 @@ class _LatestAdsState extends State<LatestAds> {
     );
   }
 
-  ListView buildListView(MediaQueryData mq,scrollController) {
+  ListView buildListView(MediaQueryData mq, scrollController) {
     return ListView.builder(
       controller: scrollController,
       shrinkWrap: true,
-      itemCount: _adsData.length,
+      itemCount: _adsData.length+1,
       physics: ClampingScrollPhysics(),
       itemBuilder: (context, index) {
         if (index == _adsData.length) {
@@ -209,8 +209,7 @@ class _LatestAdsState extends State<LatestAds> {
         var _data = _adsData[index];
         // log("DATA : ${_data['user_contact']['hash_id']}");
         bool hasImg = false;
-        if (_data['images'] != [] || _data['images'] != null)
-          hasImg = true;
+        if (_data['images'] != [] || _data['images'] != null) hasImg = true;
         // print(hasImg);
         return Card(
           elevation: 2.0,
@@ -311,19 +310,21 @@ class _LatestAdsState extends State<LatestAds> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (_data['show_contact'] != false)
-                              InkWell(
-                                onTap: () {
-                                  print('hash_id: ${_data['hash_id']}');
-                                  return Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AdvertiserProfile(
-                                            _data['user_contact']['hash_id']),
-                                      ));
-                                },
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
+                              Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      print('hash_id: ${_data['hash_id']}');
+                                      return Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdvertiserProfile(
+                                                    _data['user_contact']
+                                                        ['hash_id']),
+                                          ));
+                                    },
+                                    child: CircleAvatar(
                                       radius: 20,
                                       backgroundImage: _data['user_contact']
                                                   ['user_image'] !=
@@ -333,18 +334,18 @@ class _LatestAdsState extends State<LatestAds> {
                                           : AssetImage(
                                               "assets/images/no_img.png"),
                                     ),
-                                    SizedBox(
-                                      width: 5,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    _data['user_contact']['nick_name'],
+                                    style: appStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16.0,
                                     ),
-                                    Text(
-                                      _data['user_contact']['nick_name'],
-                                      style: appStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             SizedBox(
                               height: 10.0,
@@ -384,16 +385,20 @@ class _LatestAdsState extends State<LatestAds> {
                         ? Icons.favorite_border
                         : Icons.favorite,
                     color: Colors.red,
+                    bgColor: AppColors.grey.withOpacity(0.1),
                     size: 26,
                     action: () {
                       favoriteAd(
                         // scaffoldKey: _scaffoldKey,
                         context: context,
                         adId: _data['id'],
-                        state:_adsData[index]['is_favorite_ad'] == true ? "delete" : "add",
+                        state: _adsData[index]['is_favorite_ad'] == true
+                            ? "delete"
+                            : "add",
                       ).then((value) {
                         setState(() {
-                          _adsData[index]['is_favorite_ad'] = !_adsData[index]['is_favorite_ad'];
+                          _adsData[index]['is_favorite_ad'] =
+                              !_adsData[index]['is_favorite_ad'];
                           // LatestAdsServices.getLatestAdsData().then((value) {
                           //   setState(() {
                           //     _adsData = value[0]['responseData'];

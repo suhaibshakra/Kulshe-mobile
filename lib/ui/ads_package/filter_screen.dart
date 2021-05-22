@@ -170,10 +170,10 @@ class _FilterScreenState extends State<FilterScreen> {
                                       ),
                                       Container(
                                         child: GridView.builder(
-                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: _type == 'range'?1:2,childAspectRatio:_type == 'range'? 5 : 2.6,),
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: _type == 'range'?1:_type == 'multiple_select'?1:2,childAspectRatio:_type == 'range'? 5 :_type == 'multiple_select'?2.2: 2.6,),
                                           // gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: _type == 'range'?MediaQuery.of(context).size.width:MediaQuery.of(context).size.width/2,mainAxisExtent: 80,crossAxisSpacing: 10,childAspectRatio: 50),
                                           itemCount:
-                                              _type == 'range'
+                                              _type == 'range' || _type == 'multiple_select'
                                               ? 1
                                               : _options.length,
                                           shrinkWrap: true,
@@ -187,9 +187,12 @@ class _FilterScreenState extends State<FilterScreen> {
                                                   // if (_type == 'radio')
                                                   //   _buildRadio(
                                                   //       mainIndex, opIndex),
-                                                  if (_type!='range')
+                                                  if (_type!='range' && _type!='multiple_select')
                                                     _buildCheckbox(
                                                         mainIndex, opIndex),
+                                                  if (_type =='multiple_select')
+                                                    buildMultiSelected(mainIndex),
+
                                                   // if (_type == 'select')
                                                   //   _buildSelect(
                                                   //       opIndex, mainIndex),
@@ -456,12 +459,6 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   Container _buildRange(int opIndex, int mainIndex) {
-    // int trendIndex = myAdAttributesArray
-    //     .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-    // if (trendIndex == -1) {
-    //   _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'],
-    //       _listAttributes[mainIndex]['options'][0]['id']);
-    // }
     var valFrom;
     var valTo;
     int trendIndex = myAdAttributesArray
@@ -513,46 +510,7 @@ class _FilterScreenState extends State<FilterScreen> {
           ),
         ],
       ),
-      // child: Column(
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   children: [
-      //     // DropdownButtonHideUnderline(
-      //     //   child: ButtonTheme(
-      //     //     alignedDropdown: true,
-      //     //     child: DropdownButton<String>(dropdownColor: Colors.grey.shade200,
-      //     //       isExpanded: true,
-      //     //       value:myAdAttributesArray[trendIndex]['value']
-      //     //           .toString(),
-      //     //       // value: '1',
-      //     //       iconSize: 30,
-      //     //       // icon: (null),
-      //     //       style: appStyle(
-      //     //         color: Colors.black54,
-      //     //         fontSize: 16,
-      //     //       ),
-      //     //       onChanged: (value) {
-      //     //         setState(() {
-      //     //           print("select:  ${_listAttributes[mainIndex]['id']}");
-      //     //           print(value);
-      //     //           _buildMap(_listAttributes[mainIndex]['id'],_listAttributes[mainIndex]['name'], value);
-      //     //           print("$myAdAttributesArray");
-      //     //         });
-      //     //       },
-      //     //       items: _listAttributes[mainIndex]['options']
-      //     //           .map<DropdownMenuItem<String>>((listOptions) {
-      //     //         // print('LIST  :$list');
-      //     //         return new DropdownMenuItem(
-      //     //           child: new Text(
-      //     //               val == "" ? "${listOptions['label'][_lang]}" : val),
-      //     //           value: listOptions['id'].toString(),
-      //     //         );
-      //     //       })?.toList() ??
-      //     //           [],
-      //     //     ),
-      //     //   ),
-      //     // ),
-      //   ],
-    );
+     );
   }
 
   CheckboxListTile _buildCheckbox(int mainIndex, opIndex) {
@@ -585,9 +543,7 @@ class _FilterScreenState extends State<FilterScreen> {
           });
         });
   }
-
-
-
+  
   Column _buildPrice() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -626,49 +582,7 @@ class _FilterScreenState extends State<FilterScreen> {
         ),
       ],
     );
-  }
-
-  // Container _buildPath() {
-  //   return Container(
-  //     width: double.infinity,
-  //     child: Row(
-  //       children: [
-  //         Expanded(
-  //           flex: 1,
-  //           child: Container(
-  //             padding: EdgeInsets.all(5),
-  //             decoration: BoxDecoration(
-  //               color: Colors.grey.shade200,
-  //               borderRadius: BorderRadius.circular(20),
-  //             ),
-  //             child: buildTxt(
-  //                 fontSize: 18,
-  //                 txtColor: AppColors.blackColor2,
-  //                 fontWeight: FontWeight.w700,
-  //                 txt: "${_sectionData[0]['label'][_lang]}",
-  //                 textAlign: TextAlign.center),
-  //           ),
-  //         ),
-  //         Expanded(
-  //           flex: 1,
-  //           child: Container(
-  //             padding: EdgeInsets.all(5),
-  //             decoration: BoxDecoration(
-  //               color: Colors.grey.shade200,
-  //               borderRadius: BorderRadius.circular(20),
-  //             ),
-  //             child: buildTxt(
-  //                 fontSize: 20,
-  //                 txtColor: AppColors.blackColor2,
-  //                 fontWeight: FontWeight.w500,
-  //                 txt: "${_subSectionData[0]['label'][_lang]}",
-  //                 textAlign: TextAlign.center),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  } 
   _buildPath() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

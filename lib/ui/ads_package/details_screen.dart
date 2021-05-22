@@ -82,12 +82,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
           .toList();
       _subSectionText = _subSectionData[0]['label']['ar'];
 
-      _adBrands = _subSectionData[0]['brands']
-          .where((element) => (element['id'] == _brandId))
-          .toList();
-      _adSubBrands = _adBrands[0]['sub_brands']
-          .where((element) => (element['id'] == _subBrandId))
-          .toList();
+      if(_subSectionData[0]['brands'].toString().isNotEmpty ) {
+        _adBrands = _subSectionData[0]['brands']
+            .where((element) => (element['id'] == _brandId))
+            .toList();
+        _adSubBrands = _adBrands[0]['sub_brands']
+            .where((element) => (element['id'] == _subBrandId))
+            .toList();
+      }
       // _adSubBrands = _adBrands[0]['sub_brands'];
     });
   }
@@ -377,7 +379,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                           width: double.infinity,
                                           color: AppColors.amberColor,
                                           padding: EdgeInsets.symmetric(vertical: 8),
-                                          child: buildTxt(txt: "هذا العلان منتهي الصلاحية !",fontSize: 20,txtColor: AppColors.whiteColor),
+                                          child: buildTxt(txt: "هذا الإعلان منتهي الصلاحية !",fontSize: 20,txtColor: AppColors.whiteColor),
                                         )
                                     ],
                                   ),
@@ -439,7 +441,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           children: [
                             if('${_details['user_contact']}' != '[]')
                             Expanded(
-                              flex: 6,
+                              flex: 7,
                               child: InkWell(
                                 onTap: (){
                                   print('${_details['user_contact']['hash_id']}');
@@ -458,7 +460,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                      CircleAvatar(
                                         radius: 22,
                                         backgroundImage: AssetImage(
-                                            'assets/images/no_img.png'),
+                                            'assets/images/user_img.png'),
                                     ),
                                     SizedBox(
                                       width: 10,

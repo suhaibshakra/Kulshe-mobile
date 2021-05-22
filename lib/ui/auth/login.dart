@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:bmprogresshud/progresshud.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String _selectedCountry;
   String _myCountry;
   List _countryData;
+  GlobalKey<ProgressHudState> _hudKey = GlobalKey();
 
   final _strController = AppController.strings;
   final _drController = AppController.textDirection;
@@ -59,19 +60,23 @@ class _LoginScreenState extends State<LoginScreen> {
     // print('_${_countryData.where((element) => element['classified'] == true)}');
   }
 
-  void _validateAndSubmit() {
+  void _validateAndSubmit({BuildContext ctx}) {
     final FormState form = _formKey.currentState;
     if (form.validate()) {
+      showLoadingHud(context: ctx,hudKey: _hudKey);
       loginFunction(
           email: _emailController.text.toString().trim(),
           password: _passwordController.text.toString(),
           context: context).then((value){
         if(value['custom_code'] == 2166){
+          _hudKey.currentState?.dismiss();
+          setState(() {
+          });
           Navigator.push(context, MaterialPageRoute(builder: (context) => ChangePasswordSocialMedia(value: value['responseData']['token'],),),);
-            }else{
+        }else{
           return "";
         }
-      });
+       });
     } else {
       print('Form is invalid');
     }
@@ -102,211 +107,216 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Scaffold(
           resizeToAvoidBottomInset: false,
            backgroundColor: Colors.grey.shade200,
-          body: Stack(
-            children: [
-              buildBg(),
-              SingleChildScrollView(
-                child: Container(
-                  padding: isLandscape
-                      ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
-                      : EdgeInsets.symmetric(horizontal: 15,  vertical: 10),
-                  height:
-                      isLandscape ? mq.size.height * 1.9 : mq.size.height * 0.9,
-                  child: LayoutBuilder(
-                    builder: (ctx, constraints) => Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Hero(
-                            tag: 'logo',
-                            child: buildLogo(height: constraints.maxHeight * 0.2),
-                          ),
-                          Container(
-                            alignment: Alignment.bottomCenter,
-                            height: constraints.maxHeight * 0.08,
-                            child: buildTxt(
-                                txt: _strController.loginTitle,
-                                fontSize: 25,
-                                fontWeight: FontWeight.w700,
-                                txtColor: AppColors.redColor),
-                          ),
-                          //0.25
-                          Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                buildTextField(
-                                    controller: _emailController,
-                                    label: _strController.email,
-                                    textInputType: TextInputType.emailAddress,
-                                    validator: (value) =>
-                                        EmailValidator.validate(value)
-                                            ? null
-                                            : _strController.errorEmail,
-                                    hintTxt: _strController.email),
-                                buildTextField(
-                                    validator: (value) =>
-                                        (value.length < 8 || value.isEmpty)
-                                            ? _strController.errorPassword
-                                            : null,
-                                    controller: _passwordController,
-                                    textInputType: TextInputType.visiblePassword,
-                                    label: _strController.password,
-                                    isPassword: _passwordHidden,
-                                    suffixIcon: InkWell(
-                                      onTap: _togglePasswordView,
-                                      child: Icon(_passwordHidden?Icons.visibility
-                                                  :Icons.visibility_off),
-                                    ),
-                                    maxLines: 1,
-                                    minLines: 1,
-                                    hintTxt: _strController.password),
-                              ],
+          body: ProgressHud(
+            key: _hudKey,
+            isGlobalHud: true,
+            child: Stack(
+              children: [
+                buildBg(),
+                SingleChildScrollView(
+                  child: Container(
+                    padding: isLandscape
+                        ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
+                        : EdgeInsets.symmetric(horizontal: 15,  vertical: 10),
+                    height:
+                        isLandscape ? mq.size.height * 1.9 : mq.size.height * 0.9,
+                    child: LayoutBuilder(
+                      builder: (ctx, constraints) => Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Hero(
+                              tag: 'logo',
+                              child: buildLogo(height: constraints.maxHeight * 0.2),
                             ),
-                          ),
-                          //0.25
-                          Container(
-                            height: constraints.maxHeight * 0.05,
-                            alignment: AppController.strings is EnglishString
-                                ? Alignment.centerLeft
-                                : Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),)),
-                              // no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
+                            Container(
+                              alignment: Alignment.bottomCenter,
+                              height: constraints.maxHeight * 0.08,
                               child: buildTxt(
-                                  txt: _strController.forgetPassword +" ؟",
-                                  txtColor: AppColors.redColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700
-                                 ),
+                                  txt: _strController.loginTitle,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w700,
+                                  txtColor: AppColors.redColor),
                             ),
-                          ),
-                          //0/05
-                          SizedBox(
-                            height: 0.03,
-                          ),
-                          Container(
-                            child: myButton(
-                                context: ctx,
-                                height: constraints.maxHeight * 0.07,
-                                width: double.infinity,
-                                btnTxt: _strController.login,
-                                fontSize: 20,
-                                txtColor: AppColors.whiteColor,
-                                radius: 10,
-                                btnColor: AppColors.redColor,
-                                onPressed: () {
-                                  _validateAndSubmit();
-                                }),
-                          ), //0.07
-                          Container(
-                            padding: EdgeInsets.only(top: 10),
-                            height: constraints.maxHeight * 0.05,
-                            child: Center(
-                              child: InkWell(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SignUpScreen(),
-                                    )),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          text: _strController.noAccount,
-                                          style: appStyle(
-                                              color: AppColors.blackColor2,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700)),
-                                      TextSpan(
-                                        text: _strController.signUp,
-                                        style: TextStyle(
-                                            color: AppColors.redColor,
-                                            fontSize: 17,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            fontWeight: FontWeight.w700),
+                            //0.25
+                            Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  buildTextField(
+                                      controller: _emailController,
+                                      label: _strController.email,
+                                      textInputType: TextInputType.emailAddress,
+                                      validator: (value) =>
+                                          EmailValidator.validate(value)
+                                              ? null
+                                              : _strController.errorEmail,
+                                      hintTxt: _strController.email),
+                                  buildTextField(
+                                      validator: (value) =>
+                                          (value.length < 8 || value.isEmpty)
+                                              ? _strController.errorPassword
+                                              : null,
+                                      controller: _passwordController,
+                                      textInputType: TextInputType.visiblePassword,
+                                      label: _strController.password,
+                                      isPassword: _passwordHidden,
+                                      suffixIcon: InkWell(
+                                        onTap: _togglePasswordView,
+                                        child: Icon(_passwordHidden?Icons.visibility
+                                                    :Icons.visibility_off),
                                       ),
-                                    ],
+                                      maxLines: 1,
+                                      minLines: 1,
+                                      hintTxt: _strController.password),
+                                ],
+                              ),
+                            ),
+                            //0.25
+                            Container(
+                              height: constraints.maxHeight * 0.05,
+                              alignment: AppController.strings is EnglishString
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),)),
+                                // no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
+                                child: buildTxt(
+                                    txt: _strController.forgetPassword +" ؟",
+                                    txtColor: AppColors.redColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700
+                                   ),
+                              ),
+                            ),
+                            //0/05
+                            SizedBox(
+                              height: 0.03,
+                            ),
+                            Container(
+                              child: myButton(
+                                  context: ctx,
+                                  height: constraints.maxHeight * 0.07,
+                                  width: double.infinity,
+                                  btnTxt: _strController.login,
+                                  fontSize: 20,
+                                  txtColor: AppColors.whiteColor,
+                                  radius: 10,
+                                  btnColor: AppColors.redColor,
+                                  onPressed: () {
+                                    _validateAndSubmit(ctx: ctx);
+                                    // _showLoadingHud(context);
+                                  }),
+                            ), //0.07
+                            Container(
+                              padding: EdgeInsets.only(top: 10),
+                              height: constraints.maxHeight * 0.05,
+                              child: Center(
+                                child: InkWell(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SignUpScreen(),
+                                      )),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                            text: _strController.noAccount,
+                                            style: appStyle(
+                                                color: AppColors.blackColor2,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)),
+                                        TextSpan(
+                                          text: _strController.signUp,
+                                          style: TextStyle(
+                                              color: AppColors.redColor,
+                                              fontSize: 17,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ), //0.07
-                          Container(
-                            height: constraints.maxHeight * 0.25,
-                            child: Column(
-                              children: [
-                                buildOr(
-                                  constraints.maxHeight * 0.1,
-                                ),
-                                Container(
-                                  height: constraints.maxHeight * 0.05,
-                                  child: buildTxt(
-                                      txt: _strController.loginUsing,
-                                      fontSize: 18,
-                                      txtColor: AppColors.blackColor),
-                                ), //0.05
-                                Container(
-                                  height: constraints.maxHeight * 0.1,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      buildSocialIcons(
-                                        width: 45,
-                                        height: 45,
-                                        borderRadius: 8,
-                                        margin:
-                                            EdgeInsets.symmetric(horizontal: 8),
-                                        boxFit: BoxFit.cover,
-                                        url: "assets/images/apple.png",
-                                        // onTap: () => Navigator.push(
-                                        //     context,
-                                        //     MaterialPageRoute(
-                                        //       builder: (context) => SignUp(),
-                                        //     ))
-                                      ),
-                                      buildSocialIcons(
-                                          width: 45,
-                                          height: 45,
-                                          borderRadius: 8,
-                                          onTap: () => buildGoogleLogin(),
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          boxFit: BoxFit.cover,
-                                          url: "assets/images/google.png"),
-                                      buildSocialIcons(
-                                          width: 45,
-                                          height: 45,
-                                          borderRadius: 8,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          boxFit: BoxFit.cover,
-                                          url: "assets/images/facebook.png",
-                                          onTap: () => initiateFacebookLogin()),
-                                      buildSocialIcons(
-                                          width: 45,
-                                          height: 45,
-                                          borderRadius: 8,
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 8),
-                                          boxFit: BoxFit.cover,
-                                          url: "assets/images/twitter.png"),
-                                    ],
+                            ), //0.07
+                            Container(
+                              height: constraints.maxHeight * 0.25,
+                              child: Column(
+                                children: [
+                                  buildOr(
+                                    constraints.maxHeight * 0.1,
                                   ),
-                                ), //0.1
-                              ],
+                                  Container(
+                                    height: constraints.maxHeight * 0.05,
+                                    child: buildTxt(
+                                        txt: _strController.loginUsing,
+                                        fontSize: 18,
+                                        txtColor: AppColors.blackColor),
+                                  ), //0.05
+                                  Container(
+                                    height: constraints.maxHeight * 0.1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        buildSocialIcons(
+                                          width: 45,
+                                          height: 45,
+                                          borderRadius: 8,
+                                          margin:
+                                              EdgeInsets.symmetric(horizontal: 8),
+                                          boxFit: BoxFit.cover,
+                                          url: "assets/images/apple.png",
+                                          // onTap: () => Navigator.push(
+                                          //     context,
+                                          //     MaterialPageRoute(
+                                          //       builder: (context) => SignUp(),
+                                          //     ))
+                                        ),
+                                        buildSocialIcons(
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: 8,
+                                            onTap: () => buildGoogleLogin(),
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            boxFit: BoxFit.cover,
+                                            url: "assets/images/google.png"),
+                                        buildSocialIcons(
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: 8,
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            boxFit: BoxFit.cover,
+                                            url: "assets/images/facebook.png",
+                                            onTap: () => initiateFacebookLogin()),
+                                        buildSocialIcons(
+                                            width: 45,
+                                            height: 45,
+                                            borderRadius: 8,
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 8),
+                                            boxFit: BoxFit.cover,
+                                            url: "assets/images/twitter.png"),
+                                      ],
+                                    ),
+                                  ), //0.1
+                                ],
+                              ),
                             ),
-                          ),
-                          //0.25
-                        ],
+                            //0.25
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -331,151 +341,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
     });
   }
-
-  // _buildChoiceDialog({bool noEmail, String from}) {
-  //   return buildDialog(
-  //       context: context,
-  //       title: "يرجى إدخال الحقول المطلوبة",
-  //       desc: "",
-  //       no: _strController.cancel,
-  //       yes: _strController.done,
-  //       content: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children: [
-  //           Container(
-  //             margin: EdgeInsets.only(bottom: 8, left: 12, right: 12),
-  //             child: myButton(
-  //                 txtColor: AppColors.blackColor,
-  //                 fontSize: 18,
-  //                 context: context,
-  //                 btnColor: AppColors.greyOne,
-  //                 radius: 4,
-  //                 btnTxt: _selectedCountry,
-  //                 width: double.infinity,
-  //                 onPressed: () =>
-  //                     _showCountriesDialog(mq: MediaQuery.of(context))),
-  //           ),
-  //           buildTextField(
-  //             label: _strController.nickName,
-  //             controller: _nickNameControllerS,
-  //             textInputType: TextInputType.name,
-  //           ),
-  //           if (noEmail)
-  //             buildTextField(
-  //               label: _strController.email,
-  //               controller: _emailControllerS,
-  //               textInputType: TextInputType.emailAddress,
-  //             ),
-  //           Row(
-  //             children: [
-  //               Expanded(
-  //                 flex: 4,
-  //                 child: Container(
-  //                   height: 46,
-  //                   padding: EdgeInsets.symmetric(horizontal: 16),
-  //                   decoration: BoxDecoration(
-  //                       color: Colors.white.withOpacity(0.6),
-  //                       border: Border.all(width: 1, color: Colors.grey),
-  //                       borderRadius: BorderRadius.circular(8)),
-  //                   child: CountryListPick(
-  //                     appBar: AppBar(
-  //                       backgroundColor: Colors.blue,
-  //                       title: Text(
-  //                         _strController.country,
-  //                         style: appStyle(
-  //                             fontSize: 18, fontWeight: FontWeight.w400),
-  //                       ),
-  //                     ),
-  //                     theme: CountryTheme(
-  //                         isShowFlag: false,
-  //                         isShowTitle: false,
-  //                         isShowCode: true,
-  //                         isDownIcon: false,
-  //                         showEnglishName: true,
-  //                         initialSelection: '+962'),
-  //                     initialSelection: '+962',
-  //                     useSafeArea: true,
-  //                     onChanged: (CountryCode code) {
-  //                       print(code.name);
-  //                       print(code.code);
-  //                       print(code.dialCode);
-  //                       print(code.dialCode);
-  //                       print(code.dialCode);
-  //                       print(code.flagUri);
-  //                       setState(() {
-  //                         mobileCountryIsoCode.text = code.code;
-  //                         _mobileCountryCode.text =
-  //                             code.dialCode.replaceAll('+', '').toString();
-  //                         print('code : ${_mobileCountryCode.text}');
-  //                       });
-  //                     },
-  //                   ),
-  //                 ),
-  //               ),
-  //               Expanded(
-  //                 flex: 7,
-  //                 child: buildTextField(
-  //                   fromDialog: true,
-  //                   label: _strController.mobile,
-  //                   controller: _phoneControllerS,
-  //                   hintTxt: _strController.mobile,
-  //                   textInputType: TextInputType.phone,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //       action: () => from == 'google'
-  //           ? createAccountFunctionGoogle(
-  //                   context: context,
-  //                   gId: gId,
-  //                   gToken: gToken,
-  //                   email: email,
-  //                   nickName: _nickNameControllerS.text.toString(),
-  //                   userImage: imageUrl,
-  //                   countryId: _myCountry.toString(),
-  //                   mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
-  //                       ? '962'
-  //                       : mobileCountryIsoCode.text.toString(),
-  //                   mobileNumber: _phoneControllerS.text.toString(),
-  //                   mobileCountryPhoneCode: _mobileCountryCode.text.toString())
-  //               .then((value) {
-  //               if (value == 200)
-  //                 Navigator.of(context, rootNavigator: true).pop();
-  //             })
-  //           : from == 'facebook'
-  //               ? createAccountFunctionFacebook(
-  //                       context: context,
-  //                       email:
-  //                           "${(profileData['email'] == "" || profileData['email'] == null) ? _emailControllerS.text.toString() : profileData['email']}",
-  //                       mobileNumber: "${_phoneControllerS.text.toString()}",
-  //                       nickName: "${_nickNameControllerS.text.toString()}",
-  //                       fbId: "${facebookLoginResult.accessToken.userId}",
-  //                       fbToken: "${facebookLoginResult.accessToken.token}",
-  //                       userImage: "${profileData['picture']['data']['url']}",
-  //                       mobileCountryIsoCode: mobileCountryIsoCode.text.isEmpty
-  //                           ? '962'
-  //                           : mobileCountryIsoCode.text.toString(),
-  //                       mobileCountryPhoneCode:
-  //                           _mobileCountryCode.text.toString(),
-  //                       countryId: _myCountry.toString()
-  //
-  //                       // '''{\r\n  "googleId": "$gId",\r\n  "googleToken": "$gToken",\r\n  "email": "${_emailController.text.toString().trim()}",\r\n  "nickName": "${_nickNameController.text.toString().trim()}",\r\n  "comeFrom": "m",\r\n  "userImage": "https://img.favpng.com/12/15/21/computer-icons-avatar-user-profile-recommender-system-png-favpng-HaMDUPFH1etkLCdiFjgTKHzAs.jpg",\r\n  "mobileNumber": "${_phoneController.text.toString().trim()}",\r\n  "mobileCountryPhoneCode": "962",\r\n  "mobileCountryIsoCode": "JO",\r\n  "countryId": "110"\r\n}'''
-  //                       )
-  //                   .then((value) {
-  //                   if (value == 200)
-  //                     Navigator.of(context, rootNavigator: true).pop();
-  //                 })
-  //               : null);
-  // }
-
-  // Future<void> signOutGoogle() async {
-  //   await googleSignIn.signOut();
-  //   print("User Signed Out");
-  // }
-
-  //facebook
   var facebookLogin = FacebookLogin();
   var profileData;
   bool isLoggedIn = false;
@@ -533,168 +398,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // _displayUserData(profileData) {
-  //   return Column(
-  //     mainAxisSize: MainAxisSize.min,
-  //     children: <Widget>[
-  //       Container(
-  //         height: 200.0,
-  //         width: 200.0,
-  //         decoration: BoxDecoration(
-  //           shape: BoxShape.circle,
-  //           image: DecorationImage(
-  //             fit: BoxFit.fill,
-  //             image: NetworkImage(
-  //               profileData['picture']['data']['url'],
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //       SizedBox(height: 28.0),
-  //       Text(
-  //         "Logged in as: ${profileData['name']}",
-  //         style: TextStyle(
-  //           fontSize: 20.0,
-  //         ),
-  //       ),
-  //       Text(
-  //         "Logged in as: ${profileData['email']}",
-  //         style: TextStyle(
-  //           fontSize: 20.0,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // _displayLoginButton() {
-  //   return RaisedButton(
-  //     child: Text("Login with Facebook"),
-  //     onPressed: () => initiateFacebookLogin(),
-  //   );
-  // }
-  //
-  // _logout() async {
-  //   await facebookLogin.logOut();
-  //   onLoginStatusChanged(false);
-  //   print("Logged out");
-  // }
-
-  // void _showCountriesDialog({MediaQueryData mq}) {
-  //   showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           contentPadding: EdgeInsets.only(left: 15, right: 15),
-  //           title: Center(child: Text(_strController.country)),
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.all(Radius.circular(20.0))),
-  //           content: Container(
-  //             height: mq.size.height * 0.5,
-  //             width: mq.size.width * 1,
-  //             child: ListView.builder(
-  //               itemCount: _countryData.length,
-  //               itemBuilder: (context, index) {
-  //                 final list = _countryData[index];
-  //                 return Padding(
-  //                   padding: const EdgeInsets.symmetric(vertical: 5),
-  //                   child: InkWell(
-  //                     onTap: () {
-  //                       setState(() {
-  //                         _selectedCountry = list['name'];
-  //                         _myCountry = list['id'].toString();
-  //                         print(_myCountry);
-  //                         _dismissDialog(context: context);
-  //                       });
-  //                     },
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: <Widget>[
-  //                         SizedBox(
-  //                           height: 25,
-  //                         ),
-  //                         Expanded(
-  //                           flex: 4,
-  //                           child: Text(
-  //                             list['name'],
-  //                             maxLines: 3,
-  //                           ),
-  //                         ),
-  //                         Expanded(
-  //                           flex: 1,
-  //                           child: Padding(
-  //                             padding: const EdgeInsets.all(8.0),
-  //                             child: SvgPicture.network(
-  //                               list['flag'],
-  //                               fit: BoxFit.fill,
-  //                               height: 25,
-  //                               width: 15,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //           actions: <Widget>[
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: <Widget>[
-  //                 Container(
-  //                   width: MediaQuery.of(context).size.width * 0.16,
-  //                   child: RaisedButton(
-  //                     child: new Text(
-  //                       'Fund',
-  //                       style: TextStyle(color: Colors.white),
-  //                     ),
-  //                     color: Color(0xFF121A21),
-  //                     shape: new RoundedRectangleBorder(
-  //                       borderRadius: new BorderRadius.circular(30.0),
-  //                     ),
-  //                     onPressed: () {
-  //                       Navigator.of(context).pop();
-  //                     },
-  //                   ),
-  //                 ),
-  //                 SizedBox(
-  //                   width: MediaQuery.of(context).size.width * 0.01,
-  //                 ),
-  //                 Padding(
-  //                   padding: const EdgeInsets.only(right: 70.0),
-  //                   child: Container(
-  //                     width: MediaQuery.of(context).size.width * 0.20,
-  //                     child: RaisedButton(
-  //                       child: new Text(
-  //                         'Cancel',
-  //                         style: TextStyle(color: Colors.white),
-  //                       ),
-  //                       color: Color(0xFF121A21),
-  //                       shape: new RoundedRectangleBorder(
-  //                         borderRadius: new BorderRadius.circular(30.0),
-  //                       ),
-  //                       onPressed: () {
-  //                         Navigator.of(context).pop();
-  //                       },
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 SizedBox(
-  //                   height: MediaQuery.of(context).size.height * 0.02,
-  //                 ),
-  //               ],
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
-
-  // _dismissDialog({BuildContext context}) {
-  //   Navigator.pop(context);
-  // }
 bool _passwordHidden = true;
   void _togglePasswordView() {
     setState(() {

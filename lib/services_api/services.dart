@@ -100,6 +100,7 @@ class PublicAdsServicesNew {
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
+      // print('Last Sort Operation: $sort');
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=10&offset=$offset',
           headers: {
@@ -108,7 +109,8 @@ class PublicAdsServicesNew {
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
-      print(response.statusCode);
+
+      // print('${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=10&offset=$offset');
       if (200 == response.statusCode) {
         print(response.statusCode);
         // print(response.body);

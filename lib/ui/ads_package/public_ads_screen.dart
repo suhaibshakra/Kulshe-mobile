@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
@@ -54,7 +56,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   String lang;
   List _currentCountry;
   List _countryData;
-  String sorting = 'NewToOld';
+  String sorting = '';
   int offset = 0;
   int limit = 10;
   bool isChecked = false;
@@ -82,6 +84,11 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
       _subSectionText = _subSectionData[0]['label']['ar'];
     });
   }
+
+  bool deleteIcon = true;
+  bool pauseIcon = true;
+  bool editIcon = true;
+  bool renewIcon = true;
 
   _getCountries() async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
@@ -114,10 +121,11 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             subSectionId: widget.subSectionId,
             hasImage: hasImg,
             sort: sorting,
+            txt: widget.txt,
             offset: offset.toString())
         .then((value) {
       setState(() {
-        // print('${_publicAd.toString()}');
+        // log('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -154,7 +162,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
               for (int index = 0; index < _num; index++) {
                 // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                print('offset: $offset');
+                // print('offset: $offset');
               }
             });
           }
@@ -181,7 +189,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
               for (int index = 0; index < _num; index++) {
                 // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                print('offset: $offset');
+                // print('offset: $offset');
               }
             });
           }
@@ -197,9 +205,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   void initState() {
     _privateBool = widget.isPrivate ? true : false;
     _getLang();
-    widget.isPrivate
+    widget.isPrivate && (widget.txt == null || widget.txt == "")
         ? fetchPrivateAds()
-        : widget.isFav
+        : widget.isFav && (widget.txt == null || widget.txt == "")
             ? fetchFavoriteAds()
             : fetchAds();
     widget.section = "section";
@@ -210,7 +218,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             ? fetchPrivateAds()
             : widget.isFav
                 ? fetchFavoriteAds()
-                : fetchAds();
+                : fetchAds(hasImg: isChecked?1:0);
         print('End of screen');
       }
     });
@@ -365,49 +373,19 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                               _chosenValue = value;
                                               sorting = (_chosenValue ==
                                                       _strController.oldToNew)
-                                                  ? "OldToNew"
+                                                  ? "oldToNew"
                                                   : (_chosenValue ==
                                                           _strController
                                                               .newToOld)
-                                                      ? "NewToOld"
+                                                      ? "newToOld"
                                                       : (_chosenValue ==
                                                               _strController
                                                                   .priceLessToHigh)
                                                           ? "priceLessToHigh"
                                                           : "priceHighToLess";
-                                              // if(widget.isFav)
-                                              //   FavoriteAdsServices.getFavData(offset: '$offset', limit: '$limit')
-                                              //       .then((value) {
-                                              //     setState(() {
-                                              //       _publicAd = value[0]['responseData']['ads'];
-                                              //       countOfAds =
-                                              //           (value[0]['responseData']['total']).toString();
-                                              //       print('count of ads : ${countOfAds.toString()}');
-                                              //       _loading = false;
-                                              //     });
-                                              //   });
-                                              fetchAds();
-                                              // if(!widget.isFav)
-                                              //   PublicAdsServicesNew.getPublicAdsData(
-                                              //       sectionId: widget.sectionId,
-                                              //       subSectionId: widget.subSectionId,
-                                              //       txt: widget.txt,
-                                              //       offset: '$offset',
-                                              //       hasImage: 0,
-                                              //       sort: sorting.toString(),
-                                              //       hasPrice: '',
-                                              //       limit: '$limit')
-                                              //       .then((value) {
-                                              //     setState(() {
-                                              //       _publicAd = value[0]['responseData']['ads'];
-                                              //       countOfAds =
-                                              //           (value[0]['responseData']['total']).toString();
-                                              //       print('count of ads : ${countOfAds.toString()}');
-                                              //       _loading = false;
-                                              //     });
-                                              //   });
-                                              print('Sorting : $sorting');
-                                            });
+                                              print(' sorting SSSSSS : $sorting');
+                                              fetchAds(hasImg: isChecked?1:0);
+                                             });
                                           },
                                         ),
                                       ),
@@ -441,8 +419,10 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                 ? _publicAd[index]['count_of_images']
                 : 0;
             var _data = _publicAd[index];
-            print('AAAA ${_data['user_contact']}');
-
+            // print('AAAA ${_data['user_contact']}');
+            if (index == _publicAd.length) {
+              return CupertinoActivityIndicator();
+            }
             return InkWell(
               onTap: () {
                 print(_data['id'].toString());
@@ -511,6 +491,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                   ? Icons.favorite_border
                                                   : Icons.favorite,
                                           color: Colors.red,
+                                          bgColor: AppColors.grey.withOpacity(0.1),
                                           size: 25,
                                           action: () {
                                             favoriteAd(
@@ -813,7 +794,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
 
                               if (_privateBool)
                                 if (_data['status'] != 'deleted')
-                                  buildUserSetting(_data, context),
+                                  buildUserSetting(_data, context, index),
                             ],
                           ),
                         ),
@@ -827,7 +808,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
     );
   }
 
-  Column buildUserSetting(_data, BuildContext context) {
+  Column buildUserSetting(_data, BuildContext context, index) {
     return Column(
       children: [
         Divider(
@@ -883,6 +864,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                             ? AppColors.amberColor
                             : AppColors.greyFour,
                         onPressed: () {
+                          setState(() {
+                            pauseIcon = false;
+                          });
                           pauseAd(
                             context: context,
                             adId: _data['id'],
@@ -890,12 +874,15 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                           ).then((value) {
                             setState(() {
                               // print('value: $value');
+                              pauseIcon = true;
                               _data['paused'] = !_data['paused'];
                             });
                           });
                         },
                         size: 25,
                       ),
+                      // if(!pauseIcon )
+                      //   CircularProgressIndicator(),
                       buildTxt(
                           txt: _data['paused'] == true ? 'تشغيل' : 'إيقاف',
                           txtColor: _data['paused'] == true
@@ -940,32 +927,37 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                   child: Container(
                       child: Column(
                     children: [
-                      buildIconButton(
-                        icon: Icons.delete,
-                        color: AppColors.redColor,
-                        size: 25,
-                        onPressed: () {
-                          buildDialog(
-                              context: context,
-                              title: _strController.deleteAd,
-                              desc: _strController.askDeleteAd,
-                              yes: _strController.ok,
-                              no: _strController.cancel,
-                              action: () {
-                                deleteAd(
-                                  context: context,
-                                  adId: _data['id'],
-                                ).then((value) {
+                      if (deleteIcon == true)
+                        buildIconButton(
+                          icon: Icons.delete,
+                          color: AppColors.redColor,
+                          size: 25,
+                          onPressed: () {
+                            buildDialog(
+                                context: context,
+                                title: _strController.deleteAd,
+                                desc: _strController.askDeleteAd,
+                                yes: _strController.ok,
+                                no: _strController.cancel,
+                                action: () {
                                   setState(() {
-                                    _data['status'] = 'deleted';
+                                    deleteIcon = false;
                                   });
+                                  deleteAd(
+                                    context: context,
+                                    adId: _data['id'],
+                                  ).then((value) {
+                                    setState(() {
+                                      _data['status'] = 'deleted';
+                                      deleteIcon = true;
+                                    });
+                                  });
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
                                 });
-
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                              });
-                        },
-                      ),
+                          },
+                        ),
+                      if (!deleteIcon) CircularProgressIndicator(),
                       buildTxt(txt: "حذف")
                     ],
                   )),

@@ -237,6 +237,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   if (showDrop)
                     Stack(
                       children: [
+                        if(!isEmailVerified)
                         Container(
                             decoration:
                                 BoxDecoration(color: AppColors.whiteColor),
@@ -256,7 +257,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                             padding: const EdgeInsets.all(8.0),
                                             child: InkWell(
                                                 onTap: ()=>verifyEmail(context: context),
-                                                child: Text("تفعيل",style: appStyle(fontWeight: FontWeight.bold,color: AppColors.green,fontSize: 20),textAlign: TextAlign.center,)),
+                                                child: Text("أرسل رسالة التحقق مرة أخرى",style: appStyle(fontWeight: FontWeight.bold,color: AppColors.green,fontSize: 20),textAlign: TextAlign.center,)),
                                           ),):"",
                                         ),
                                       );

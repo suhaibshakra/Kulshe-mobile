@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:bmprogresshud/bmprogresshud.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
@@ -89,6 +90,7 @@ class _EditAdFormState extends State<EditAdForm> {
   var _imgURL;
   List<dynamic> _images = [];
   List<dynamic> _imagesNetwork = [];
+  GlobalKey<ProgressHudState> _hudKey = GlobalKey();
 
   List<dynamic> pickedImages = [];
   _buildImagesMap(
@@ -101,29 +103,6 @@ class _EditAdFormState extends State<EditAdForm> {
       'identifier': identifier
     });
   }
-
-  // void _pickImageLast(ImageSource src) async {
-  //   final pickedImageFile =
-  //   await _picker.getImage(source: src, imageQuality: 50, maxWidth: 150);
-  //   // // print('PC:$_picker');
-  //   if (pickedImageFile != null) {
-  //     setState(() {
-  //       _pickedImage = File(pickedImageFile.path);
-  //     });
-  //     _userImageFile = _pickedImage;
-  //     bytes = File(_userImageFile.path).readAsBytesSync();
-  //
-  //     String fileName = _userImageFile.path.split('/').last;
-  //     fileName = fileName.split('.').last;
-  //
-  //     // // print(fileName);
-  //     // // print("data:image/$fileName;base64,${base64Encode(bytes)}");
-  //     _userImage = "data:image/$fileName;base64,${base64Encode(bytes)}";
-  //     _images.add({"image": _userImage != null ? _userImage : "sss"});
-  //   } else {
-  //     // print('No Image Selected');
-  //   }
-  // }
 
   getLang() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
@@ -191,6 +170,8 @@ class _EditAdFormState extends State<EditAdForm> {
   @override
   void initState() {
     // print('adID : ${widget.adID}');
+    pickedImages = [];
+    _images = [];
     getLang();
     _getCountries();
     myAdAttributesArray = [];
@@ -276,69 +257,75 @@ class _EditAdFormState extends State<EditAdForm> {
       appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Directionality(
-          textDirection: AppController.textDirection,
-          child: _loading
+        child: ProgressHud(
+          key: _hudKey,
+          isGlobalHud: true,
+          child: Directionality(
+            textDirection: AppController.textDirection,
+            child: _loading
 
-              ? Center(child: buildLoading(color: AppColors.redColor))
-              : Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // if (!widget.fromEdit)
-                    //   _buildPath(),
-                    _buildImages(),
-                    Container(
-                      height: 100,
-                      child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          physics: ClampingScrollPhysics(),
-                          itemCount: _imagesNetwork.length,
-                          itemBuilder: (context, i) {
-                            print(_imagesNetwork[i]['small']);
-                            return _imagesNetwork[i]['deleted'] != false? InkWell(
-                              onTap: (){
-                                setState(() {
+                ? Center(child: buildLoading(color: AppColors.redColor))
+                : Form(
+              key: _formKey,
+              child: LayoutBuilder(
+                builder: (ctx, constraints) =>  SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // if (!widget.fromEdit)
+                        //   _buildPath(),
+                        _buildImages(),
+                        Container(
+                          height: 100,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              physics: ClampingScrollPhysics(),
+                              itemCount: _imagesNetwork.length,
+                              itemBuilder: (context, i) {
+                                print(_imagesNetwork[i]['small']);
+                                return _imagesNetwork[i]['deleted'] != false? InkWell(
+                                  onTap: (){
+                                    setState(() {
 
-                                  _imagesNetwork[i]['deleted'] = false;
-                                  _imagesNetwork.removeAt(i);
-                                });
-                                },
-                              child: Container(
-                                width: 100,height: 100,
-                                decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"))),
-                              ),
-                            ): Container()
-                            ;
-                          }),
+                                      _imagesNetwork[i]['deleted'] = false;
+                                      _imagesNetwork.removeAt(i);
+                                    });
+                                    },
+                                  child: Container(
+                                    width: 100,height: 100,
+                                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"))),
+                                  ),
+                                ): Container()
+                                ;
+                              }),
+                        ),
+                        _buildConstData(),
+                        _buildDynamicData(mq),
+                        // Center(
+                        //   child: buildIconWithTxt(
+                        //     iconData: Icons.image_outlined,
+                        //     iconColor: AppColors.redColor,
+                        //     label: Text(
+                        //       _strController.labelGallery,
+                        //       style: appStyle(
+                        //           fontSize: 16,
+                        //           color: AppColors.redColor,
+                        //           fontWeight: FontWeight.w400),
+                        //     ),
+                        //     action: () => _pickImageLast(ImageSource.gallery),
+                        //   ),
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        _buildButton(context,ctx),
+                      ],
                     ),
-                    _buildConstData(),
-                    _buildDynamicData(mq),
-                    // Center(
-                    //   child: buildIconWithTxt(
-                    //     iconData: Icons.image_outlined,
-                    //     iconColor: AppColors.redColor,
-                    //     label: Text(
-                    //       _strController.labelGallery,
-                    //       style: appStyle(
-                    //           fontSize: 16,
-                    //           color: AppColors.redColor,
-                    //           fontWeight: FontWeight.w400),
-                    //     ),
-                    //     action: () => _pickImageLast(ImageSource.gallery),
-                    //   ),
-                    // ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    _buildButton(context),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -807,7 +794,7 @@ class _EditAdFormState extends State<EditAdForm> {
   // }
 
 
-  Container _buildButton(BuildContext context) {
+  Container _buildButton(BuildContext context,ctx) {
     // // print("AT:$myAdAttributes");
     return Container(
       child: myButton(
@@ -822,6 +809,8 @@ class _EditAdFormState extends State<EditAdForm> {
         onPressed: () {
           final FormState form = _formKey.currentState;
           if(form.validate()){
+            showLoadingHud(context: ctx,hudKey: _hudKey,time: 5000);
+
             setState(() {
               if(_imagesNetwork.length!=0)
                 for(int i = 0;i<_imagesNetwork.length;i++){
@@ -852,6 +841,7 @@ class _EditAdFormState extends State<EditAdForm> {
 
             print(pickedImages);
             print(_images);
+
             updateAdFunction(
                 context: context,
                 adID: widget.adID.toString(),

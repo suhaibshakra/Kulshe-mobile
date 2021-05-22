@@ -10,7 +10,7 @@ class TimeAgo {
     if (difference.inSeconds < 5) {
       return 'الان ';
     } else if (difference.inSeconds < 60) {
-      return ' ثانية ${difference.inSeconds} منذ ';
+      return '  منذ  ${difference.inSeconds} ثانية ';
     } else if (difference.inMinutes <= 1) {
       return (numericDates) ? 'منذ 1 دقيقة' : 'منذ دقيقة';
     } else if (difference.inMinutes < 60) {
