@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:bmprogresshud/bmprogresshud.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_absolute_path/flutter_absolute_path.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -34,8 +35,6 @@ class EditAdForm extends StatefulWidget {
 
   @override
   _EditAdFormState createState() => _EditAdFormState();
-
-  static getAdsForm({String adID}) {}
 }
 
 class _EditAdFormState extends State<EditAdForm> {
@@ -278,50 +277,43 @@ class _EditAdFormState extends State<EditAdForm> {
                         // if (!widget.fromEdit)
                         //   _buildPath(),
                         _buildImages(),
-                        Container(
-                          height: 100,
-                          child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              physics: ClampingScrollPhysics(),
-                              itemCount: _imagesNetwork.length,
-                              itemBuilder: (context, i) {
-                                print(_imagesNetwork[i]['small']);
-                                return _imagesNetwork[i]['deleted'] != false? InkWell(
-                                  onTap: (){
-                                    setState(() {
-
-                                      _imagesNetwork[i]['deleted'] = false;
-                                      _imagesNetwork.removeAt(i);
-                                    });
-                                    },
-                                  child: Container(
-                                    width: 100,height: 100,
-                                    decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"))),
-                                  ),
-                                ): Container()
-                                ;
-                              }),
+                        if(_imagesNetwork.length!=0)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Container(
+                            height: 112,
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                shrinkWrap: true,
+                                physics: ClampingScrollPhysics(),
+                                itemCount: _imagesNetwork.length,
+                                itemBuilder: (context, i) {
+                                  print(_imagesNetwork[i]['small']);
+                                  return _imagesNetwork[i]['deleted'] != false? Stack(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: Container(
+                                          width: 112,height: 112,
+                                          decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"),fit: BoxFit.cover)),
+                                        ),
+                                      ),
+                                      Align(alignment:Alignment.topLeft,child: Padding(
+                                        padding: const EdgeInsets.all(1 ),
+                                        child: InkWell(onTap: (){setState(() {
+                                          _imagesNetwork[i]['deleted'] = false;
+                                          _imagesNetwork.removeAt(i);
+                                        });},child: buildIcons(iconData: Icons.delete_forever,color: Colors.red,bgColor: AppColors.whiteColor.withOpacity(0.6),height: 35,width: 35),),
+                                      ),),
+                                    ],
+                                  ): Container()
+                                  ;
+                                }),
+                          ),
                         ),
+                        SizedBox(height: 10,),
                         _buildConstData(),
                         _buildDynamicData(mq),
-                        // Center(
-                        //   child: buildIconWithTxt(
-                        //     iconData: Icons.image_outlined,
-                        //     iconColor: AppColors.redColor,
-                        //     label: Text(
-                        //       _strController.labelGallery,
-                        //       style: appStyle(
-                        //           fontSize: 16,
-                        //           color: AppColors.redColor,
-                        //           fontWeight: FontWeight.w400),
-                        //     ),
-                        //     action: () => _pickImageLast(ImageSource.gallery),
-                        //   ),
-                        // ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
                         _buildButton(context,ctx),
                       ],
                     ),
@@ -793,9 +785,7 @@ class _EditAdFormState extends State<EditAdForm> {
   //   );
   // }
 
-
   Container _buildButton(BuildContext context,ctx) {
-    // // print("AT:$myAdAttributes");
     return Container(
       child: myButton(
         context: context,
@@ -859,6 +849,7 @@ class _EditAdFormState extends State<EditAdForm> {
                 showContact: _showContactInfo,
                 negotiable: _negotiable,
                 zoom: 14,
+                video: _videoController.text.toString(),
                 adAttributes: myAdAttributesArray,
                 images: pickedImages != null ? pickedImages : [],
                 currencyId: _currencyId).then((value){
@@ -1529,6 +1520,57 @@ class _EditAdFormState extends State<EditAdForm> {
   String _error = 'No Error Dectected';
 
   Widget buildGridView() {
+    return ListView.builder(shrinkWrap: true,scrollDirection: Axis.horizontal,itemCount: images.length,itemBuilder: (context, index) {
+      Asset asset = images[index];
+      var lastImages =[];
+      images.forEach((element) {
+        lastImages.add(element.identifier);
+
+      });
+      _images = lastImages;
+
+      FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
+          .then((value) async {
+        print('val: $value');
+        var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
+        var file = await getImageFileFromAsset(path2);
+        String fileExt = path2.split('/').last;
+        fileExt = fileExt.split('.').last;
+        var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+        // log('base64Encode : ${base64Image.toString()}');
+        var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
+        if(alreadyChoose.length == 0){
+
+          await uploadImage(context,base64Image).then((value){
+            _buildImagesMap(isMain:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
+          });
+          print(pickedImages);
+        }
+      });
+      return Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Stack(
+              children: [
+                AssetThumb(
+                  asset: asset,
+                  width: 200,
+                  height: 200,
+                ),
+              ],
+            ),
+          ),
+          Align(alignment:Alignment.topLeft,child: Padding(
+            padding: const EdgeInsets.all(1 ),
+            child: InkWell(onTap: (){setState(() {
+              images.removeAt(index);
+            });},child: buildIcons(iconData: Icons.delete_forever,color: Colors.red,bgColor: AppColors.whiteColor.withOpacity(0.6),height: 35,width: 35),),
+          ),),
+        ],
+      );
+    },);
+
     return GridView.count(
       crossAxisCount: 4,
       children: List.generate(images.length, (index) {
@@ -1637,7 +1679,8 @@ class _EditAdFormState extends State<EditAdForm> {
           },
         ),
         // if (files.isNotEmpty)
-        SizedBox(height: 120, child: buildGridView())
+        if(images.length!=0)
+          SizedBox(height: 120, child: buildGridView())
       ],
     );
   }

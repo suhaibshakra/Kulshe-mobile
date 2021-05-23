@@ -33,7 +33,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
   TextEditingController _mobileCountryCode = TextEditingController();
   TextEditingController mobileCountryIsoCode = TextEditingController();
   TextEditingController _phoneController = TextEditingController()..text;
-  String _selectedCountry = AppController.strings.selectCity;
+  String _selectedCountry = AppController.strings.selectCountry;
   String _myCountry;
   final _strController = AppController.strings;
   final GlobalKey<FormState> _formKeySocial = GlobalKey<FormState>();

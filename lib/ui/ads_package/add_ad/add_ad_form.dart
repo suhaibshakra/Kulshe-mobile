@@ -931,6 +931,7 @@ class _AddAdFormState extends State<AddAdForm> {
                 showContact: _showContactInfo,
                 negotiable: _negotiable,
                 zoom: 14,
+                video: _videoController.text.toString(),
                 adAttributes: myAdAttributesArray,
                 images: pickedImages != null ? pickedImages : [],
                 currencyId: _currencyId).then((value) {
@@ -1581,7 +1582,55 @@ class _AddAdFormState extends State<AddAdForm> {
   List<Asset> resultList;
   String _error = 'No Error Dectected';
 
-  Widget buildGridView() {
+  Widget buildListViewImages() {
+    
+    return ListView.builder(shrinkWrap: true,scrollDirection: Axis.horizontal,itemCount: images.length,itemBuilder: (context, index) {
+      Asset asset = images[index];
+      var lastImages =[];
+      images.forEach((element) {
+        lastImages.add(element.identifier);
+
+      });
+      _images = lastImages;
+      print("_images ${_images.length}");
+      FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
+          .then((value) async {
+        print('val: $value');
+        var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
+        var file = await getImageFileFromAsset(path2);
+        String fileExt = path2.split('/').last;
+        fileExt = fileExt.split('.').last;
+        var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+
+        var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
+        if(alreadyChoose.length == 0){
+
+          await uploadImage(context,base64Image).then((value){
+            _buildImagesMap(isMain: index == 0?true:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
+          });
+          print(pickedImages);
+        }
+      });
+      return Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Stack(
+          children: [
+            AssetThumb(
+              asset: asset,
+              width: 200,
+              height: 200,
+            ),
+            Align(alignment:Alignment.topLeft,child: Padding(
+              padding: const EdgeInsets.all(1 ),
+              child: InkWell(onTap: (){setState(() {
+                images.removeAt(index);
+              });},child: buildIcons(iconData: Icons.delete_forever,color: Colors.red,bgColor: AppColors.whiteColor.withOpacity(0.6),height: 35,width: 35),),
+            ),),
+          ],
+        ),
+      );
+    },);
+
     return GridView.count(
       crossAxisCount: 4,
       children: List.generate(images.length, (index) {
@@ -1688,7 +1737,9 @@ class _AddAdFormState extends State<AddAdForm> {
           onPressed: loadAssets,
         ),
         // if (files.isNotEmpty)
-          SizedBox(height: 120, child: buildGridView())
+        if(images.length!=0)
+          SizedBox(height: 120, child: buildListViewImages()),
+        SizedBox(height: 10,),
       ],
     );
   }

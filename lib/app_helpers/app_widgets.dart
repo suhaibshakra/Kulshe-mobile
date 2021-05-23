@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/ui/about_pages/about_screen.dart';
-import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
+import 'package:kulshe/ui/ads_package/add_ad/add_ad_sections.dart';
 import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
 import 'package:kulshe/ui/ads_package/user_panel.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
 import '../services_api/api.dart';
-import '../ui/ads_package/private_ads_list_screen.dart';
 import '../ui/profile/edit_profile_screen.dart';
 import 'package:toast/toast.dart';
 
@@ -104,7 +103,7 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
                           actionTitle: '',
                         ),
                       ),
@@ -121,7 +120,7 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
                           actionTitle: 'approved',
                         ),
                       ),
@@ -135,7 +134,7 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
                           actionTitle: 'new',
                         ),
                       ),
@@ -149,7 +148,7 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
                           actionTitle: 'rejected',
                         ),
                       ),
@@ -163,7 +162,7 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
                           actionTitle: 'expired',
                         ),
                       ),
@@ -177,27 +176,33 @@ buildDrawer(BuildContext context, Function action, {fromNav = false}) {
                 tapHandler: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,isMain: false,)
+                    builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,)
                   ),
                 ),
                 icon: Icons.arrow_forward_ios)),
             buildBorder(buildListTile(
                 context: context,
                 hasLeading: true,
-                iconL: Icons.widgets_outlined,
-                title: _strController.categories,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
                 iconL: Icons.filter_list,
                 title: _strController.filter,
+                tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddAdSectionsScreen(comeFrom: 'filter',)
+                  ),
+                ),
                 icon: Icons.arrow_forward_ios)),
             buildBorder(buildListTile(
                 context: context,
                 hasLeading: true,
                 iconL: Icons.add_circle,
                 title: _strController.newAd,
+                tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)
+                  ),
+                ),
                 icon: Icons.arrow_forward_ios)),
             buildBorder(buildListTile(
                 context: context,
@@ -622,7 +627,7 @@ Widget listItem(BuildContext context, LinearGradient gradient,Color color, Strin
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => actionTitle == 'fav'?PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,isMain: false,):PublicAdsScreen(isPrivate:true,
+            builder: (context) => actionTitle == 'fav'?PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,):PublicAdsScreen(isPrivate:true,fromHome: false,isFav: false,isFilter: false,
               actionTitle: actionTitle,
             ),
           ),

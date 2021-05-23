@@ -128,9 +128,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               )),
                           actions: [
                             Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(16.0),
                               child: Badge(
-                                badgeColor: Colors.amber,
+                                badgeColor: AppColors.redColor,
                                 badgeContent: Text(
                                   !isEmailVerified ? '1' : '',
                                   style: TextStyle(color: AppColors.whiteColor),
@@ -139,7 +139,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   child: Icon(
                                     Icons.notifications,
                                     color: Colors.grey,
-                                    size: 28,
+                                    size: 24,
                                   ),
                                   onTap: () {
                                     setState(() {
@@ -239,7 +239,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       children: [
                         if(!isEmailVerified)
                         Container(
-                            decoration:
+                          decoration:
                                 BoxDecoration(color: AppColors.whiteColor),
                             width: double.infinity,
                             height: mq.size.height,
@@ -372,8 +372,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   txt: "",
                                   isFav: false,
                                   isFilter: false,
-                                  isMain: false,
                                   isPrivate: false,
+                                  fromHome: false,
                                 ),
                               ),
                             );

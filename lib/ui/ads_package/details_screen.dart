@@ -441,7 +441,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           children: [
                             if('${_details['user_contact']}' != '[]')
                             Expanded(
-                              flex: 7,
+                              flex: 6,
                               child: InkWell(
                                 onTap: (){
                                   print('${_details['user_contact']['hash_id']}');
@@ -449,18 +449,25 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 },
                                 child: Row(
                                   children: [
-                                    _details['user_contact']['user_image'] != null
-                                        ?CircleAvatar(
-                                        radius: 22,
-                                        backgroundImage: NetworkImage(
-                                            _details['user_contact']
-                                            ['user_image']),
-                                    )
-                                        :
-                                     CircleAvatar(
-                                        radius: 22,
-                                        backgroundImage: AssetImage(
-                                            'assets/images/user_img.png'),
+                                    Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: _details[
+                                          'user_contact']
+                                          ['user_image'] !=
+                                              null
+                                              ? NetworkImage(
+                                              _details['user_contact']
+                                              ['user_image'])
+                                              : AssetImage(
+                                              "assets/images/user_img.png"),
+                                        ),
+                                        CircleAvatar(
+                                          radius: 5,
+                                          backgroundColor: _details['is_user_online']?AppColors.greenColor:AppColors.grey,
+                                        )
+                                      ],
                                     ),
                                     SizedBox(
                                       width: 10,
@@ -533,6 +540,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               flex: 1,
                               child: Center(),
                             ),
+
                             if(!isPaused && (status == 'approved' || status == 'new'))
                             buildIcons(
                                 width: 35,

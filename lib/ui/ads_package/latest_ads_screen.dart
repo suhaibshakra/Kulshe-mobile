@@ -10,6 +10,7 @@ import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/profile/advertiser_profile.dart';
+import 'package:kulshe/ui/profile/edit_profile_screen.dart';
 
 import 'ad_details_screen.dart';
 import 'details_screen.dart';
@@ -77,6 +78,9 @@ class _LatestAdsState extends State<LatestAds> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
+        endDrawer: buildDrawer(context, () {
+          Navigator.of(context).pop();
+        }),
         key: _scaffoldKey,
         resizeToAvoidBottomInset: false,
         body: _loading
@@ -108,11 +112,14 @@ class _LatestAdsState extends State<LatestAds> {
                               ),
                             ),
                             leading: InkWell(
-                                onTap: () =>
-                                    Scaffold.of(context).openEndDrawer(),
+                                onTap: (){setState(() {
+                                  // _showDrawer = true;
+                                  Scaffold.of(context).openEndDrawer();
+                                });},
                                 child: Icon(
                                   Icons.list,
                                   color: Colors.black54,
+
                                 )),
                             actions: [
                               buildIconButton(
@@ -133,12 +140,12 @@ class _LatestAdsState extends State<LatestAds> {
                                 color: Colors.black54,
                                 size: 25,
                                 onPressed: () {
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //       builder: (context) => EditProfileScreen(),
-                                  //     ),
-                                  // );
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProfileScreen(),
+                                      ),
+                                  );
                                 },
                               ),
                             ],
@@ -324,15 +331,23 @@ class _LatestAdsState extends State<LatestAds> {
                                                         ['hash_id']),
                                           ));
                                     },
-                                    child: CircleAvatar(
-                                      radius: 20,
-                                      backgroundImage: _data['user_contact']
-                                                  ['user_image'] !=
-                                              null
-                                          ? NetworkImage(_data['user_contact']
-                                              ['user_image'])
-                                          : AssetImage(
-                                              "assets/images/no_img.png"),
+                                    child: Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: _data['user_contact']
+                                                      ['user_image'] !=
+                                                  null
+                                              ? NetworkImage(_data['user_contact']
+                                                  ['user_image'])
+                                              : AssetImage(
+                                                  "assets/images/no_img.png"),
+                                        ),
+                                        CircleAvatar(
+                                          radius: 5,
+                                          backgroundColor: _data['is_user_online']?AppColors.greenColor:AppColors.grey,
+                                        )
+                                      ],
                                     ),
                                   ),
                                   SizedBox(
@@ -389,7 +404,7 @@ class _LatestAdsState extends State<LatestAds> {
                     size: 26,
                     action: () {
                       favoriteAd(
-                        // scaffoldKey: _scaffoldKey,
+                        scaffoldKey: _scaffoldKey,
                         context: context,
                         adId: _data['id'],
                         state: _adsData[index]['is_favorite_ad'] == true

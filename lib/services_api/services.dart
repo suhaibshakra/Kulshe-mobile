@@ -157,22 +157,13 @@ class LatestAdsServices {
 }
 class FilterAdsServices {
   static Future<List> getAdsData({
-    var filteredData,
-    int countryId,
-    String cityId,
-    String brand,
-    String subBrand,
-    String hasPrice,
-    int hasImage,
-    String sort,
-    String limit,
-    String offset,
-    String txt = "",
-  }) async {
+    var filteredData,int offset
+   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
+      print('filtered Data: $filteredData');
       final response = await http.get(
-          '${baseURL}classifieds?${filteredData}',
+          '${baseURL}classifieds?${filteredData}&limit=10&offset=$offset',
           headers: {
             'lang': '${_pref.getString('lang')??'ar'}',
             'Accept': 'application/json',

@@ -102,14 +102,15 @@ class _LoginScreenState extends State<LoginScreen> {
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
-      child: Directionality(
-        textDirection: _drController,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-           backgroundColor: Colors.grey.shade200,
-          body: ProgressHud(
-            key: _hudKey,
-            isGlobalHud: true,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+         backgroundColor: Colors.grey.shade200,
+        body: ProgressHud(
+          key: _hudKey,
+          isGlobalHud: true,
+          child: Directionality(
+            textDirection: _drController,
+
             child: Stack(
               children: [
                 buildBg(),
@@ -211,7 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ), //0.07
                             Container(
                               padding: EdgeInsets.only(top: 10),
-                              height: constraints.maxHeight * 0.05,
+                              height: constraints.maxHeight * 0.07,
+                              width: double.infinity,
                               child: Center(
                                 child: InkWell(
                                   onTap: () => Navigator.push(
@@ -220,6 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         builder: (context) => SignUpScreen(),
                                       )),
                                   child: RichText(
+                                    maxLines: 1,
                                     text: TextSpan(
                                       children: [
                                         TextSpan(

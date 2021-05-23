@@ -385,7 +385,7 @@ Future favoriteAd(
     //   onPressed: () {
     //     // Some code to undo the change.
     //   },
-    // ),duration: Duration(milliseconds: 2000),backgroundColor: Colors.green.shade300,content: new Text('${decodeData['custom_message']}',style: appStyle(fontWeight: FontWeight.bold,fontSize: 15,color: AppColors.whiteColor),)));
+    // ),duration: Duration(milliseconds: 3000),backgroundColor: Colors.green.shade300,content: new Text('${decodeData['custom_message']}',style: appStyle(fontWeight: FontWeight.bold,fontSize: 15,color: AppColors.whiteColor),)));
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
     return decodeData['custom_code'];
@@ -439,12 +439,8 @@ Future createAccountFunction({
     print('********************************Done');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(),
-      ),
-    );
+
+    loginFunction(email: email,password: password,context: context);
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
@@ -598,7 +594,7 @@ Future addAdFunction({
     "is_free": isFree,
     "is_delivery": isDelivery,
     "show_contact": showContact,
-    "video": "https://www.youtube.com/watch?v=kSDJZTzCl8k",
+    "video": video,
     //https://www.youtube.com/watch?v=kSDJZTzCl8k
     "ad_attributes": adAttributes,
     "images": images
@@ -674,7 +670,7 @@ Future updateAdFunction({
     "is_free": isFree,
     "is_delivery": isDelivery,
     "show_contact": showContact,
-    "video": "https://www.youtube.com/watch?v=kSDJZTzCl8k",
+    "video": video,
     //https://www.youtube.com/watch?v=kSDJZTzCl8k
     "ad_attributes": adAttributes,
     "images": images
@@ -799,6 +795,7 @@ Future createAccountFunctionGoogle(
   print('mobileCountryIsoCode $mobileCountryIsoCode');
   print('countryId $countryId');
   SharedPreferences _pref = await SharedPreferences.getInstance();
+
   var body = jsonEncode({
     'email': email,
     'googleId': gId,

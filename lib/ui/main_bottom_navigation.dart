@@ -37,10 +37,10 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
                 ? CategoriesScreen()
                 : index == 2
                     ? PublicAdsScreen(
-          isPrivate: false,
+                        isPrivate: false,
+                        fromHome: true,
                         isFav: true,
-          isFilter: false,
-            isMain:false,
+                        isFilter: false,
                       )
                     : buildDrawer(context, () => print('Done'), fromNav: true);
       },
@@ -75,10 +75,15 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
         notchedShape: CircularNotchedRectangle(),
         onTabSelected: _selectedTab,
         items: [
-          FABBottomAppBarItem(iconData: Icons.home, text: AppController.strings.home),
-          FABBottomAppBarItem(iconData: Icons.list, text: AppController.strings.categories),
-          FABBottomAppBarItem(iconData: FontAwesomeIcons.solidHeart, text: AppController.strings.fav),
-          FABBottomAppBarItem(iconData: Icons.more_horiz, text: AppController.strings.more),
+          FABBottomAppBarItem(
+              iconData: Icons.home, text: AppController.strings.home),
+          FABBottomAppBarItem(
+              iconData: Icons.list, text: AppController.strings.categories),
+          FABBottomAppBarItem(
+              iconData: FontAwesomeIcons.solidHeart,
+              text: AppController.strings.fav),
+          FABBottomAppBarItem(
+              iconData: Icons.more_horiz, text: AppController.strings.more),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -91,12 +96,21 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
     return FloatingActionButton(
       backgroundColor: AppColors.redColor,
       onPressed: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)));
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => AddAdSectionsScreen(
+                  comeFrom: 'addAd',
+                )));
       },
       tooltip: _strController.addAd,
       // child: Icon(Icons.add),
-      child: Text(_strController.addAd,style: appStyle(fontWeight: FontWeight.w700,),maxLines: 2,textAlign: TextAlign.center,),
+      child: Text(
+        _strController.addAd,
+        style: appStyle(
+          fontWeight: FontWeight.w700,
+        ),
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

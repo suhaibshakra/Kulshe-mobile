@@ -55,13 +55,13 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
     setState(() {
       _sectionData = sections[0]['responseData'];
-      _sectionData =
-          _sectionData.where((element) => element['id'] == sec).toList();
-      _sectionText = _sectionData[0]['label']['ar'];
-      _subSectionData = _sectionData[0]['sub_sections']
-          .where((element) => (element['id'] == subSec))
-          .toList();
-      _subSectionText = _subSectionData[0]['label']['ar'];
+      // _sectionData =
+      //     _sectionData.where((element) => element['id'] == sec).toList();
+      // _sectionText = _sectionData[0]['label']['ar'];
+      // _subSectionData = _sectionData[0]['sub_sections']
+      //     .where((element) => (element['id'] == subSec))
+      //     .toList();
+      // _subSectionText = _subSectionData[0]['label']['ar'];
     });
   }
 
@@ -152,26 +152,27 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _publicProfile['profile_image'] != null
-                                    ? CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          _publicProfile['profile_image'],
-                                        ),
-                                        radius: 50.0,
-                                      )
-                                    : CircleAvatar(
-                                        backgroundImage: AssetImage(
-                                          "assets/images/no_img.png",
-                                        ),
-                                        radius: 30.0,
-                                      ),
+                                Stack(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 50,
+                                      backgroundImage: _publicProfile['profile_image'] != null
+                                          ? NetworkImage(
+                                          _publicProfile['profile_image'])
+                                          : AssetImage(
+                                          "assets/images/user_img.png"),
+                                    ),
+                                    CircleAvatar(
+                                      radius: 10,
+                                      backgroundColor: _publicProfile['is_user_online']?AppColors.greenColor:AppColors.grey,
+                                    )
+                                  ],
+                                ),
                                 SizedBox(
                                   height: 10.0,
                                 ),
                                 Text(
-                                  _publicProfile['full_name'] != null
-                                      ? _publicProfile['full_name']
-                                      : "",
+                                  _publicProfile['nick_name'],
                                   style: appStyle(
                                     fontSize: 22.0,
                                     color: AppColors.blackColor2,
@@ -409,7 +410,39 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
   }
 
   Container _buildList(MediaQueryData mq) {
-    return Container(
+    return _publicAd.length == 0?Container(
+      color: Colors.white,
+      child: Center(
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            height: 60,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      offset: Offset(2, 2),
+                      blurRadius: 1,
+                      spreadRadius: 2)
+                ]),
+            child: buildIconWithTxt(
+              label: Text(
+                "عذرا , لا يوجد اعلانات",
+                style: appStyle(
+                    color: AppColors.blue, fontSize: 22),
+              ),
+              iconColor: AppColors.blue,
+              iconData: Icons.arrow_back_outlined,
+              size: 30,
+              action: () {
+                  Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ),
+      ),
+    ):Container(
       child: ListView.builder(
           controller: scrollController,
           itemCount: _publicAd.length,
@@ -423,8 +456,15 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                     : 0
                 : '';
             var _data = _publicAd[index];
-            print('AAAA ${_data['user_contact']}');
+            // print('AAAA ${_data['user_contact']}');
+            // _sectionData =
+            //     _sectionData.where((element) => element['id'] == _data['section_id']).toList();
+            // _subSectionData = _sectionData[index]['sub_sections']
+            //     .where((element) => (element['id'] == _data['sub_section_id']))
+            //     .toList();
+            // _subSectionText = _sectionData[0]['label'][lang??'ar'];
 
+            print('_sec:$_sectionData');
             return InkWell(
               onTap: () {
                 print(_data['id'].toString());

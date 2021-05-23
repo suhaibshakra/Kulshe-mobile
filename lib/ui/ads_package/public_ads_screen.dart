@@ -25,9 +25,9 @@ class PublicAdsScreen extends StatefulWidget {
   final isPrivate;
   var section;
   var isFav;
+  var fromHome;
   final isFilter;
   final filteredData;
-  final isMain;
 
   PublicAdsScreen(
       {Key key,
@@ -39,7 +39,7 @@ class PublicAdsScreen extends StatefulWidget {
       this.isFav,
       this.isFilter,
       this.filteredData,
-      this.isMain,
+      this.fromHome,
       this.actionTitle,
       this.isPrivate})
       : super(key: key);
@@ -147,6 +147,33 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
     });
   }
 
+  fetchAdsFilter() {
+    return FilterAdsServices.getAdsData(
+            filteredData: widget.filteredData, offset: offset)
+        .then((value) {
+      setState(() {
+        // log('${_publicAd.toString()}');
+        if (offset == 0) {
+          _publicAd = value[0]['responseData']['ads'];
+        } else {
+          if (_publicAd.length > 0) {
+            _num = value[0]['responseData']['ads'].length;
+            setState(() {
+              for (int index = 0; index < _num; index++) {
+                // print('DATA $index   ${_publicAd[index]['id']}');
+                _publicAd.add(value[0]['responseData']['ads'][index]);
+                // print('offset: $offset');
+              }
+            });
+          }
+        }
+        offset += 10;
+        _loading = false;
+        _getSections(sec: widget.sectionId, subSec: widget.subSectionId);
+      });
+    });
+  }
+
   fetchPrivateAds() {
     return MyAdsServicesNew.getMyAdsData(
             offset: offset.toString(), status: widget.actionTitle)
@@ -209,7 +236,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
         ? fetchPrivateAds()
         : widget.isFav && (widget.txt == null || widget.txt == "")
             ? fetchFavoriteAds()
-            : fetchAds();
+            : (widget.isFilter)
+                ? fetchAdsFilter()
+                : fetchAds();
     widget.section = "section";
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
@@ -218,7 +247,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             ? fetchPrivateAds()
             : widget.isFav
                 ? fetchFavoriteAds()
-                : fetchAds(hasImg: isChecked?1:0);
+                : widget.isFilter
+                    ? fetchAdsFilter()
+                    : fetchAds(hasImg: isChecked ? 1 : 0);
         print('End of screen');
       }
     });
@@ -258,27 +289,35 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                 ? Container(
                     color: Colors.white,
                     child: Center(
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.red,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 1,
-                                  spreadRadius: 2)
-                            ]),
-                        child: buildIconWithTxt(
-                          label: Text(
-                            "لا يوجد اعلانات لهذا الحقل",
-                            style: appStyle(
-                                color: AppColors.whiteColor, fontSize: 22),
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Container(
+                          height: 60,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: AppColors.blue.withOpacity(0.3),
+                                    offset: Offset(2, 2),
+                                    blurRadius: 1,
+                                    spreadRadius: 2)
+                              ]),
+                          child: buildIconWithTxt(
+                            label: Text(
+                              "عذرا , لا يوجد اعلانات",
+                              style: appStyle(
+                                  color: AppColors.blue, fontSize: 22),
+                            ),
+                            iconColor: AppColors.blue,
+                            iconData: !(widget.isFav&&widget.fromHome)
+                                ? Icons.arrow_back_outlined
+                                : Icons.clear,
+                            size: 30,
+                            action: () {
+                              if (!widget.fromHome)
+                                Navigator.of(context).pop();
+                            },
                           ),
-                          iconColor: AppColors.whiteColor,
-                          iconData: Icons.arrow_back_outlined,
-                          size: 30,
-                          action: () => Navigator.of(context).pop(),
                         ),
                       ),
                     ),
@@ -287,7 +326,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                     textDirection: TextDirection.rtl,
                     child: Stack(
                       children: [
-                        if (!_privateBool && !widget.isFav)
+                        if (!_privateBool && !widget.isFav && !widget.isFilter && !widget.fromHome)
                           SizedBox(
                             height: 60,
                             width: double.infinity,
@@ -383,9 +422,11 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                                   .priceLessToHigh)
                                                           ? "priceLessToHigh"
                                                           : "priceHighToLess";
-                                              print(' sorting SSSSSS : $sorting');
-                                              fetchAds(hasImg: isChecked?1:0);
-                                             });
+                                              print(
+                                                  ' sorting SSSSSS : $sorting');
+                                              fetchAds(
+                                                  hasImg: isChecked ? 1 : 0);
+                                            });
                                           },
                                         ),
                                       ),
@@ -396,7 +437,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                             ),
                           ),
                         Padding(
-                          padding: !_privateBool && !widget.isFav
+                          padding: !_privateBool && !widget.isFav && !widget.isFilter && !widget.fromHome
                               ? const EdgeInsets.only(top: 60)
                               : const EdgeInsets.only(top: 4),
                           child: _buildList(mq),
@@ -491,7 +532,8 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                   ? Icons.favorite_border
                                                   : Icons.favorite,
                                           color: Colors.red,
-                                          bgColor: AppColors.grey.withOpacity(0.1),
+                                          bgColor:
+                                              AppColors.grey.withOpacity(0.1),
                                           size: 25,
                                           action: () {
                                             favoriteAd(
@@ -697,17 +739,28 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                             ['hash_id']),
                                                   ));
                                             },
-                                            child: CircleAvatar(
-                                              radius: 20,
-                                              backgroundImage: _data[
-                                                              'user_contact']
-                                                          ['user_image'] !=
-                                                      null
-                                                  ? NetworkImage(
-                                                      _data['user_contact']
-                                                          ['user_image'])
-                                                  : AssetImage(
-                                                      "assets/images/user_img.png"),
+                                            child: Stack(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundImage: _data[
+                                                                  'user_contact']
+                                                              ['user_image'] !=
+                                                          null
+                                                      ? NetworkImage(
+                                                          _data['user_contact']
+                                                              ['user_image'])
+                                                      : AssetImage(
+                                                          "assets/images/user_img.png"),
+                                                ),
+                                                CircleAvatar(
+                                                  radius: 5,
+                                                  backgroundColor:
+                                                      _data['is_user_online']
+                                                          ? AppColors.greenColor
+                                                          : AppColors.grey,
+                                                )
+                                              ],
                                             ),
                                           ),
                                         ),

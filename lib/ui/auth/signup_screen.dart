@@ -114,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
                       : EdgeInsets.symmetric(horizontal: 15,vertical: 10),
                   height:
-                      isLandscape ? mq.size.height * 1.5 : mq.size.height * 1,
+                      isLandscape ? mq.size.height * 1.5 : mq.size.height * 1.2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
