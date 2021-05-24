@@ -19,8 +19,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
-import 'ad_details_screen.dart';
-
 class DetailsScreen extends StatefulWidget {
   final int adID;
   final int countryId;
@@ -776,29 +774,35 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             flex: 3,
                                             child: Row(
                                               children: [
-                                                Text(
-                                                  attributeName.toString(),
-                                                  style: appStyle(
-                                                      fontSize: 15,
-                                                      color: AppColors.greyFour,
-                                                      fontWeight:
-                                                      FontWeight.w700),
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    attributeName.toString(),
+                                                    style: appStyle(
+                                                        fontSize: 15,
+                                                        color: AppColors.greyFour,
+                                                        fontWeight:
+                                                        FontWeight.w700),
+                                                  ),
                                                 ),
                                                 if (_attributes[position]
                                                 ['has_unit'] ==
                                                     1)
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                      Text(_attributes[position][//TODO : UNIT
-                                                      'selected_unit_name']['ar'] .toString(),style: appStyle(
-                                                          fontSize: 15,
-                                                          color: AppColors.greyFour,
-                                                          fontWeight:
-                                                          FontWeight.w700),),
-                                                    ],
+                                                  Expanded(
+                                                    flex: 1,
+                                                    child: Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(_attributes[position][//TODO : UNIT
+                                                        'selected_unit_name']['ar'] .toString(),style: appStyle(
+                                                            fontSize: 15,
+                                                            color: AppColors.greyFour,
+                                                            fontWeight:
+                                                            FontWeight.w700),),
+                                                      ],
+                                                    ),
                                                   )
                                               ],
                                             ),

@@ -26,14 +26,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController()..text;
-  TextEditingController _emailControllerS = TextEditingController()..text;
   TextEditingController _phoneControllerS = TextEditingController()..text;
   TextEditingController _nickNameControllerS = TextEditingController()..text;
-  TextEditingController _countryControllerS = TextEditingController()..text;
-  TextEditingController _emailForgetController = TextEditingController()..text;
   TextEditingController _passwordController = TextEditingController()..text;
-  TextEditingController _newPasswordController = TextEditingController()..text;
-  TextEditingController _confirmPasswordController = TextEditingController()..text;
   TextEditingController _mobileCountryCode = TextEditingController()..text;
   TextEditingController mobileCountryIsoCode = TextEditingController()..text;
   String _selectedCountry;
@@ -124,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: LayoutBuilder(
                       builder: (ctx, constraints) => Form(
                         key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -140,7 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.w700,
                                   txtColor: AppColors.redColor),
                             ),
-                            //0.25
                             Container(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -149,16 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       controller: _emailController,
                                       label: _strController.email,
                                       textInputType: TextInputType.emailAddress,
-                                      validator: (value) =>
-                                          EmailValidator.validate(value)
-                                              ? null
-                                              : _strController.errorEmail,
+                                      validator: validateEmail,
                                       hintTxt: _strController.email),
                                   buildTextField(
-                                      validator: (value) =>
-                                          (value.length < 8 || value.isEmpty)
-                                              ? _strController.errorPassword
-                                              : null,
+                                      validator: validatePassword,
                                       controller: _passwordController,
                                       textInputType: TextInputType.visiblePassword,
                                       label: _strController.password,
@@ -174,7 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ],
                               ),
                             ),
-                            //0.25
                             Container(
                               height: constraints.maxHeight * 0.05,
                               alignment: AppController.strings is EnglishString

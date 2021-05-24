@@ -3,14 +3,18 @@ abstract class Strings {
   String appName;
   String loginTitle;
   String email;
+  String emptyEmail;
   String errorEmail;
   String nickName;
-  String errorNickName;
+  String emptyNickName;
+  String errorOneNickName;
+  String errorTwoNickName;
   String country;
   String selectCountry;
   String errorCountry;
   String password;
   String errorPassword;
+  String emptyPassword;
   String confirmPassword;
   String errorConfirmPassword;
   String forgetPassword;
@@ -59,6 +63,8 @@ abstract class Strings {
   String selectCity;
   String fullName;
   String mobile;
+  String errorMobile;
+  String emptyMobile;
   String oldPassword;
   String conPassword;
   String newPassword;
@@ -124,6 +130,15 @@ abstract class Strings {
   String fFrom;
   String fTo;
 
+  //ads validation
+  String emptyTitle;
+  String errorTitle;
+  String errorTitleTwo;
+  String emptyBody;
+  String errorBody;
+  String errorCity;
+  String errorCurrency;
+
 }
 
 class EnglishString extends Strings {
@@ -132,9 +147,11 @@ class EnglishString extends Strings {
     appName = 'Kulshe';
     loginTitle = "Login";
     email = "E-mail";
-    errorEmail = "Please enter a valid email";
+    emptyEmail = "Email is required";
+    errorEmail = "email is not valid";
     password = "Password";
-    errorPassword = "Please Enter a valid password";
+    errorPassword = "At least 8 characters";
+    emptyPassword = "Password is required";
     forgetPassword = "Forget Password";
     login = "Login";
     loginUsing = "Login using";
@@ -144,7 +161,9 @@ class EnglishString extends Strings {
     hasAccount = "Has account ";
     createAccountUsing = "Create account using";
     nickName = "Nick name";
-    errorNickName = "Enter another name";
+    errorOneNickName = "at least 3 characters";
+    errorTwoNickName = "Maximum length 20 characters";
+    emptyNickName = "Username required";
     country = "Country";
     selectCountry = "Select country";
     errorCountry = "Choose country";
@@ -185,6 +204,9 @@ class EnglishString extends Strings {
     labelGallery = "from gallery";
     selectCity = "Select City";
     fullName = "Full Name";
+    mobile = "Mobile";
+    emptyMobile = "mobile is required field";
+    errorMobile = "At least 7 characters";
     mobile = "Mobile";
     oldPassword= "Old Password";
     conPassword= "Current Password";
@@ -251,6 +273,15 @@ class EnglishString extends Strings {
     fPrice = 'Price';
     fFrom = 'From';
     fTo = 'To';
+
+    //ads validation
+    emptyTitle = "Title required";
+    errorTitle = "At least 15 characters";
+    errorTitleTwo = "Enter valid title";
+    emptyBody = "Description required field";
+    errorBody = "At least 30 characters";
+    errorCity = "City is required field";
+    errorCurrency = "Currency is required field";
   }
 }
 
@@ -260,10 +291,12 @@ class ArabicString extends Strings {
     appName = 'Kulshe';
     loginTitle = "تسجيل الدخول";
     email = "البريد الإلكتروني";
-    errorEmail = "أدخل بريد إالكتروني صالح";
-    password = "كلمة السر";
-    errorPassword = "يجب ان لا تقل عن 8 حروف";
-    forgetPassword = "نسيت كلمة السر";
+    errorEmail = "البريد الالكتروني المدخل غير صحيح";
+    emptyEmail = "البريد الإلكتروني حقل مطلوب";
+    password = "كلمة المرور";
+    emptyPassword = "كلمة المرور حقل مطلوب";
+    errorPassword = "الحد الأدنى 8 أحرف";
+    forgetPassword = "نسيت كلمة المرور";
     login = "دخول";
     loginUsing = "دخول باستخدام";
     or = "أو";
@@ -272,7 +305,9 @@ class ArabicString extends Strings {
     hasAccount = "لديك حساب ";
     createAccountUsing = "إنشاء حساب باستخدام";
     nickName = "اسم المستحدم";
-    errorNickName = "أدخل اسم اخر";
+    errorOneNickName = "الحد الأدنى 3 أحرف";
+    errorTwoNickName = "الحد الأقصى المسموح به لعدد الأحرف هو 20";
+    emptyNickName = "اسم المستخدم حقل مطلوب";
     country = "الدولة";
     selectCountry = "إختر الدولة";
     errorCountry = "إختر الدولة";
@@ -316,6 +351,8 @@ class ArabicString extends Strings {
     selectCity = "إختر المدينة";
     fullName = "الاسم الكامل";
     mobile = "رقم الهاتف";
+    emptyMobile = "رقم الموبايل حقل مطلوب";
+    errorMobile = "الحد الأدنى 7 أحرف";
     oldPassword= "كلمة السر القديمة";
     conPassword= "تأكيد كلمة السر";
     newPassword= "كلمة السر الجديدة";
@@ -380,5 +417,14 @@ class ArabicString extends Strings {
     fPrice = 'السعر';
     fFrom = 'من';
     fTo = 'إلى';
+
+    //ads validation
+    emptyTitle = "العنوان حقل مطلوب";
+    errorTitle = "الحد الأدنى 15 حرف";
+    errorTitleTwo = "يمكن لهذا الحقل أن يقبل فقط أحرف , أرقام ,نقاط ,شرطات و أقواس";
+    emptyBody = "الوصف حقل مطلوب";
+    errorBody = "الحد الأدنى 30 حرف";
+    errorCity = "المدينة حقل مطلوب";
+    errorCurrency = "العملة حقل مطلوب";
   }
 }

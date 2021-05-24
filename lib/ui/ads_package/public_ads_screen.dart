@@ -314,8 +314,11 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                 : Icons.clear,
                             size: 30,
                             action: () {
-                              if (!widget.fromHome)
+                              if(widget.fromHome == true){
+                                return null;
+                              }else {
                                 Navigator.of(context).pop();
+                              }
                             },
                           ),
                         ),

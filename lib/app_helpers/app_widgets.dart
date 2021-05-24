@@ -395,6 +395,7 @@ buildTxt(
 buildTextField({
   String hintTxt,
   String initialValue,
+  bool fromAttributes=false,
   bool fromDialog = false,
   @required String label,
   TextInputType textInputType,
@@ -406,10 +407,11 @@ buildTextField({
   Widget suffixIcon,
   int minLines,
   int maxLines,
+  int maxLength,
   bool isPassword = false,
 }) {
   return Padding(
-    padding: fromDialog?EdgeInsets.symmetric(vertical: 8):const EdgeInsets.symmetric(vertical: 8,horizontal: 4),
+    padding: fromDialog?EdgeInsets.symmetric(vertical: 8):fromAttributes?EdgeInsets.only(bottom: 10,):const EdgeInsets.symmetric(vertical: 8,horizontal: 4),
     child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -423,6 +425,7 @@ buildTextField({
         onFieldSubmitted: onSubmit,
         controller: controller,
         validator: validator,
+        maxLength: maxLength,
         onChanged: onChanged,
         keyboardType: textInputType,
         obscureText: isPassword ,
@@ -847,4 +850,96 @@ Future<void> showInformationDialog({
       });
     },
   );
+}
+
+
+String validateName(String value) {
+  String patttern = r'(^[a-zA-Z ]*$)';
+  RegExp regExp = new RegExp(patttern);
+  if (value.length == 0) {
+    return AppController.strings.emptyNickName;
+  }else if(value.length < 3){
+    return AppController.strings.errorOneNickName;
+  }else if(value.length > 20){
+    return AppController.strings.errorTwoNickName;
+  }
+  // else if (!regExp.hasMatch(value)) {
+  //   return "Name must be a-z and A-Z";
+  // }
+  return null;
+}
+
+String validatePassword(String value) {
+  if (value.length == 0) {
+    return AppController.strings.emptyPassword;
+  }else if(value.length < 8){
+    return AppController.strings.errorPassword;
+  }
+  // else if (!regExp.hasMatch(value)) {
+  //   return "Name must be a-z and A-Z";
+  // }
+  return null;
+}
+
+String validateMobile(String value) {
+  // String patttern = r'(^[0-9]*$)';
+  // RegExp regExp = new RegExp(patttern);
+  if (value.length == 0) {
+    return AppController.strings.emptyMobile;
+  } else if(value.length < 7){
+    return AppController.strings.errorMobile;
+  }
+  // else if (!regExp.hasMatch(value)) {
+  //   return "Mobile Number must be digits";
+  // }
+  return null;
+}
+
+String validateEmail(String value) {
+  String pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  RegExp regExp = new RegExp(pattern);
+  if (value.length == 0) {
+    return AppController.strings.emptyEmail;
+  } else if(!regExp.hasMatch(value)){
+    return AppController.strings.errorEmail;
+  }else {
+    return null;
+  }
+}
+
+String validateTitle(String value) {
+  String pattern = r'^[a-zA-Z0-9\u0621-\u064A\u0660-\u0669.\-() ]+$';
+  RegExp regExp = new RegExp(pattern);
+  if (value.length == 0) {
+    return AppController.strings.emptyTitle;
+  }else if(value.length < 15) {
+    return AppController.strings.errorTitle;
+  } else if(!regExp.hasMatch(value)){
+    return AppController.strings.errorTitleTwo;
+  }else {
+    return null;
+  }
+}
+String validateBody(String value) {
+  if (value.length == 0) {
+    return AppController.strings.emptyBody;
+  } else if(value.length < 30){
+    return AppController.strings.errorBody;
+  }else {
+    return null;
+  }
+}
+String validateCity(String value) {
+  if (value == null) {
+    return AppController.strings.errorCity;
+  }else{
+    return null;
+  }
+}
+String validateCurrency(String value) {
+  if (value == null) {
+    return AppController.strings.errorCurrency;
+  }else{
+    return null;
+  }
 }

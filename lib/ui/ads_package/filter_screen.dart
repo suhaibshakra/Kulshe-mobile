@@ -595,12 +595,12 @@ class _FilterScreenState extends State<FilterScreen> {
             child: Row(
               children: [
                 Expanded(
-                  flex: 6,
+                  flex: 3,
                   child: Container(
                     padding: EdgeInsets.all(5),
                     child: buildTxt(
                         fontSize: 17,
-                        maxLine: 1,
+                        maxLine: 2,
                         txtColor: AppColors.blackColor2,
                         overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.w400,
@@ -622,7 +622,7 @@ class _FilterScreenState extends State<FilterScreen> {
                     padding: EdgeInsets.all(5),
                     child: buildTxt(
                         fontSize: 17,
-                        maxLine: 1,
+                        maxLine: 2,
                         txtColor: AppColors.blackColor2,
                         fontWeight: FontWeight.w400,
                         txt: "${_subSectionData[0]['label'][_lang]}",

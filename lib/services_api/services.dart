@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:kulshe/models/profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api.dart';

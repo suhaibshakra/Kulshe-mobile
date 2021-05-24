@@ -312,7 +312,7 @@ class _EditAdFormState extends State<EditAdForm> {
                           ),
                         ),
                         SizedBox(height: 10,),
-                        _buildConstData(),
+                        _buildConstData(mq),
                         _buildDynamicData(mq),
                         _buildButton(context,ctx),
                       ],
@@ -353,96 +353,96 @@ class _EditAdFormState extends State<EditAdForm> {
     );
   }
 
-  Padding buildMainAttributes(int mainIndex, MediaQueryData mq) {
+    buildMainAttributes(int mainIndex, MediaQueryData mq) {
     // print("VAL:${_listAttributes[mainIndex]['label'][_lang]}");
     // print("type:${_type}");
     // print("_options:${_options}");
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _listAttributes[mainIndex]['label'][_lang].toString(),
-            style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
+    return Column(
+     mainAxisAlignment: MainAxisAlignment.center,
+     crossAxisAlignment: CrossAxisAlignment.start,
+     children: [
+       Text(
+         _listAttributes[mainIndex]['label'][_lang].toString(),
+         style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+       ),
 
-          if (_type == 'string' || _type == 'number' || _type == 'year')
-            _buildSNY(mainIndex),
-          if (_listAttributes[mainIndex]['has_unit'] == 1)
-          // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
-            ListView.builder(
-                itemCount: 1,
-                physics: ClampingScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (_, unitIndex) {
-                  return Column(
-                    children: [
-                      if (_listAttributes[mainIndex]['id'] ==
-                          _listUnits[unitIndex]['attribute_id'])
-                        if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
-                          _buildUnits(_listUnits, unitIndex, mainIndex), // TODO: UNITS
-                    ],
-                  );
-                }),
-          if (_type == 'dob')
-            myButton(
-                fontSize: 16,
-                width: mq.size.width * 0.5,
-                height: 45,
-                onPressed: () {
-                  // print("${_listAttributes[mainIndex]['value']}");
-                  _pickDateDialog(_listAttributes[mainIndex]['id'],value: "");
-                },
-                radius: 10,
-                btnTxt: chosenDate,
-                txtColor: Colors.black54,
-                btnColor: Colors.white),
-          if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups' || _type == 'radio')
-            SingleChildScrollView(
-              child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      mainAxisExtent: _type == 'radio' ? 50 :  null,
-                      childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select')?( _options.length > 4 ?  01 :_options.length * 2.0):3,
-                      crossAxisCount:
-                      _type == 'select' || _type == 'multiple_select' || _type == 'multiple_buttons_groups'
-                          ? 1
-                          : 2),
-                  shrinkWrap: true,
-                  physics: ClampingScrollPhysics(),
-                  itemCount: _type == 'select' || _type == 'multiple_select'
-                      ? 1
-                      : _options.length,
-                  itemBuilder: (context, rcsIndex) {
-                    return Container(
-                      decoration: BoxDecoration(
-                          borderRadius: _type == 'select'
-                              ? BorderRadius.circular(8)
-                              : BorderRadius.circular(0)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          if (_type == 'radio')
-                            _buildRadio(mainIndex, rcsIndex),
-                          if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
-                            _buildCheckbox(mainIndex, rcsIndex),
-                          if (_type == 'select')
-                            _buildSelect(rcsIndex, mainIndex),
-                          if (_type == 'multiple_select')
-                            buildMultiSelected(mainIndex),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-        ],
-      ),
-    );
+       if (_type == 'string' || _type == 'number' || _type == 'year')
+         _buildSNY(mainIndex),
+       if (_listAttributes[mainIndex]['has_unit'] == 1)
+       // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
+         ListView.builder(
+             itemCount: 1,
+             physics: ClampingScrollPhysics(),
+             shrinkWrap: true,
+             itemBuilder: (_, unitIndex) {
+               return Column(
+                 children: [
+                   if (_listAttributes[mainIndex]['id'] ==
+                       _listUnits[unitIndex]['attribute_id'])
+                     if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
+                       Padding(
+                         padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                         child: _buildUnits(_listUnits, unitIndex, mainIndex,mq),
+                       ), // TODO: UNITS
+                 ],
+               );
+             }),
+       if (_type == 'dob')
+         myButton(
+             fontSize: 16,
+             width: mq.size.width * 0.5,
+             height: 45,
+             onPressed: () {
+               // print("${_listAttributes[mainIndex]['value']}");
+               _pickDateDialog(_listAttributes[mainIndex]['id'],value: "");
+             },
+             radius: 10,
+             btnTxt: chosenDate,
+             txtColor: Colors.black54,
+             btnColor: Colors.white),
+       if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups' || _type == 'radio')
+         SingleChildScrollView(
+           child: GridView.builder(
+               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                   mainAxisExtent: _type == 'radio' ? 50 :  null,
+                   childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select')?( _options.length > 4 ?  01 :_options.length * 2.0):3,
+                   crossAxisCount:
+                   _type == 'select' || _type == 'multiple_select' || _type == 'multiple_buttons_groups'
+                       ? 1
+                       : 2),
+               shrinkWrap: true,
+               physics: ClampingScrollPhysics(),
+               itemCount: _type == 'select' || _type == 'multiple_select'
+                   ? 1
+                   : _options.length,
+               itemBuilder: (context, rcsIndex) {
+                 return Container(
+                   decoration: BoxDecoration(
+                       borderRadius: _type == 'select'
+                           ? BorderRadius.circular(8)
+                           : BorderRadius.circular(0)),
+                   child: Column(
+                     crossAxisAlignment: CrossAxisAlignment.center,
+                     mainAxisAlignment: MainAxisAlignment.start,
+                     children: [
+                       if (_type == 'radio')
+                         _buildRadio(mainIndex, rcsIndex),
+                       if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
+                         _buildCheckbox(mainIndex, rcsIndex),
+                       if (_type == 'select')
+                         _buildSelect(rcsIndex, mainIndex,mq),
+                       if (_type == 'multiple_select')
+                         buildMultiSelected(mainIndex),
+                     ],
+                   ),
+                 );
+               }),
+         ),
+     ],
+      );
   }
 
-  Container _buildUnits(List _listUnits, int unitIndex, int mainIndex) {
+  Container _buildUnits(List _listUnits, int unitIndex, int mainIndex,MediaQueryData mq) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
 
@@ -452,7 +452,7 @@ class _EditAdFormState extends State<EditAdForm> {
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
     return Container(
-      width: 373.0,
+      width: mq.size.width,
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black54),
           borderRadius: BorderRadius.circular(8)),
@@ -571,7 +571,7 @@ class _EditAdFormState extends State<EditAdForm> {
     );
   }
 
-  Container _buildSelect(int rcsIndex, int mainIndex) {
+  Container _buildSelect(int rcsIndex, int mainIndex,MediaQueryData mq) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['value']);
     if(trendIndex == -1){
@@ -585,7 +585,7 @@ class _EditAdFormState extends State<EditAdForm> {
 
     var val = "";
     return Container(
-      width: 373.0,
+      width: mq.size.width,
 
       decoration: BoxDecoration(
           border:Border.all(color: Colors.black54),
@@ -594,7 +594,7 @@ class _EditAdFormState extends State<EditAdForm> {
         children: [
           DropdownButtonHideUnderline(
             child: ButtonTheme(
-              padding: const EdgeInsets.only(bottom: 200,top: 10),
+              padding: const EdgeInsets.only(bottom: 200,top: 10,left: 3,right: 3),
 
               alignedDropdown: true,
               child: DropdownButton<String>(
@@ -868,7 +868,7 @@ class _EditAdFormState extends State<EditAdForm> {
     );
   }
 
-  _buildConstData() {
+  _buildConstData(MediaQueryData mq) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -877,7 +877,7 @@ class _EditAdFormState extends State<EditAdForm> {
           style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20,top: 10),
+          padding: const EdgeInsets.only(bottom: 20,top: 10,right: 3,left: 3),
           child: Container(
             width:double.infinity,
             decoration: BoxDecoration(
@@ -897,10 +897,7 @@ class _EditAdFormState extends State<EditAdForm> {
                         value: _cityId,
                         iconSize: 30,
                         icon: (null),
-                        validator: (value) =>
-                        (_cityId == null || _cityId.isEmpty)
-                            ? "يجب اختيار المدينه"
-                            : null,
+                        validator: validateCity,
                         style: TextStyle(
                           color: Colors.black54,
                           fontSize: 16,
@@ -948,10 +945,7 @@ class _EditAdFormState extends State<EditAdForm> {
               ),
               Container(
                 child: buildTextField(
-                    validator: (value) =>
-                    (_titleController.text == null || _titleController.text.isEmpty)
-                        ? "يجب اختيار _bodyController"
-                        : null,
+                    validator: validateTitle,
                     label: _strController.adTitle,
                     controller: _titleController,
                     textInputType: TextInputType.text),
@@ -970,10 +964,7 @@ class _EditAdFormState extends State<EditAdForm> {
               ),
               Container(
                 child: buildTextField(
-                  validator: (value) =>
-                  (_bodyController.text == null || _bodyController.text.isEmpty)
-                      ? "يجب اختيار _bodyController"
-                      : null,
+                  validator: validateCity,
                   label: _strController.adDescription,
                   controller: _bodyController,
                   minLines: 4,
@@ -1000,10 +991,6 @@ class _EditAdFormState extends State<EditAdForm> {
                     Container(
                       width:double.infinity,
                       child: buildTextField(
-                          validator: (value) =>
-                          (_priceController.text == null || _priceController.text.toString().isEmpty )
-                              ? "يجب اختيار price"
-                              : null,
                           label: _strController.price,
                           controller: _priceController,
                           textInputType: TextInputType.number),
@@ -1036,10 +1023,7 @@ class _EditAdFormState extends State<EditAdForm> {
                                   child: DropdownButtonFormField<String>(
                                     isExpanded: false,
                                     value: _currencyId,
-                                    validator: (value) =>
-                                    (_currencyId == null || _currencyId.isEmpty)
-                                        ? "يجب اختيار _currencyId"
-                                        : null,
+                                    validator: validateCurrency,
                                     iconSize: 30,
                                     icon: (null),
                                     style: TextStyle(
@@ -1093,91 +1077,92 @@ class _EditAdFormState extends State<EditAdForm> {
                   "النوع",
                   style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black54),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: DropdownButtonHideUnderline(
-                          child: ButtonTheme(
-                            alignedDropdown: true,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black54),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: DropdownButtonHideUnderline(
+                            child: ButtonTheme(
+                              alignedDropdown: true,
 
-                            child: DropdownButtonFormField<String>(
-                              isExpanded: false,
-                              value: _brandId,
-                              validator: (value) =>
-                              (_brandId == null || _brandId.isEmpty)
-                                  ? "يجب اختيار _brandId"
-                                  : null,
-                              iconSize: 30,
-                              icon: (null),
-                              style: appStyle(
-                                color: Colors.black54,
-                                fontSize: 16,
-                              ),
-                              hint: Text(
-                                // _brandId!=null?_brandId.toString():"choose type",
-                                _listBrands[0]['label'][_lang],
+                              child: DropdownButtonFormField<String>(
+                                isExpanded: false,
+                                value: _brandId,
+                                validator: (value) =>
+                                (_brandId == null || _brandId.isEmpty)
+                                    ? "يجب اختيار _brandId"
+                                    : null,
+                                iconSize: 30,
+                                icon: (null),
                                 style: appStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18),
-                              ),
-                              onChanged: (String value) {
-                                setState(() {
-                                  _subBrandId = null;
-                                  _brandId = value;
-                                  _listSubBrands = _listBrands
-                                      .where((element) =>
-                                  element['id'].toString() ==
-                                      value.toString())
-                                      .toList();
-                                  _listSubBrands =
-                                  _listSubBrands[0]['sub_brands'];
-                                  _listSubBrands = _listSubBrands.toSet().toList();
-                                  if (_listSubBrands != [] &&
-                                      _listSubBrands != null &&
-                                      _listSubBrands.isNotEmpty) {
-                                    setState(() {
-                                      hasSubBrands = true;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      hasSubBrands = false;
-                                    });
-                                  }
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                ),
+                                hint: Text(
+                                  // _brandId!=null?_brandId.toString():"choose type",
+                                  _listBrands[0]['label'][_lang],
+                                  style: appStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                ),
+                                onChanged: (String value) {
+                                  setState(() {
+                                    _subBrandId = null;
+                                    _brandId = value;
+                                    _listSubBrands = _listBrands
+                                        .where((element) =>
+                                    element['id'].toString() ==
+                                        value.toString())
+                                        .toList();
+                                    _listSubBrands =
+                                    _listSubBrands[0]['sub_brands'];
+                                    _listSubBrands = _listSubBrands.toSet().toList();
+                                    if (_listSubBrands != [] &&
+                                        _listSubBrands != null &&
+                                        _listSubBrands.isNotEmpty) {
+                                      setState(() {
+                                        hasSubBrands = true;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        hasSubBrands = false;
+                                      });
+                                    }
 
-                                });
-                              },
-                              items: _listBrands.map((listBrand) {
-                                // // print("LIST BRAND ${listBrand['id']}");
-                                return new DropdownMenuItem(
-                                  child: new Text(
-                                    listBrand['label'][_lang],
-                                    style: appStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
-                                  value: listBrand['id'].toString(),
-                                );
-                              })?.toList() ??
-                                  [],
+                                  });
+                                },
+                                items: _listBrands.map((listBrand) {
+                                  // // print("LIST BRAND ${listBrand['id']}");
+                                  return new DropdownMenuItem(
+                                    child: new Text(
+                                      listBrand['label'][_lang],
+                                      style: appStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                    value: listBrand['id'].toString(),
+                                  );
+                                })?.toList() ??
+                                    [],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 if (hasSubBrands == true)
                   Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    padding: const EdgeInsets.only(top: 20, bottom: 20,left:3,right:3),
                     child: Container(
-                      width: 382.0,
-
-
+                      width: mq.size.width,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black54),
                           borderRadius: BorderRadius.circular(10)
@@ -1669,14 +1654,17 @@ class _EditAdFormState extends State<EditAdForm> {
   Widget _buildImages() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         // Center(child: Text('Error: $_error')),
-        ElevatedButton(
-          child: Text("إختر صور"),
-          onPressed:(){ loadAssets();
-          print('___images : $_images');
-          },
+        Container(
+          width: double.infinity,
+          child: ElevatedButton(
+            child: Text("إختر صور"),
+            onPressed:(){ loadAssets();
+            print('___images : $_images');
+            },
+          ),
         ),
         // if (files.isNotEmpty)
         if(images.length!=0)

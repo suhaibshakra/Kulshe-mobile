@@ -11,8 +11,6 @@ import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/profile/advertiser_profile.dart';
 import 'package:kulshe/ui/profile/edit_profile_screen.dart';
-
-import 'ad_details_screen.dart';
 import 'details_screen.dart';
 
 class LatestAds extends StatefulWidget {

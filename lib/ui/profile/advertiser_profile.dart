@@ -7,7 +7,6 @@ import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/services_api/services.dart';
-import 'package:kulshe/ui/ads_package/ad_details_screen.dart';
 import 'package:kulshe/ui/ads_package/details_screen.dart';
 import 'package:kulshe/ui/ads_package/time_ago.dart';
 import 'package:shared_preferences/shared_preferences.dart';

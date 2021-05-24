@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kulshe/app_helpers/app_colors.dart';
 import 'package:kulshe/app_helpers/app_controller.dart';
 import 'package:kulshe/app_helpers/app_widgets.dart';
-import 'package:kulshe/models/profile.dart';
 import 'package:kulshe/services_api/services.dart';
-
 import '../../showImg.dart';
-import '../profile/edit_profile_screen.dart';
 
 class UserPanel extends StatefulWidget {
   @override
@@ -187,12 +184,6 @@ class _UserPanelState extends State<UserPanel> {
                     expandedHeight: isLandscape ?mq.size.height*0.1:mq.size.height*0.2,
                     automaticallyImplyLeading: false,
                     floating: false,
-                    // title: Text(_strController.userPanel,style: appStyle(color: AppColors.blackColor2,fontSize: 18),),
-                    //  actions: [ buildIconButton(icon: Icons.edit,color: AppColors.blackColor2,size: 26,onPressed: (){
-                    //   Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(),));
-                    // }, ),
-                    //
-                    // ],
                      centerTitle: false,
                     backgroundColor: Colors.white,
                     toolbarHeight: 30,
@@ -212,15 +203,16 @@ class _UserPanelState extends State<UserPanel> {
                                   Text(_profileData['email'],style: appStyle(color: AppColors.whiteColor,fontSize: 18,fontWeight: FontWeight.w500),),
                                 ],
                               ),
-                              InkWell(
-                                onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
-                                child: CircleAvatar(
+                              // InkWell(
+                                // onTap:()=>Navigator.push(context,MaterialPageRoute(builder: (context) => ShowFullImage(img: _profileData['profile_image'],),)),
+                                // child:
+                                CircleAvatar(
                                   radius: 40.0,
                                   child: Container(
                                     decoration: BoxDecoration(color: Colors.blue,borderRadius: BorderRadius.circular(50),
                                         image: DecorationImage(image: NetworkImage("${_profileData['profile_image']}"),fit: BoxFit.cover)),),
                                   backgroundColor: Colors.transparent,
-                                ),
+                                // ),
                               )
                             ],
                           ),

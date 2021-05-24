@@ -23,19 +23,15 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _phoneControllerS = TextEditingController()..text;
   TextEditingController _nickNameControllerS = TextEditingController()..text;
-
-  TextEditingController _countryController = TextEditingController()..text;
   TextEditingController _nickNameController = TextEditingController()..text;
   TextEditingController _emailController = TextEditingController()..text;
   TextEditingController _phoneController = TextEditingController()..text;
   TextEditingController _passwordController = TextEditingController()..text;
-  // TextEditingController mobileCountryPhoneCode = TextEditingController()..text;
-  // TextEditingController mobileCountryIsoCode = TextEditingController()..text;
   TextEditingController _confirmPasswordController = TextEditingController()
     ..text;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var facebookLoginResult;
-  String _selectedCountry = AppController.strings.selectCountry;
+  String _selectedCountry = AppController.strings.country;
   bool isHiddenNew = true;
   bool isHiddenConfirm = true;
   String _myCountry;
@@ -53,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           email: _emailController.text.toString().trim(),
           password: _passwordController.text.toString(),
           confirmPassword: _confirmPasswordController.text.toString(),
-          countryId: _myCountry.trim(),
+          countryId: _myCountry.toString().trim(),
           mobileNumber: _phoneController.text[0].toString() == "0"
               ? _phoneController.text.replaceFirst('0', '').toString().trim()
               : _phoneController.text.toString().trim(),
@@ -82,9 +78,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     print('_${_countryData.where((element) => element['classified'] == true)}');
   }
+  bool showMessageCountry;
 
   @override
   void initState() {
+    showMessageCountry = true;
     setState(() {
       _getCountries();
     });
@@ -100,10 +98,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       child: Directionality(
         textDirection: _drController,
         child: Scaffold(
-          // appBar: buildAppBar(
-          //     centerTitle: true,
-          //     bgColor: AppColors.whiteColor,
-          //     themeColor: Colors.grey),
           backgroundColor: Colors.white,
           body: Stack(
             children: [
@@ -114,7 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ? EdgeInsets.symmetric(vertical: 20, horizontal: 50)
                       : EdgeInsets.symmetric(horizontal: 15,vertical: 10),
                   height:
-                      isLandscape ? mq.size.height * 1.5 : mq.size.height * 1.2,
+                      isLandscape ? mq.size.height * 1.5 : mq.size.height * 1.1,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -122,16 +116,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         tag: 'logo',
                         child: buildLogo(height: mq.size.height* 0.15),
                       ),
-                      // Container(
-                      //   margin: EdgeInsets.all(16),
-                      //   child: buildTxt(
-                      //       txt: _strController.createAccount,
-                      //       fontSize: 25,
-                      //       txtColor: AppColors.redColor),
-                      // ),
                       Container(
                         child: Form(
                           key: _formKey,
+                          autovalidateMode:AutovalidateMode.onUserInteraction ,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -149,25 +137,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     onPressed: () =>
                                         _showCountriesDialog(mq: mq)),
                               ),
+                              if(showMessageCountry)
+                              Align(alignment: Alignment.centerRight,child: buildTxt(txt: "الدولة حقل مطلوب",fontSize: 15,txtColor: AppColors.redColor,fontWeight: FontWeight.w400),),
                               buildTextField(
                                 label: _strController.nickName,
                                 hintTxt: "إدخال اسم المستخدم",
                                 controller: _nickNameController,
                                 textInputType: TextInputType.name,
-                                validator: (value) =>
-                                    (value.length < 3 || value.isEmpty)
-                                        ? "الحد الأدنى 3 احرف"
-                                        : null,
+                                validator: validateName
                               ),
                               buildTextField(
                                 label: _strController.email,
                                 hintTxt: "البريد الإلكتروني",
                                 textInputType: TextInputType.emailAddress,
                                 controller: _emailController,
-                                validator: (value) =>
-                                    EmailValidator.validate(value)
-                                        ? null
-                                        : "يرجى إدخال بريد الكتروني صالح",
+                                validator: validateEmail
                               ),
                               Container(
                                 child: Column(
@@ -227,12 +211,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             flex: 7,
                                             child: buildTextField(
                                                 fromPhone: true,
-                                                validator: (value) =>
-                                                    (value.length > 11 ||
-                                                            value.length < 9 ||
-                                                            value.isEmpty)
-                                                        ? "أدخل رقم صحيح"
-                                                        : null,
+                                                validator: validateMobile,
                                                 controller: _phoneController,
                                                 textInputType:
                                                     TextInputType.phone,
@@ -246,14 +225,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               buildTextField(
-                                  validator: (value) =>
-                                      (value.length < 8 || value.isEmpty)
-                                          ? "يجب ان لا تقل عن 8 حروف":(value !=
-                                          _confirmPasswordController.text
-                                              .toString() ||
-                                          value.isEmpty)
-                                          ? "يجب تطابق كلمتي السر"
-                                          : null,
+                                  validator: validatePassword,
                                   controller: _passwordController,
                                   textInputType: TextInputType.visiblePassword,
                                   label: _strController.password,
@@ -278,7 +250,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                               _passwordController.text
                                                   .toString() ||
                                           value.isEmpty)
-                                      ? "يجب تطابق كلمتي السر"
+                                      ? "يجب تطابق كلمتي المرور"
                                       : null,
                                   isPassword: isHiddenConfirm,
                                   controller: _confirmPasswordController,
