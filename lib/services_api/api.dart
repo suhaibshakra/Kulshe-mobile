@@ -325,7 +325,7 @@ Future abuseAd({
 //   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
 // }
 
-//abuse ad
+//send message
 Future sendMessage({
   @required BuildContext context,
   @required int adId,
@@ -348,16 +348,55 @@ Future sendMessage({
     print('********************************Done');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
+    return response.statusCode;
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
+    return response.statusCode;
   }
 }
 
-// void showInSnackBar(String value,GlobalKey<ScaffoldState> _scaffoldKey) {
-//   _scaffoldKey.currentState.showSnackBar(new SnackBar(content: new Text(value)));
-// }
+//abuse ad
+Future contactWithUs({
+  @required BuildContext context,
+  @required String name,
+  @required String email,
+  @required String message,
+  @required String mobileNumber,
+  @required String mobileCountryPhoneCode,
+  @required String mobileCountryIsoCode,
+}) async {
+  SharedPreferences _pref = await SharedPreferences.getInstance();
+
+  var body = json.encode({
+    'name': name,
+    'email': email,
+    'message': message,
+    'mobileNumber': mobileNumber,
+    'mobileCountryPhoneCode': mobileCountryPhoneCode,
+    'mobileCountryIsoCode': mobileCountryIsoCode,
+  });
+  print('body: ${body}');
+  http.Response response = await http.post('https://api.kulshe.nurdevops.com/api/v1/contact-us',
+      headers: {
+        'lang': _pref.getString('lang') ?? 'ar',
+        'Content-Type': 'application/json',
+      },
+      body: body);
+  var decodeData = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+      viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+        Toast.BOTTOM);
+    return [response.statusCode,decodeData['custom_message']];
+  } else {
+    print(decodeData['custom_message']);
+    viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
+        Toast.BOTTOM);
+    return [response.statusCode,decodeData['custom_message']];
+  }
+}
+
 //favorite
 Future favoriteAd(
     {@required BuildContext context,

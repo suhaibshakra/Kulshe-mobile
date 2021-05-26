@@ -71,6 +71,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   bool _privateBool;
 
   _getSections({int sec, int subSec}) async {
+    print("_getSections : Start");
     SharedPreferences _gp = await SharedPreferences.getInstance();
     final List sections = jsonDecode(_gp.getString("allSectionsData"));
     setState(() {
@@ -82,6 +83,10 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
           .where((element) => (element['id'] == subSec))
           .toList();
       _subSectionText = _subSectionData[0]['label']['ar'];
+
+      print("Sections : ${_sectionText}");
+      print("sub Sections : ${_subSectionText}");
+      print("_getSections : END");
     });
   }
 
@@ -102,10 +107,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
           .where((element) =>
               element['id'].toString() == _gp.getString('countryId'))
           .toList();
-      //print('CURRENT : $_currentCountry');
     });
-    //print('_${_countryData.where((element) => element['classified'] == true)}');
-    // print(sections[0].responseData[4].name);
   }
 
   _getLang() async {
@@ -125,7 +127,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             offset: offset.toString())
         .then((value) {
       setState(() {
-        // log('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -133,9 +134,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                // print('offset: $offset');
               }
             });
           }
@@ -152,7 +151,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             filteredData: widget.filteredData, offset: offset)
         .then((value) {
       setState(() {
-        // log('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -160,9 +158,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                // print('offset: $offset');
               }
             });
           }
@@ -179,7 +175,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             offset: offset.toString(), status: widget.actionTitle)
         .then((value) {
       setState(() {
-        // print('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -187,16 +182,13 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                // print('offset: $offset');
               }
             });
           }
         }
         offset += 10;
         _loading = false;
-        _getSections(sec: 1, subSec: 1);
       });
     });
   }
@@ -206,7 +198,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
       offset: offset.toString(),
     ).then((value) {
       setState(() {
-        // print('${_publicAd.toString()}');
         if (offset == 0) {
           _publicAd = value[0]['responseData']['ads'];
         } else {
@@ -214,16 +205,13 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
             _num = value[0]['responseData']['ads'].length;
             setState(() {
               for (int index = 0; index < _num; index++) {
-                // print('DATA $index   ${_publicAd[index]['id']}');
                 _publicAd.add(value[0]['responseData']['ads'][index]);
-                // print('offset: $offset');
               }
             });
           }
         }
         offset += 10;
         _loading = false;
-        // _getSections(sec: 1, subSec: 1);
       });
     });
   }
@@ -279,14 +267,13 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    return SafeArea(
-      child: Scaffold(
-        appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
-        // body: Center(),
-        body: _loading
-            ? buildLoading(color: AppColors.redColor)
-            : _publicAd.length == 0
-                ? Container(
+    return Scaffold(
+      appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+      body: _loading
+          ? buildLoading(color: AppColors.redColor)
+          : _publicAd.length == 0
+              ? SafeArea(
+                  child: Container(
                     color: Colors.white,
                     child: Center(
                       child: Directionality(
@@ -305,18 +292,18 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                           child: buildIconWithTxt(
                             label: Text(
                               "عذرا , لا يوجد اعلانات",
-                              style: appStyle(
-                                  color: AppColors.blue, fontSize: 22),
+                              style:
+                                  appStyle(color: AppColors.blue, fontSize: 22),
                             ),
                             iconColor: AppColors.blue,
-                            iconData: !(widget.isFav&&widget.fromHome)
+                            iconData: !(widget.isFav && widget.fromHome)
                                 ? Icons.arrow_back_outlined
                                 : Icons.clear,
                             size: 30,
                             action: () {
-                              if(widget.fromHome == true){
+                              if (widget.fromHome == true) {
                                 return null;
-                              }else {
+                              } else {
                                 Navigator.of(context).pop();
                               }
                             },
@@ -324,130 +311,128 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                         ),
                       ),
                     ),
-                  )
-                : Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Stack(
-                      children: [
-                        if (!_privateBool && !widget.isFav && !widget.isFilter && !widget.fromHome)
-                          SizedBox(
-                            height: 60,
-                            width: double.infinity,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  color: AppColors.whiteColor,
-                                  child: Row(
-                                    children: [
-                                      Transform.scale(
-                                        scale: 1,
-                                        child: Checkbox(
-                                          value: isChecked,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              offset = 0;
-                                            });
-                                            toggleCheckbox(value);
-                                          },
-                                          activeColor: Colors.green,
-                                          checkColor: Colors.white,
-                                          tristate: false,
-                                        ),
+                  ),
+                )
+              : Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Stack(
+                    children: [
+                      if (!_privateBool &&
+                          !widget.isFav &&
+                          !widget.isFilter &&
+                          !widget.fromHome)
+                        SizedBox(
+                          height: 60,
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.3,
+                                color: AppColors.whiteColor,
+                                child: Row(
+                                  children: [
+                                    Transform.scale(
+                                      scale: 1,
+                                      child: Checkbox(
+                                        value: isChecked,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            offset = 0;
+                                          });
+                                          toggleCheckbox(value);
+                                        },
+                                        activeColor: Colors.green,
+                                        checkColor: Colors.white,
+                                        tristate: false,
                                       ),
-                                      buildTxt(txt: _strController.withImages),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 25,
-                                  child: VerticalDivider(
-                                    thickness: 1,
-                                    color: AppColors.greyThree,
-                                  ),
-                                ),
-                                // if(!widget.isFav)
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  color: AppColors.whiteColor,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: AppColors.whiteColor,
                                     ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: ButtonTheme(
-                                        alignedDropdown: true,
-                                        child: DropdownButtonFormField<String>(
-                                          isExpanded: false,
-                                          value: _chosenValue,
-                                          //elevation: 5,
-                                          style: TextStyle(color: Colors.black),
-                                          items: <String>[
-                                            _strController.oldToNew,
-                                            _strController.newToOld,
-                                            _strController.priceHighToLess,
-                                            _strController.priceLessToHigh,
-                                          ].map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(
-                                                value,
-                                                style: appStyle(fontSize: 14),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          hint: Text(
-                                            _strController.orderBy,
-                                            style: appStyle(
-                                                color: AppColors.blackColor2,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          onChanged: (String value) {
-                                            setState(() {
-                                              offset = 0;
-                                              _chosenValue = value;
-                                              sorting = (_chosenValue ==
-                                                      _strController.oldToNew)
-                                                  ? "oldToNew"
-                                                  : (_chosenValue ==
-                                                          _strController
-                                                              .newToOld)
-                                                      ? "newToOld"
-                                                      : (_chosenValue ==
-                                                              _strController
-                                                                  .priceLessToHigh)
-                                                          ? "priceLessToHigh"
-                                                          : "priceHighToLess";
-                                              print(
-                                                  ' sorting SSSSSS : $sorting');
-                                              fetchAds(
-                                                  hasImg: isChecked ? 1 : 0);
-                                            });
-                                          },
+                                    buildTxt(txt: _strController.withImages),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25,
+                                child: VerticalDivider(
+                                  thickness: 1,
+                                  color: AppColors.greyThree,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                color: AppColors.whiteColor,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: AppColors.whiteColor,
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButtonFormField<String>(
+                                        isExpanded: false,
+                                        value: _chosenValue,
+                                        style: TextStyle(color: Colors.black),
+                                        items: <String>[
+                                          _strController.oldToNew,
+                                          _strController.newToOld,
+                                          _strController.priceHighToLess,
+                                          _strController.priceLessToHigh,
+                                        ].map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(
+                                              value,
+                                              style: appStyle(fontSize: 14),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        hint: Text(
+                                          _strController.orderBy,
+                                          style: appStyle(
+                                              color: AppColors.blackColor2,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700),
+                                          textAlign: TextAlign.center,
                                         ),
+                                        onChanged: (String value) {
+                                          setState(() {
+                                            offset = 0;
+                                            _chosenValue = value;
+                                            sorting = (_chosenValue ==
+                                                    _strController.oldToNew)
+                                                ? "oldToNew"
+                                                : (_chosenValue ==
+                                                        _strController.newToOld)
+                                                    ? "newToOld"
+                                                    : (_chosenValue ==
+                                                            _strController
+                                                                .priceLessToHigh)
+                                                        ? "priceLessToHigh"
+                                                        : "priceHighToLess";
+                                            fetchAds(hasImg: isChecked ? 1 : 0);
+                                          });
+                                        },
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        Padding(
-                          padding: !_privateBool && !widget.isFav && !widget.isFilter && !widget.fromHome
-                              ? const EdgeInsets.only(top: 60)
-                              : const EdgeInsets.only(top: 4),
-                          child: _buildList(mq),
                         ),
-                      ],
-                    )),
-      ),
+                      Padding(
+                        padding: !_privateBool &&
+                                !widget.isFav &&
+                                !widget.isFilter &&
+                                !widget.fromHome
+                            ? const EdgeInsets.only(top: 60)
+                            : const EdgeInsets.only(top: 4),
+                        child: _buildList(mq),
+                      ),
+                    ],
+                  )),
     );
   }
 
@@ -455,18 +440,18 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
     return Container(
       child: ListView.builder(
           controller: scrollController,
-          itemCount: _publicAd.length,
+          itemCount: _publicAd.length+1,
           physics: ClampingScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
+            if (index == _publicAd.length) {
+              return Container(height: mq.size.height*0.1,color: Colors.grey[200],child: CupertinoActivityIndicator());
+            }
             int imgStatus = _publicAd[index]['count_of_images'] != null
                 ? _publicAd[index]['count_of_images']
                 : 0;
             var _data = _publicAd[index];
-            // print('AAAA ${_data['user_contact']}');
-            if (index == _publicAd.length) {
-              return CupertinoActivityIndicator();
-            }
+
             return InkWell(
               onTap: () {
                 print(_data['id'].toString());
@@ -554,9 +539,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                               });
                                               if (widget.isFav)
                                                 _publicAd.remove(_data);
-                                              // value == 1019 // add to fav
-                                              // value == 2136 // already fav
-                                              // value == 1020 // delete
                                             });
                                           }),
                                     ),
@@ -648,7 +630,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                     FontAwesomeIcons.windows,
                                                 size: 18,
                                               ),
-                                              // child: Text("$_sectionText",style: appStyle(fontSize: 15,fontWeight: FontWeight.w400),)
                                             ),
                                             SizedBox(
                                               height: 25,
@@ -673,53 +654,11 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                                     FontAwesomeIcons.clock,
                                                 size: 18,
                                               ),
-                                              // child: Text("$_sectionText",style: appStyle(fontSize: 15,fontWeight: FontWeight.w400),)
                                             ),
                                           ],
                                         ),
                                       ),
                                     ),
-
-                                    // child: SingleChildScrollView(
-                                    //   scrollDirection: Axis.horizontal,
-                                    //   child: Row(
-                                    //     mainAxisAlignment:
-                                    //         MainAxisAlignment.spaceEvenly,
-                                    //     children: [
-                                    //       Row(
-                                    //         children: [
-                                    //           myIcon(
-                                    //               context, FontAwesomeIcons.windows,
-                                    //               color: Colors.black54,
-                                    //               size: 20,
-                                    //               hasDecoration: false),
-                                    //           buildTxt(
-                                    //               txt: ("شقق للبيع للبيع للبيع للبيع للبيع للبيعااااااااااااااااااااااااااا").toString(),
-                                    //               txtColor: Colors.black54)
-                                    //         ],
-                                    //       ),
-                                    //       SizedBox(width: 50,),
-                                    //       Row(
-                                    //         children: [
-                                    //           myIcon(context,
-                                    //               Icons.access_time_outlined,
-                                    //               color: Colors.black54,
-                                    //               size: 22,
-                                    //               hasDecoration: false),
-                                    //           buildTxt(
-                                    //               txt:
-                                    //                   // widget.isFav?"":
-                                    //                   TimeAgo.timeAgoSinceDate(
-                                    //                       _data['created_at'])
-                                    //               // (_data['created_at'])
-                                    //               //     .toString()
-                                    //               ,
-                                    //               txtColor: Colors.black54)
-                                    //         ],
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
                                   ),
                                 ),
                               Container(
@@ -798,7 +737,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                   width: double.infinity,
                                   child: Text(
                                     _data['body'],
-                                    // "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged",
                                     style: appStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade700),
@@ -827,9 +765,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                     ),
                                   ),
                                 ),
-                              // if (_data['has_price']==flase && _data['price'] == 0)
-                              //   Text(""),
-
                               if (_data['is_free'])
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -847,7 +782,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                     ),
                                   ),
                                 ),
-
                               if (_privateBool)
                                 if (_data['status'] != 'deleted')
                                   buildUserSetting(_data, context, index),
@@ -896,9 +830,6 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                             });
                           },
                           size: 25,
-                          // iconColor: _data['paused']
-                          //     ? pausedColor
-                          //     : unPausedColor
                         ),
                         buildTxt(txt: "إعادة تفعيل")
                       ],
@@ -910,42 +841,40 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Container(
-                      child: Column(
-                    children: [
-                      buildIconButton(
-                        icon: _data['paused'] == true
-                            ? Icons.play_arrow
-                            : Icons.pause,
-                        color: _data['paused'] == true
-                            ? AppColors.amberColor
-                            : AppColors.greyFour,
-                        onPressed: () {
-                          setState(() {
-                            pauseIcon = false;
-                          });
-                          pauseAd(
-                            context: context,
-                            adId: _data['id'],
-                            pausedStatus: _data['paused'] == true ? 0 : 1,
-                          ).then((value) {
-                            setState(() {
-                              // print('value: $value');
-                              pauseIcon = true;
-                              _data['paused'] = !_data['paused'];
-                            });
-                          });
-                        },
-                        size: 25,
-                      ),
-                      // if(!pauseIcon )
-                      //   CircularProgressIndicator(),
-                      buildTxt(
-                          txt: _data['paused'] == true ? 'تشغيل' : 'إيقاف',
-                          txtColor: _data['paused'] == true
+                    child: Column(
+                      children: [
+                        buildIconButton(
+                          icon: _data['paused'] == true
+                              ? Icons.play_arrow
+                              : Icons.pause,
+                          color: _data['paused'] == true
                               ? AppColors.amberColor
-                              : AppColors.greyFour)
-                    ],
-                  )),
+                              : AppColors.greyFour,
+                          onPressed: () {
+                            setState(() {
+                              pauseIcon = false;
+                            });
+                            pauseAd(
+                              context: context,
+                              adId: _data['id'],
+                              pausedStatus: _data['paused'] == true ? 0 : 1,
+                            ).then((value) {
+                              setState(() {
+                                pauseIcon = true;
+                                _data['paused'] = !_data['paused'];
+                              });
+                            });
+                          },
+                          size: 25,
+                        ),
+                        buildTxt(
+                            txt: _data['paused'] == true ? 'تشغيل' : 'إيقاف',
+                            txtColor: _data['paused'] == true
+                                ? AppColors.amberColor
+                                : AppColors.greyFour)
+                      ],
+                    ),
+                  ),
                 ),
               ),
               Expanded(

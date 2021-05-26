@@ -147,8 +147,7 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                       validator: (value) =>
                                       EmailValidator.validate(value)
                                           ? null
-                                          : _strController.errorEmail,
-                                      hintTxt: _strController.email),
+                                          : _strController.errorEmail,),
                                 ),
                               if(widget.noEmail)
                                 SizedBox(height: 20,),
@@ -211,7 +210,6 @@ class _SocialMediaScreenState extends State<SocialMediaScreen> {
                                           value.isEmpty)
                                           ? "أدخل رقم صحيح"
                                           : null,
-                                      hintTxt: _strController.mobile,
                                       textInputType: TextInputType.phone,
                                     ),
                                   ),

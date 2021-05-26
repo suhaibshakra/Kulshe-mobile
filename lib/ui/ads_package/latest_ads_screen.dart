@@ -209,7 +209,7 @@ class _LatestAdsState extends State<LatestAds> {
       physics: ClampingScrollPhysics(),
       itemBuilder: (context, index) {
         if (index == _adsData.length) {
-          return CupertinoActivityIndicator();
+          return Container(height: mq.size.height*0.1,color: Colors.grey[200],child: CupertinoActivityIndicator());
         }
         var _data = _adsData[index];
         // log("DATA : ${_data['user_contact']['hash_id']}");

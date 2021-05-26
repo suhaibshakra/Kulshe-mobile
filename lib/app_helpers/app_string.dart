@@ -104,6 +104,7 @@ abstract class Strings {
   String callAdv;
   String callAdvPrice;
   String sendEmail;
+  String send;
 
   //Ads
   String ads;
@@ -248,6 +249,7 @@ class EnglishString extends Strings {
     callAdv = "Communicate with the advertiser";
     callAdvPrice = "Communicate advertiser for details";
     sendEmail = "Send Email";
+    send = "Send";
 
     //Ads
     ads = "Ads";
@@ -392,6 +394,7 @@ class ArabicString extends Strings {
     callAdv = "تواصل مع المعلن";
     callAdvPrice = "تواصل مع المعلن لمعرفة السعر";
     sendEmail = "إرسال بريد الكتروني";
+    send = " إرسال ";
 
     //Ads
     ads = "الإعلانات";

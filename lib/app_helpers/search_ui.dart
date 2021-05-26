@@ -63,6 +63,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                         MaterialPageRoute(
                           builder: (context) => PublicAdsScreen(
                             isPrivate: false,
+                            fromHome: false,
                             isFav: false,
                             isFilter: false,
                             txt: val,
@@ -92,7 +93,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                     builder: (context) => AddAdSectionsScreen()));
               },
               child: CircleAvatar(
-                backgroundColor: AppColors.redColor,
+                backgroundColor: AppColors.grey.withOpacity(0.5),
                 child: Icon(
                   FontAwesomeIcons.slidersH,
                   color: Colors.white,

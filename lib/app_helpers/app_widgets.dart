@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/ui/about_pages/about_screen.dart';
+import 'package:kulshe/ui/about_pages/contact_us_screen.dart';
 import 'package:kulshe/ui/ads_package/add_ad/add_ad_sections.dart';
 import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
 import 'package:kulshe/ui/ads_package/user_panel.dart';
@@ -54,189 +55,193 @@ buildAppBar({
 GlobalKey<ProgressHudState> _hudKey = GlobalKey();
 
 buildDrawer(BuildContext context, Function action, {fromNav = false}) {
-  return ProgressHud(
-     isGlobalHud: true,
-    child: LayoutBuilder(
-      builder: (ctx, constraints) => Container(
-        width: double.infinity,
-        child: ListView(
-          children: ListTile.divideTiles(context: context, tiles: [
-            if (!fromNav)
-              Container(
-                width: double.infinity,
-                height: 50,
-                color: Colors.white,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: buildIconButton(
-                      icon: Icons.arrow_back_ios,
-                      color: Colors.black,
-                      onPressed: action),
-                ),
-              ),
-            buildBorder(buildListTile(
-                context: context,
-                title: _strController.userPanel,
-                hasLeading: true,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserPanel(),
-                      ),
-                    ),
-                iconL: Icons.account_circle,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                title: _strController.myAccount,
-                hasLeading: true,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditProfileScreen(),
-                      ),
-                    ),
-                iconL: Icons.account_circle,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                          actionTitle: '',
-                        ),
-                      ),
-                    ),
-                title: _strController.myAds,
-                hasLeading: true,
-                iconL: Icons.addchart_sharp,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.addchart_sharp,
-                title: _strController.myPostsAds,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                          actionTitle: 'approved',
-                        ),
-                      ),
-                    ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.post_add_sharp,
-                title: _strController.myWaitingAds,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
-                          actionTitle: 'new',
-                        ),
-                      ),
-                    ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.close,
-                title: _strController.myRejectedAds,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                          actionTitle: 'rejected',
-                        ),
-                      ),
-                    ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.close,
-                title: _strController.expiredAds,
-                tapHandler: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
-                          actionTitle: 'expired',
-                        ),
-                      ),
-                    ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.favorite,
-                title: _strController.myFavAds,
-                tapHandler: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,)
+  return Directionality(
+    textDirection: AppController.textDirection,
+    child: ProgressHud(
+       isGlobalHud: true,
+      child: LayoutBuilder(
+        builder: (ctx, constraints) => Container(
+          width: double.infinity,
+          child: ListView(
+            children: ListTile.divideTiles(context: context, tiles: [
+              if (!fromNav)
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  color: Colors.white,
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: buildIconButton(
+                        icon: Icons.arrow_forward_ios,
+                        color: Colors.black,
+                        onPressed: action),
                   ),
                 ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.filter_list,
-                title: _strController.filter,
-                tapHandler: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AddAdSectionsScreen(comeFrom: 'filter',)
+              buildBorder(buildListTile(
+                  context: context,
+                  title: _strController.userPanel,
+                  hasLeading: true,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserPanel(),
+                        ),
+                      ),
+                  iconL: Icons.account_circle,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  title: _strController.myAccount,
+                  hasLeading: true,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EditProfileScreen(),
+                        ),
+                      ),
+                  iconL: Icons.account_circle,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                            actionTitle: '',
+                          ),
+                        ),
+                      ),
+                  title: _strController.myAds,
+                  hasLeading: true,
+                  iconL: Icons.addchart_sharp,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.addchart_sharp,
+                  title: _strController.myPostsAds,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                            actionTitle: 'approved',
+                          ),
+                        ),
+                      ),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.post_add_sharp,
+                  title: _strController.myWaitingAds,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
+                            actionTitle: 'new',
+                          ),
+                        ),
+                      ),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.close,
+                  title: _strController.myRejectedAds,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                            actionTitle: 'rejected',
+                          ),
+                        ),
+                      ),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.close,
+                  title: _strController.expiredAds,
+                  tapHandler: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
+                            actionTitle: 'expired',
+                          ),
+                        ),
+                      ),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.favorite,
+                  title: _strController.myFavAds,
+                  tapHandler: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,)
+                    ),
                   ),
-                ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasLeading: true,
-                iconL: Icons.add_circle,
-                title: _strController.newAd,
-                tapHandler: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.filter_list,
+                  title: _strController.filter,
+                  tapHandler: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddAdSectionsScreen(comeFrom: 'filter',)
+                    ),
                   ),
-                ),
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                title: _strController.contactWithUs,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-              tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'howWeAre',),)),
-                context: context,
-                title: _strController.whoAreWe,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 't&c',),)),
-                context: context,
-                title: _strController.termsAndCon,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'privacy',),)),
-                context: context,
-                title: _strController.privacyPolicy,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                title: _strController.followUs,
-                icon: Icons.arrow_forward_ios)),
-            buildBorder(buildListTile(
-                context: context,
-                hasColor: true,
-                tapHandler: () {
-                  showLoadingHud(context: ctx,hudKey: _hudKey);
-                  return logoutFunction(context: context);
-                },
-                title: _strController.logout,
-                icon: Icons.logout)),
-          ]).toList(),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasLeading: true,
+                  iconL: Icons.add_circle,
+                  title: _strController.newAd,
+                  tapHandler: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)
+                    ),
+                  ),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  title: _strController.contactWithUs,
+                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUsScreen(),)),
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'howWeAre',),)),
+                  context: context,
+                  title: _strController.whoAreWe,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 't&c',),)),
+                  context: context,
+                  title: _strController.termsAndCon,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'privacy',),)),
+                  context: context,
+                  title: _strController.privacyPolicy,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  title: _strController.followUs,
+                  icon: Icons.arrow_forward_ios)),
+              buildBorder(buildListTile(
+                  context: context,
+                  hasColor: true,
+                  tapHandler: () {
+                    showLoadingHud(context: ctx,hudKey: _hudKey);
+                    return logoutFunction(context: context);
+                  },
+                  title: _strController.logout,
+                  icon: Icons.logout)),
+            ]).toList(),
+          ),
         ),
       ),
     ),

@@ -74,8 +74,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                     validator: (value) =>
                                     EmailValidator.validate(value)
                                         ? null
-                                        : _strController.errorEmail,
-                                    hintTxt: _strController.email),
+                                        : _strController.errorEmail,),
                               ),
                               SizedBox(height: 20,),
                               Container(

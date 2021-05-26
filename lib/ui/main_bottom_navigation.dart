@@ -94,7 +94,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
 
   Widget _buildFab(BuildContext context) {
     return FloatingActionButton(
-      backgroundColor: AppColors.redColor,
+      backgroundColor: AppColors.amberColor,
       onPressed: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => AddAdSectionsScreen(

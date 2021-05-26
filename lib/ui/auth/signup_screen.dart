@@ -141,14 +141,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               Align(alignment: Alignment.centerRight,child: buildTxt(txt: "الدولة حقل مطلوب",fontSize: 15,txtColor: AppColors.redColor,fontWeight: FontWeight.w400),),
                               buildTextField(
                                 label: _strController.nickName,
-                                hintTxt: "إدخال اسم المستخدم",
                                 controller: _nickNameController,
                                 textInputType: TextInputType.name,
                                 validator: validateName
                               ),
                               buildTextField(
                                 label: _strController.email,
-                                hintTxt: "البريد الإلكتروني",
                                 textInputType: TextInputType.emailAddress,
                                 controller: _emailController,
                                 validator: validateEmail
@@ -215,8 +213,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 controller: _phoneController,
                                                 textInputType:
                                                     TextInputType.phone,
-                                                label: _strController.mobile,
-                                                hintTxt: "أدخل رقم الهاتف"),
+                                                label: _strController.mobile,),
                                           ),
                                         ],
                                       ),
@@ -255,8 +252,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   isPassword: isHiddenConfirm,
                                   controller: _confirmPasswordController,
                                   textInputType: TextInputType.visiblePassword,
-                                  label: _strController.confirmPassword,
-                                  hintTxt: _strController.confirmPassword),
+                                  label: _strController.confirmPassword,),
                             ],
                           ),
                         ),

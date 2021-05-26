@@ -42,19 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey2 = GlobalKey<FormState>();
   var facebookLoginResult;
 
-  _getCountries() async {
-    SharedPreferences _gp = await SharedPreferences.getInstance();
-    final List countries = jsonDecode(_gp.getString("allCountriesData"));
-    _countryData = countries[0]['responseData'];
-    setState(() {
-      _countryData = _countryData
-          .where((element) => element['classified'] == true)
-          .toList();
-    });
-
-    // print('_${_countryData.where((element) => element['classified'] == true)}');
-  }
-
   void _validateAndSubmit({BuildContext ctx}) {
     final FormState form = _formKey.currentState;
     if (form.validate()) {
@@ -86,8 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    _selectedCountry = "Select country";
-    _getCountries();
+    _selectedCountry = _strController.country;
     super.initState();
   }
 
@@ -144,8 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       controller: _emailController,
                                       label: _strController.email,
                                       textInputType: TextInputType.emailAddress,
-                                      validator: validateEmail,
-                                      hintTxt: _strController.email),
+                                      validator: validateEmail, ),
                                   buildTextField(
                                       validator: validatePassword,
                                       controller: _passwordController,
@@ -158,8 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     :Icons.visibility_off),
                                       ),
                                       maxLines: 1,
-                                      minLines: 1,
-                                      hintTxt: _strController.password),
+                                      minLines: 1,),
                                 ],
                               ),
                             ),

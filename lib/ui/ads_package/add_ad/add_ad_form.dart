@@ -206,7 +206,8 @@ class _AddAdFormState extends State<AddAdForm> {
     });
   }
 
-  var _customMessage = 0;
+  String _customMessage = '';
+  int _code = 0;
 
   @override
   void initState() {
@@ -220,13 +221,14 @@ class _AddAdFormState extends State<AddAdForm> {
     myAdAttributesMulti = [];
     AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
         .then((value) {
-      if (value == 412) {
+      if (value[0] == 412) {
         setState(() {
           print('value: $value');
-          _customMessage = value;
+          _customMessage = value[1];
+          _code = value[0];
           _loading = false;
         });
-      }else if (value != 412)
+      }else
         setState(() {
           print('value: $value');
           _adForm = value;
@@ -324,7 +326,7 @@ class _AddAdFormState extends State<AddAdForm> {
               ),
             ],
           ),
-        ),):  _customMessage != 412
+        ),):  _code != 412
                 ?
                 ProgressHud(
                   isGlobalHud: true,
@@ -361,27 +363,35 @@ class _AddAdFormState extends State<AddAdForm> {
                 ):Container(
         color: Colors.white,
         child: Center(
-          child: Container(
-            height: 80,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.red,
-                      offset: Offset(2, 2),
-                      blurRadius: 1,
-                      spreadRadius: 2)
-                ]),
-            child: buildIconWithTxt(
-              label: Text(
-                "$_customMessage",
-                style: appStyle(
-                    color: AppColors.whiteColor, fontSize: 20,),maxLines: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppColors.redColor,
+                        offset: Offset(2, 2),
+                        blurRadius: 1,
+                        spreadRadius: 2)
+                  ]),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Expanded(flex: 1,child: Icon(Icons.arrow_back_ios,color: AppColors.whiteColor,)),
+                      Expanded(flex: 5,
+                        child: buildTxt(txt: "$_customMessage",maxLine: 4,txtColor: AppColors.whiteColor,fontWeight: FontWeight.w700,fontSize: 18,textAlign: TextAlign.center),
+                      )
+                    ],
+                  ),
+                ),
               ),
-              iconColor: AppColors.whiteColor,
-              iconData: Icons.arrow_back_outlined,
-              size: 30,
-              action: () => Navigator.of(context).pop(),
             ),
           ),
         ),

@@ -169,16 +169,16 @@ class _UserPanelState extends State<UserPanel> {
     final mq = MediaQuery.of(context);
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    return SafeArea(
-      child: Scaffold(
-        appBar: buildAppBar(centerTitle: true,bgColor: AppColors.whiteColor),
-        body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.redColor):Stack(
+    return Scaffold(
+      body: _loading || listOfAdsTypes == null ?buildLoading(color: AppColors.redColor):SafeArea(
+        child: Stack(
           children: [
             buildBg(),
             NestedScrollView(
               headerSliverBuilder: (context, innerBoxScrolled) {
                 return <Widget>[
                   SliverAppBar(
+                    leading: Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.arrow_back,color: AppColors.whiteColor,),onPressed: ()=>Navigator.pop(context),))),
                     foregroundColor: Colors.lightBlue,
                     shadowColor: Colors.red,
                     expandedHeight: isLandscape ?mq.size.height*0.1:mq.size.height*0.2,
