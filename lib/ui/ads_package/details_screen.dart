@@ -1385,10 +1385,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
         actions: <Widget>[
           Row(
             children: [
-              Expanded(
-                  child: Padding(
+                 Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
+                  width: MediaQuery.of(context).size.width * 0.7,
                   decoration: BoxDecoration(
                     color: AppColors.green,
                     borderRadius: BorderRadius.circular(10),
@@ -1413,7 +1413,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     fontSize: 18,
                     btnColor: AppColors.greenColor,
                     radius: 8,
-                  ),
                   // child: TextButton(
                   //   onPressed: () {
                   //     sendMessage(
@@ -1567,10 +1566,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 actions: <Widget>[
                   Row(
                     children: [
-                      Expanded(
-                          child: Padding(
+
+                         Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+
                           decoration: BoxDecoration(
                             color: AppColors.green,
                             borderRadius: BorderRadius.circular(10),
@@ -1601,7 +1602,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             fontSize: 18,
                             btnColor: AppColors.greenColor,
                             radius: 8,
-                          ),
                           // child: TextButton(
                           //   onPressed: () {
                           //     final FormState form = _formKeyAbuse.currentState;

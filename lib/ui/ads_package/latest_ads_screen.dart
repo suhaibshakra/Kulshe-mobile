@@ -548,7 +548,7 @@ class _LatestAdsState extends State<LatestAds> {
                   });
                 }),
             Padding(
-              padding: EdgeInsetsDirectional.all(8),
+              padding: EdgeInsets.all(8),
               child: buildTxt(
                 txt: 'إعلانات مختارة',
                 txtColor: AppColors.blackColor2,
