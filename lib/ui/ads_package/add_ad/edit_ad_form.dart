@@ -404,11 +404,17 @@ class _EditAdFormState extends State<EditAdForm> {
          SingleChildScrollView(
            child: GridView.builder(
                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                   mainAxisExtent: _type == 'radio' ? 50 :  null,
-                   childAspectRatio: _type == 'select' ? 7 : (_type == 'multiple_select')?( _options.length > 4 ?  01 :_options.length * 2.0):3,
-                   crossAxisCount:
-                   _type == 'select' || _type == 'multiple_select' || _type == 'multiple_buttons_groups'
+                   mainAxisExtent: _type == 'radio' ? 50 : null,
+                   childAspectRatio: _type == 'select'
+                       ? 7
+                       : (_type == 'multiple_select')
+                       ? (_options.length > 4
                        ? 1
+                       : _options.length * 2.0)
+                       : 3,
+                   crossAxisCount:
+                   _type == 'select' || _type == 'multiple_select'
+                       ? 1.2
                        : 2),
                shrinkWrap: true,
                physics: ClampingScrollPhysics(),
@@ -550,22 +556,27 @@ class _EditAdFormState extends State<EditAdForm> {
   buildMultiSelected(mainIndex) {
     return SingleChildScrollView(
       child:
-      Row(
-        children: [
-          Expanded(
-            flex: 14,
-            child: Container(
-              height: _options.length <= 4 ?   MediaQuery.of(context).size.height*0.08 :  null,
-              child:Scrollbar(
-                child:GridView(
-                  gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisExtent: 30) ,
-                  shrinkWrap: true,
-                  children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
+      Expanded(
+        flex: 1,
+        child: SingleChildScrollView(
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: _options.length <= 4 ?   MediaQuery.of(context).size.height*0.08 :  null,
+                  child:Scrollbar(
+                    child:GridView(
+                      gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisExtent: 30) ,
+                      shrinkWrap: true,
+                      children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
 
     );

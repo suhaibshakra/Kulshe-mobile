@@ -508,7 +508,7 @@ class _AddAdFormState extends State<AddAdForm> {
                           ? 7
                           : (_type == 'multiple_select')
                               ? (_options.length > 4
-                                  ? 1.5
+                                  ? 1.2
                                   : _options.length * 2.0)
                               : 3,
                       crossAxisCount:
@@ -657,13 +657,12 @@ class _AddAdFormState extends State<AddAdForm> {
             Expanded(
               flex: 1,
               child: Container(
-                // height: _options.length <= 4
-                //     ? MediaQuery.of(context).size.height * 0.01
-                //     : null,
+                // height: _options.length <= 4 ?   MediaQuery.of(context).size.height*0.04 :  null,
+
                 child: Scrollbar(
                   child: GridView(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, mainAxisExtent: 30),
+                        crossAxisCount: 2, mainAxisExtent: 40),
                     shrinkWrap: true,
                     children: _options
                         .map((item) => _buildItem(item, mainIndex))

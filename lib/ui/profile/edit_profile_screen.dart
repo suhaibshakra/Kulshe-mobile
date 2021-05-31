@@ -190,7 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     double height = mq.size.height * 0.2;
     return Scaffold(
-      // appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+      appBar: defaultAppbar(context, _strController.editProfile),
       body: SafeArea(
         child: ProgressHud(
           key: _hudKey,

@@ -50,6 +50,8 @@ class _LoginScreenState extends State<LoginScreen> {
           email: _emailController.text.toString().trim(),
           password: _passwordController.text.toString(),
           context: context).then((value){
+        print('value ::::: ${value.toString()}');
+        if(value != null)
         if(value['custom_code'] == 2166){
           _hudKey.currentState?.dismiss();
           setState(() {

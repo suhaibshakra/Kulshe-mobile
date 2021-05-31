@@ -300,8 +300,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             child: Column(
                               children: [
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -329,11 +329,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                 width: 50,
                                                 hasShadow: true,
                                                 bgColor: AppColors.whiteColor,
-                                                iconData:
-                                                    _details['is_favorite_ad'] ==
-                                                            false
-                                                        ? Icons.favorite_border
-                                                        : Icons.favorite,
+                                                iconData: _details[
+                                                            'is_favorite_ad'] ==
+                                                        false
+                                                    ? Icons.favorite_border
+                                                    : Icons.favorite,
                                                 color: Colors.red,
                                                 size: 30,
                                                 action: () {
@@ -396,14 +396,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       if ('${userContact}' != '[]')
                                         Expanded(
                                           flex: 6,
                                           child: InkWell(
                                             onTap: () {
-                                              print('${userContact['hash_id']}');
+                                              print(
+                                                  '${userContact['hash_id']}');
                                               return Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -436,7 +438,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                         radius: 5,
                                                         backgroundColor: _details[
                                                                 'is_user_online']
-                                                            ? AppColors.greenColor
+                                                            ? AppColors
+                                                                .greenColor
                                                             : AppColors.grey,
                                                       )
                                                     ],
@@ -453,8 +456,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                     style: appStyle(
-                                                        color:
-                                                            AppColors.blackColor2,
+                                                        color: AppColors
+                                                            .blackColor2,
                                                         fontSize: 15,
                                                         fontWeight:
                                                             FontWeight.w700),
@@ -471,11 +474,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                   (status == 'approved' ||
                                                       status == 'new')))
                                           ? Expanded(
-                                              flex:
-                                                  (userContact['mobile_number'] !=
-                                                          null)
-                                                      ? 5
-                                                      : 1,
+                                              flex: (userContact[
+                                                          'mobile_number'] !=
+                                                      null)
+                                                  ? 5
+                                                  : 1,
                                               child: Row(
                                                 children: [
                                                   if (userContact[
@@ -487,7 +490,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                       size: 15,
                                                       iconData: FontAwesomeIcons
                                                           .whatsapp,
-                                                      color: AppColors.whiteColor,
+                                                      color:
+                                                          AppColors.whiteColor,
                                                       bgColor: AppColors.green,
                                                       action: () => launchWhatsApp(
                                                           userContact[
@@ -502,11 +506,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                         width: 35,
                                                         height: 35,
                                                         size: 15,
-                                                        iconData: FontAwesomeIcons
-                                                            .phoneAlt,
+                                                        iconData:
+                                                            FontAwesomeIcons
+                                                                .phoneAlt,
                                                         bgColor: AppColors.blue,
-                                                        color:
-                                                            AppColors.whiteColor,
+                                                        color: AppColors
+                                                            .whiteColor,
                                                         action: () {
                                                           // _launchCaller(userContact['mobile_number'].toString());
                                                           launch(
@@ -516,8 +521,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                     width: 35,
                                                     height: 35,
                                                     size: 15,
-                                                    iconData:
-                                                        FontAwesomeIcons.envelope,
+                                                    iconData: FontAwesomeIcons
+                                                        .envelope,
                                                     color: AppColors.whiteColor,
                                                     bgColor: AppColors.redColor,
                                                     action: () {
@@ -582,8 +587,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                         ? Text(
                                                             '${_details['price'].toString() + "  " + _details['currency']['ar'].toString()}',
                                                             style: appStyle(
-                                                                color:
-                                                                    Colors.green,
+                                                                color: Colors
+                                                                    .green,
                                                                 fontSize: 18,
                                                                 fontWeight:
                                                                     FontWeight
@@ -593,8 +598,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                             _strController
                                                                 .callAdvPrice,
                                                             style: appStyle(
-                                                                color:
-                                                                    Colors.green,
+                                                                color: Colors
+                                                                    .green,
                                                                 fontSize: 18,
                                                                 fontWeight:
                                                                     FontWeight
@@ -612,10 +617,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                           vertical: 16,
                                                           horizontal: 8),
                                                       width: double.infinity,
-                                                      color: AppColors.amberColor,
+                                                      color:
+                                                          AppColors.amberColor,
                                                       child: Padding(
-                                                        padding:
-                                                            EdgeInsets.symmetric(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
                                                                 horizontal: 4),
                                                         child: buildTxt(
                                                             txt:
@@ -624,7 +630,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                             txtColor: AppColors
                                                                 .whiteColor,
                                                             fontWeight:
-                                                                FontWeight.w700),
+                                                                FontWeight
+                                                                    .w700),
                                                       ),
                                                     ),
                                                   if (status == 'expired')
@@ -634,7 +641,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                           vertical: 16,
                                                           horizontal: 8),
                                                       width: double.infinity,
-                                                      color: AppColors.amberColor,
+                                                      color:
+                                                          AppColors.amberColor,
                                                       child: buildTxt(
                                                           txt:
                                                               "هذا الإعلان منتهي الصلاحية !",
@@ -695,7 +703,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                           border: Border.all(
                                               width: 1,
                                               color: AppColors.greyThree),
-                                          borderRadius: BorderRadius.circular(0)),
+                                          borderRadius:
+                                              BorderRadius.circular(0)),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
@@ -712,7 +721,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                     color: AppColors.descColor),
                                                 textAlign: TextAlign.center,
                                               ),
-                                              iconData: FontAwesomeIcons.windows,
+                                              iconData:
+                                                  FontAwesomeIcons.windows,
                                               size: 18,
                                             ),
                                             // child: Text("$_sectionText",style: appStyle(fontSize: 15,fontWeight: FontWeight.w400),)
@@ -786,8 +796,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                     "النوع".toString(),
                                                     style: appStyle(
                                                         fontSize: 18,
-                                                        color:
-                                                            AppColors.blackColor2,
+                                                        color: AppColors
+                                                            .blackColor2,
                                                         fontWeight:
                                                             FontWeight.w500),
                                                   ),
@@ -839,7 +849,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                   "الفرع".toString(),
                                                   style: appStyle(
                                                       fontSize: 18,
-                                                      color: AppColors.blackColor,
+                                                      color:
+                                                          AppColors.blackColor,
                                                       fontWeight:
                                                           FontWeight.w700),
                                                 ),
@@ -851,7 +862,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                       .toString(),
                                                   style: appStyle(
                                                       fontSize: 18,
-                                                      color: AppColors.blackColor,
+                                                      color:
+                                                          AppColors.blackColor,
                                                       fontWeight:
                                                           FontWeight.w500),
                                                 ),
@@ -890,9 +902,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             var attributeName = (_selectedValue
                                                             .runtimeType ==
                                                         int ||
-                                                    _selectedValue.runtimeType ==
+                                                    _selectedValue
+                                                            .runtimeType ==
                                                         String ||
-                                                    _selectedValue.runtimeType ==
+                                                    _selectedValue
+                                                            .runtimeType ==
                                                         double)
                                                 ? _selectedValue.toString()
                                                 : _selectedValue.runtimeType
@@ -921,8 +935,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                       _myLabel['ar'].toString(),
                                                       style: appStyle(
                                                         fontSize: 17,
-                                                        color:
-                                                            AppColors.blackColor,
+                                                        color: AppColors
+                                                            .blackColor,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                       ),
@@ -950,8 +964,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                             ),
                                                           ),
                                                           if (_attributes[
-                                                                      position]
-                                                                  ['has_unit'] ==
+                                                                      position][
+                                                                  'has_unit'] ==
                                                               1)
                                                             Expanded(
                                                               flex: 1,
@@ -961,10 +975,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                     width: 5,
                                                                   ),
                                                                   Text(
-                                                                    _attributes[position]
-                                                                                [
-                                                                                'selected_unit_name']
-                                                                            ['ar']
+                                                                    _attributes[position]['selected_unit_name']
+                                                                            [
+                                                                            'ar']
                                                                         .toString(),
                                                                     style: appStyle(
                                                                         fontSize:
@@ -972,8 +985,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                         color: AppColors
                                                                             .greyFour,
                                                                         fontWeight:
-                                                                            FontWeight
-                                                                                .w700),
+                                                                            FontWeight.w700),
                                                                   ),
                                                                 ],
                                                               ),
@@ -1025,8 +1037,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                             '#',
                                                                             '0xFF');
                                                                 _colorsTxt =
-                                                                    attributeName[
-                                                                                i]
+                                                                    attributeName[i]
                                                                             [
                                                                             'label']
                                                                         ['ar'];
@@ -1039,8 +1050,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                       child:
                                                                           Column(
                                                                         mainAxisAlignment:
-                                                                            MainAxisAlignment
-                                                                                .center,
+                                                                            MainAxisAlignment.center,
                                                                         children: [
                                                                           Container(
                                                                             width:
@@ -1062,7 +1072,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                       ),
                                                                     )
                                                                   : Center(
-                                                                      child: Text(
+                                                                      child:
+                                                                          Text(
                                                                       attributeName[i]['label']['ar']
                                                                               .toString() +
                                                                           " , ",
@@ -1082,7 +1093,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             );
                                           },
                                           separatorBuilder:
-                                              (BuildContext context, int index) {
+                                              (BuildContext context,
+                                                  int index) {
                                             return Divider(
                                               thickness: 1,
                                             );
@@ -1104,7 +1116,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       if (_details['show_contact'] == true)
                                         if (userContact['user_phone'] != null)
@@ -1113,7 +1126,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             child: myButton(
                                                 btnTxt: _strController.callAdv,
                                                 fontSize: 16,
-                                                btnColor: Colors.lightBlueAccent,
+                                                btnColor:
+                                                    Colors.lightBlueAccent,
                                                 radius: 8,
                                                 context: context,
                                                 txtColor: AppColors.whiteColor,
@@ -1240,7 +1254,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: Container(
                                     width: double.infinity,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       // crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
                                         if (_details['video'] != null)
@@ -1374,27 +1389,45 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        sendMessage(
-                          context: context,
-                          adId: widget.adID,
-                          txtBody: _bodyController.text.toString(),
-                        ).then((value) {
-                          if (value != 412) {
-                            Navigator.of(context, rootNavigator: true).pop();
-                            _bodyController.clear();
-                          }
-                        });
-                      },
-                      child: buildTxt(
-                          txt: _strController.done,
-                          txtColor: AppColors.whiteColor),
-                    )),
+                  decoration: BoxDecoration(
+                    color: AppColors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: myButton(
+                    height: 40,
+                    onPressed: () {
+                      sendMessage(
+                        context: context,
+                        adId: widget.adID,
+                        txtBody: _bodyController.text.toString(),
+                      ).then((value) {
+                        if (value != 412) {
+                          Navigator.of(context, rootNavigator: true).pop();
+                          _bodyController.clear();
+                        }
+                      });
+                    },
+                    context: context,
+                    btnTxt: _strController.done,
+                    txtColor: AppColors.whiteColor,
+                    fontSize: 18,
+                    btnColor: AppColors.greenColor,
+                    radius: 8,
+                  ),
+                  // child: TextButton(
+                  //   onPressed: () {
+                  //     sendMessage(
+                  //       context: context,
+                  //       adId: widget.adID,
+                  //       txtBody: _bodyController.text.toString(),
+                  //     ).then((value) {
+                  //       if (value != 412) {
+                  //         Navigator.of(context, rootNavigator: true).pop();
+                  //         _bodyController.clear();
+                  //       }
+                  //     });
+                  //   },
+                ),
               )),
             ],
           ),
@@ -1511,8 +1544,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 _showOtherReason == true)
                               buildTextField(
                                 label: "السبب",
-                                validator: (value){
-                                  if(value.toString().isEmpty){
+                                validator: (value) {
+                                  if (value.toString().isEmpty) {
                                     return 'السبب حقل مطلوب';
                                   }
                                   return null;
@@ -1538,14 +1571,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: TextButton(
-                              onPressed: () {
-                                final FormState form = _formKeyAbuse.currentState;
-                                if(form.validate()){
+                          decoration: BoxDecoration(
+                            color: AppColors.green,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: myButton(
+                            height: 40,
+                            onPressed: () {
+                              final FormState form = _formKeyAbuse.currentState;
+                              if (form.validate()) {
                                 abuseAd(
                                         context: context,
                                         adId: widget.adID,
@@ -1559,11 +1593,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ? Navigator.of(context).pop()
                                       : null;
                                 });
-                              }},
-                              child: buildTxt(
-                                  txt: _strController.done,
-                                  txtColor: AppColors.whiteColor),
-                            )),
+                              }
+                            },
+                            context: context,
+                            btnTxt: _strController.done,
+                            txtColor: AppColors.whiteColor,
+                            fontSize: 18,
+                            btnColor: AppColors.greenColor,
+                            radius: 8,
+                          ),
+                          // child: TextButton(
+                          //   onPressed: () {
+                          //     final FormState form = _formKeyAbuse.currentState;
+                          //     if(form.validate()){
+                          //     abuseAd(
+                          //             context: context,
+                          //             adId: widget.adID,
+                          //             abuseId: abuseID,
+                          //             abuseDescription:
+                          //                 _otherReason.text.isNotEmpty
+                          //                     ? _otherReason.text.toString()
+                          //                     : null)
+                          //         .then((value) {
+                          //       value == "done"
+                          //           ? Navigator.of(context).pop()
+                          //           : null;
+                          //     });
+                          //   }},
+                          //   child: buildTxt(
+                          //       txt: _strController.done,
+                          //       txtColor: AppColors.whiteColor),
+                          // )
+                        ),
                       )),
                       // SizedBox(
                       //   width: 10,
