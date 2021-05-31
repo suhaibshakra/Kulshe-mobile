@@ -539,7 +539,7 @@ class _LatestAdsState extends State<LatestAds> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             buildIconButton(
-                icon: multiList?FontAwesomeIcons.listAlt:FontAwesomeIcons.diceOne,
+                icon: multiList?FontAwesomeIcons.listAlt:FontAwesomeIcons.box,
                 size: 24,
                 color: multiList ? AppColors.redColor : AppColors.grey,
                 onPressed: () {

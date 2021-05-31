@@ -414,7 +414,7 @@ class _EditAdFormState extends State<EditAdForm> {
                        : 3,
                    crossAxisCount:
                    _type == 'select' || _type == 'multiple_select'
-                       ? 1.2
+                       ? 1
                        : 2),
                shrinkWrap: true,
                physics: ClampingScrollPhysics(),
