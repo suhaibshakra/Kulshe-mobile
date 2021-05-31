@@ -67,9 +67,16 @@ dependencies:
   image: ^2.1.19
   badges: ^1.2.0
   youtube_player_flutter: ^8.0.0
+  flutter_launcher_icons: ^0.8.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "logo_file/logo_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

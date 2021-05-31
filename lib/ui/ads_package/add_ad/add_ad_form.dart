@@ -886,71 +886,74 @@ class _AddAdFormState extends State<AddAdForm> {
     );
   }
 
-  Container _buildButton(BuildContext context,ctx) {
+  _buildButton(BuildContext context,ctx) {
     // // print("AT:$myAdAttributes");
-    return Container(
-      child: myButton(
-        context: context,
-        height: 50,
-        width: double.infinity,
-        btnTxt: _strController.postAd,
-        fontSize: 20,
-        txtColor: AppColors.whiteColor,
-        radius: 10,
-        btnColor: AppColors.redColor,
-        onPressed: () {
-          final FormState form = _formKey.currentState;
-          pickedImages.where((pickedImagesElement){
-            if(!_images.contains(pickedImagesElement['identifier'])){
-              pickedImagesElement['deleted']= true;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Container(
+        child: myButton(
+          context: context,
+          height: 50,
+          width: double.infinity,
+          btnTxt: _strController.postAd,
+          fontSize: 20,
+          txtColor: AppColors.whiteColor,
+          radius: 10,
+          btnColor: AppColors.redColor,
+          onPressed: () {
+            final FormState form = _formKey.currentState;
+            pickedImages.where((pickedImagesElement){
+              if(!_images.contains(pickedImagesElement['identifier'])){
+                pickedImagesElement['deleted']= true;
+              }
+              return true;
+            }).toList();
+
+            print(pickedImages.length.toString());
+            print(pickedImages.where((element) => element['deleted']).toList().length);
+            if (form.validate()) {
+              showLoadingHud(context: ctx,hudKey: _hudKey,time: 5000);
+
+              addAdFunction(
+                  context: context,
+                  sectionId: widget.sectionId.toString(),
+                  subSectionId: '${widget.subSectionId.toString()}',
+                  title: _titleController.text.toString(),
+                  bodyAd: _bodyController.text.toLowerCase(),
+                  cityId: _cityId,
+                  price: _priceController.text.toString().isNotEmpty
+                      ? double.parse(_priceController.text.toString())
+                      : 0,
+                  localityId: '1',
+                  lat:latitudeData.toString(),
+                  lag: longitudeData.toString(),
+                  brandId: _brandId != null ? _brandId : "",
+                  subBrandId: _subBrandId != null ? _subBrandId : "",
+                  isDelivery: true,
+                  isFree: _isFree,
+                  showContact: _showContactInfo,
+                  negotiable: _negotiable,
+                  zoom: 14,
+                  video: _videoController.text.toString(),
+                  adAttributes: myAdAttributesArray,
+                  images: pickedImages != null ? pickedImages : [],
+                  currencyId: _currencyId).then((value) {
+                    if(value==200)
+                 Navigator.pushReplacement(
+                   context,
+                   MaterialPageRoute(
+                     builder: (context) => UserPanel(),
+                   ),
+                 );
+               });
+            } else {
+              print('Form is invalid');
+              viewToast(context, 'Form is invalid', AppColors.redColor, Toast.BOTTOM);
             }
-            return true;
-          }).toList();
 
-          print(pickedImages.length.toString());
-          print(pickedImages.where((element) => element['deleted']).toList().length);
-          if (form.validate()) {
-            showLoadingHud(context: ctx,hudKey: _hudKey,time: 5000);
-
-            addAdFunction(
-                context: context,
-                sectionId: widget.sectionId.toString(),
-                subSectionId: '${widget.subSectionId.toString()}',
-                title: _titleController.text.toString(),
-                bodyAd: _bodyController.text.toLowerCase(),
-                cityId: _cityId,
-                price: _priceController.text.toString().isNotEmpty
-                    ? double.parse(_priceController.text.toString())
-                    : 0,
-                localityId: '1',
-                lat:latitudeData.toString(),
-                lag: longitudeData.toString(),
-                brandId: _brandId != null ? _brandId : "",
-                subBrandId: _subBrandId != null ? _subBrandId : "",
-                isDelivery: true,
-                isFree: _isFree,
-                showContact: _showContactInfo,
-                negotiable: _negotiable,
-                zoom: 14,
-                video: _videoController.text.toString(),
-                adAttributes: myAdAttributesArray,
-                images: pickedImages != null ? pickedImages : [],
-                currencyId: _currencyId).then((value) {
-                  if(value==200)
-               Navigator.pushReplacement(
-                 context,
-                 MaterialPageRoute(
-                   builder: (context) => UserPanel(),
-                 ),
-               );
-             });
-          } else {
-            print('Form is invalid');
-            viewToast(context, 'Form is invalid', AppColors.redColor, Toast.BOTTOM);
-          }
-
-          // _validateAndSubmit();
-        },
+            // _validateAndSubmit();
+          },
+        ),
       ),
     );
   }

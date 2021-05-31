@@ -245,31 +245,34 @@ class _DetailsScreenState extends State<DetailsScreen> {
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : _statusCode == 410
-              ? Container(
-                  color: Colors.white,
-                  child: Center(
-                    child: Container(
-                      height: 60,
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.red,
-                                offset: Offset(2, 2),
-                                blurRadius: 1,
-                                spreadRadius: 2)
-                          ]),
-                      child: buildIconWithTxt(
-                        label: Text(
-                          "هذا الإعلان محذوف",
-                          style: appStyle(
-                              color: AppColors.whiteColor, fontSize: 22),
+              ? Directionality(
+                  textDirection: AppController.textDirection,
+                  child: Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: Container(
+                        height: 60,
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.red,
+                                  offset: Offset(2, 2),
+                                  blurRadius: 1,
+                                  spreadRadius: 2)
+                            ]),
+                        child: buildIconWithTxt(
+                          label: Text(
+                            "هذا الإعلان محذوف",
+                            style: appStyle(
+                                color: AppColors.whiteColor, fontSize: 22),
+                          ),
+                          iconColor: AppColors.whiteColor,
+                          iconData: Icons.arrow_back_outlined,
+                          size: 30,
+                          action: () => Navigator.of(context).pop(),
                         ),
-                        iconColor: AppColors.whiteColor,
-                        iconData: Icons.arrow_back_outlined,
-                        size: 30,
-                        action: () => Navigator.of(context).pop(),
                       ),
                     ),
                   ),
@@ -1373,61 +1376,76 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       : null,
               label: "نص الرسالة",
               controller: _bodyController,
-              minLines: 4,
+              minLines: 12,
               textInputType: TextInputType.multiline,
             ),
           ),
         ),
-        title: buildTxt(
-            txt: 'أرسل رسالة عبر البريد الكتروني',
-            fontWeight: FontWeight.bold,
-            textAlign: TextAlign.center),
+        title: Row(children: [
+          Expanded(flex: 1,child: SizedBox(width: 10,)),
+          Expanded(flex: 5,child: buildTxt(
+              txt: 'أرسل رسالة عبر البريد الالكتروني',
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              textAlign: TextAlign.center),),
+          Expanded(
+            flex: 1,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.clear,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ],),
+
         actions: <Widget>[
           Row(
             children: [
-                 Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  decoration: BoxDecoration(
-                    color: AppColors.green,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: myButton(
-                    height: 40,
-                    onPressed: () {
-                      sendMessage(
-                        context: context,
-                        adId: widget.adID,
-                        txtBody: _bodyController.text.toString(),
-                      ).then((value) {
-                        if (value != 412) {
-                          Navigator.of(context, rootNavigator: true).pop();
-                          _bodyController.clear();
-                        }
-                      });
-                    },
-                    context: context,
-                    btnTxt: _strController.done,
-                    txtColor: AppColors.whiteColor,
-                    fontSize: 18,
-                    btnColor: AppColors.greenColor,
-                    radius: 8,
-                  // child: TextButton(
-                  //   onPressed: () {
-                  //     sendMessage(
-                  //       context: context,
-                  //       adId: widget.adID,
-                  //       txtBody: _bodyController.text.toString(),
-                  //     ).then((value) {
-                  //       if (value != 412) {
-                  //         Navigator.of(context, rootNavigator: true).pop();
-                  //         _bodyController.clear();
-                  //       }
-                  //     });
-                  //   },
-                ),
-              )),
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    decoration: BoxDecoration(
+                      color: AppColors.green,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: myButton(
+                      height: 40,
+                      onPressed: () {
+                        sendMessage(
+                          context: context,
+                          adId: widget.adID,
+                          txtBody: _bodyController.text.toString(),
+                        ).then((value) {
+                          if (value != 412) {
+                            Navigator.of(context, rootNavigator: true).pop();
+                            _bodyController.clear();
+                          }
+                        });
+                      },
+                      context: context,
+                      btnTxt: _strController.done,
+                      txtColor: AppColors.whiteColor,
+                      fontSize: 18,
+                      btnColor: AppColors.greenColor,
+                      radius: 8,
+                      // child: TextButton(
+                      //   onPressed: () {
+                      //     sendMessage(
+                      //       context: context,
+                      //       adId: widget.adID,
+                      //       txtBody: _bodyController.text.toString(),
+                      //     ).then((value) {
+                      //       if (value != 412) {
+                      //         Navigator.of(context, rootNavigator: true).pop();
+                      //         _bodyController.clear();
+                      //       }
+                      //     });
+                      //   },
+                    ),
+                  )),
             ],
           ),
         ],
@@ -1566,66 +1584,65 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 actions: <Widget>[
                   Row(
                     children: [
-
-                         Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: MediaQuery.of(context).size.width * 0.7,
-
-                          decoration: BoxDecoration(
-                            color: AppColors.green,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: myButton(
-                            height: 40,
-                            onPressed: () {
-                              final FormState form = _formKeyAbuse.currentState;
-                              if (form.validate()) {
-                                abuseAd(
-                                        context: context,
-                                        adId: widget.adID,
-                                        abuseId: abuseID,
-                                        abuseDescription:
-                                            _otherReason.text.isNotEmpty
-                                                ? _otherReason.text.toString()
-                                                : null)
-                                    .then((value) {
-                                  value == "done"
-                                      ? Navigator.of(context).pop()
-                                      : null;
-                                });
-                              }
-                            },
-                            context: context,
-                            btnTxt: _strController.done,
-                            txtColor: AppColors.whiteColor,
-                            fontSize: 18,
-                            btnColor: AppColors.greenColor,
-                            radius: 8,
-                          // child: TextButton(
-                          //   onPressed: () {
-                          //     final FormState form = _formKeyAbuse.currentState;
-                          //     if(form.validate()){
-                          //     abuseAd(
-                          //             context: context,
-                          //             adId: widget.adID,
-                          //             abuseId: abuseID,
-                          //             abuseDescription:
-                          //                 _otherReason.text.isNotEmpty
-                          //                     ? _otherReason.text.toString()
-                          //                     : null)
-                          //         .then((value) {
-                          //       value == "done"
-                          //           ? Navigator.of(context).pop()
-                          //           : null;
-                          //     });
-                          //   }},
-                          //   child: buildTxt(
-                          //       txt: _strController.done,
-                          //       txtColor: AppColors.whiteColor),
-                          // )
-                        ),
-                      )),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            decoration: BoxDecoration(
+                              color: AppColors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: myButton(
+                              height: 40,
+                              onPressed: () {
+                                final FormState form =
+                                    _formKeyAbuse.currentState;
+                                if (form.validate()) {
+                                  abuseAd(
+                                          context: context,
+                                          adId: widget.adID,
+                                          abuseId: abuseID,
+                                          abuseDescription:
+                                              _otherReason.text.isNotEmpty
+                                                  ? _otherReason.text.toString()
+                                                  : null)
+                                      .then((value) {
+                                    value == "done"
+                                        ? Navigator.of(context).pop()
+                                        : null;
+                                  });
+                                }
+                              },
+                              context: context,
+                              btnTxt: _strController.done,
+                              txtColor: AppColors.whiteColor,
+                              fontSize: 18,
+                              btnColor: AppColors.greenColor,
+                              radius: 8,
+                              // child: TextButton(
+                              //   onPressed: () {
+                              //     final FormState form = _formKeyAbuse.currentState;
+                              //     if(form.validate()){
+                              //     abuseAd(
+                              //             context: context,
+                              //             adId: widget.adID,
+                              //             abuseId: abuseID,
+                              //             abuseDescription:
+                              //                 _otherReason.text.isNotEmpty
+                              //                     ? _otherReason.text.toString()
+                              //                     : null)
+                              //         .then((value) {
+                              //       value == "done"
+                              //           ? Navigator.of(context).pop()
+                              //           : null;
+                              //     });
+                              //   }},
+                              //   child: buildTxt(
+                              //       txt: _strController.done,
+                              //       txtColor: AppColors.whiteColor),
+                              // )
+                            ),
+                          )),
                       // SizedBox(
                       //   width: 10,
                       // ),

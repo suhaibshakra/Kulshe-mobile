@@ -802,6 +802,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 builder: (context) => PublicAdsScreen(
                   isPrivate: false,
                   isFav: false,
+                  fromHome: false,
                   section: widget.sectionId,
                   subSection: widget.subSectionId,
                   isFilter: true,

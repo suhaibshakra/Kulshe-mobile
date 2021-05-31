@@ -96,7 +96,7 @@ class _LatestAdsState extends State<LatestAds> {
       // drawer: buildDrawer(context),
       // backgroundColor: Colors.grey.shade200,
 
-      endDrawer: buildDrawer(context, () => Navigator.of(context).pop()),
+      drawer: buildDrawer(context, () => Navigator.of(context).pop()),
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : SafeArea(
@@ -125,7 +125,7 @@ class _LatestAdsState extends State<LatestAds> {
                             ),
                           ),
                           leading: GestureDetector(
-                              onTap: () => Scaffold.of(context).openEndDrawer(),
+                              onTap: () => Scaffold.of(context).openDrawer(),
                               child: Icon(
                                 Icons.list,
                                 color: Colors.black54,
@@ -541,7 +541,7 @@ class _LatestAdsState extends State<LatestAds> {
             buildIconButton(
                 icon: multiList?FontAwesomeIcons.listAlt:FontAwesomeIcons.box,
                 size: 24,
-                color: multiList ? AppColors.redColor : AppColors.grey,
+                color: AppColors.greenColor,
                 onPressed: () {
                   setState(() {
                     multiList = !multiList;

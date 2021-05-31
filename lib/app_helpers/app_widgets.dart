@@ -70,7 +70,7 @@ defaultAppbar(BuildContext context,String txt, {Widget leading}){
           icon: Icon(
             Icons.clear,
             color: Colors.red,
-          ))
+          ),),
     ],
     centerTitle: true,
     backgroundColor: AppColors.whiteColor,

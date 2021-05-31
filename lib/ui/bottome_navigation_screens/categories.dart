@@ -93,7 +93,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       // drawer: buildDrawer(context),
       // backgroundColor: Colors.grey.shade200,
 
-      endDrawer: buildDrawer(context, () => Navigator.of(context).pop()),
+      drawer: buildDrawer(context, () => Navigator.of(context).pop()),
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : SafeArea(
@@ -122,7 +122,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             ),
                           ),
                           leading: GestureDetector(
-                              onTap: () => Scaffold.of(context).openEndDrawer(),
+                              onTap: () => Scaffold.of(context).openDrawer(),
                               child: Icon(
                                 Icons.list,
                                 color: Colors.black54,
