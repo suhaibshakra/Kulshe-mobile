@@ -178,7 +178,9 @@ class _UserPanelState extends State<UserPanel> {
               headerSliverBuilder: (context, innerBoxScrolled) {
                 return <Widget>[
                   SliverAppBar(
-                    leading: Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.arrow_back,color: AppColors.whiteColor,),onPressed: ()=>Navigator.pop(context),))),
+                    actions: [
+                      Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.close,color: AppColors.whiteColor,),onPressed: ()=>Navigator.pop(context),))),
+                    ],
                     foregroundColor: Colors.lightBlue,
                     shadowColor: Colors.red,
                     expandedHeight: isLandscape ?mq.size.height*0.1:mq.size.height*0.2,

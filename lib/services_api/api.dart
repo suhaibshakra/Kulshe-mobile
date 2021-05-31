@@ -47,12 +47,12 @@ Future loginFunction(
   map['email'] = email.trim();
   map['password'] = password;
 
-  http.Response response = await http.post('${baseURL}login',
-      body: map,
-      headers: {
-        'lang': _pref.getString('lang') ?? 'ar',
-        'Accept': 'application/json'
-      });
+  http.Response response =
+      await http.post('${baseURL}login', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'comeFrom': 'm',
+  });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200 && decodedData['custom_code'] != 2166) {
@@ -101,6 +101,7 @@ Future verifyEmail({@required BuildContext context}) async {
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
+    'comeFrom': 'm',
     'Authorization': 'bearer ${_pref.getString('token')}',
   });
   var decodedData = jsonDecode(response.body);
@@ -125,12 +126,12 @@ Future changePasswordSocial(BuildContext context, String password,
   map['confirmPassword'] = confirmPassword;
   map['token'] = newToken;
 
-  http.Response response = await http.post('${baseURL}change-password-social',
-      body: map,
-      headers: {
-        'lang': _pref.getString('lang') ?? 'ar',
-        'Accept': 'application/json'
-      });
+  http.Response response =
+      await http.post('${baseURL}change-password-social', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'comeFrom': 'm',
+  });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -154,12 +155,12 @@ Future forgetPasswordEmail(BuildContext context, String bodyData) async {
   var map = Map<String, dynamic>();
   map['email'] = bodyData;
 
-  http.Response response = await http.post('${baseURL}reset-password',
-      body: map,
-      headers: {
-        'lang': _pref.getString('lang') ?? 'ar',
-        'Accept': 'application/json'
-      });
+  http.Response response =
+      await http.post('${baseURL}reset-password', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'comeFrom': 'm',
+  });
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
     // print(await response.stream.bytesToString());
@@ -189,6 +190,7 @@ Future uploadImage(BuildContext context, String bodyData) async {
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': _pref.getString('token'),
+    'comeFrom': 'm',
     'Authorization': 'bearer ${_pref.getString('token')}'
   });
   var decodeData = jsonDecode(response.body);
@@ -214,6 +216,7 @@ Future deleteAd({BuildContext context, @required int adId}) async {
       .post('${baseURL}user/classifieds/$adId/delete', body: map, headers: {
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
+    'comeFrom': 'm',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
   });
@@ -243,6 +246,7 @@ Future pauseAd({
         'lang': _pref.getString('lang') ?? 'ar',
         'Accept': 'application/json',
         'token': '${_pref.getString('token')}',
+        'comeFrom': 'm',
         'Authorization': 'bearer ${_pref.getString('token')}',
       });
   var decodeData = jsonDecode(response.body);
@@ -270,6 +274,7 @@ Future reNewAd({
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
     'token': '${_pref.getString('token')}',
+    'comeFrom': 'm',
     'Authorization': 'bearer ${_pref.getString('token')}',
   });
   var decodeData = jsonDecode(response.body);
@@ -302,6 +307,7 @@ Future abuseAd({
             'lang': _pref.getString('lang') ?? 'ar',
             'Content-Type': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}',
           },
           body: body);
@@ -339,6 +345,7 @@ Future sendMessage({
         'lang': _pref.getString('lang') ?? 'ar',
         'Content-Type': 'application/json',
         'token': '${_pref.getString('token')}',
+        'comeFrom': 'm',
         'Authorization': 'bearer ${_pref.getString('token')}',
       },
       body: body);
@@ -378,22 +385,24 @@ Future contactWithUs({
     'mobileCountryIsoCode': mobileCountryIsoCode,
   });
   print('body: ${body}');
-  http.Response response = await http.post('https://api.kulshe.nurdevops.com/api/v1/contact-us',
-      headers: {
-        'lang': _pref.getString('lang') ?? 'ar',
-        'Content-Type': 'application/json',
-      },
-      body: body);
+  http.Response response =
+      await http.post('https://api.kulshe.nurdevops.com/api/v1/contact-us',
+          headers: {
+            'lang': _pref.getString('lang') ?? 'ar',
+            'comeFrom': 'm',
+            'Content-Type': 'application/json',
+          },
+          body: body);
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
-      viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
+    viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
-    return [response.statusCode,decodeData['custom_message']];
+    return [response.statusCode, decodeData['custom_message']];
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
         Toast.BOTTOM);
-    return [response.statusCode,decodeData['custom_message']];
+    return [response.statusCode, decodeData['custom_message']];
   }
 }
 
@@ -408,6 +417,7 @@ Future favoriteAd(
       .get('${baseURL}user/classifieds/$adId/favorite/$state', headers: {
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
+    'comeFrom': 'm',
     'token': '${_pref.getString('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
   });
@@ -479,7 +489,7 @@ Future createAccountFunction({
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
 
-    loginFunction(email: email,password: password,context: context);
+    loginFunction(email: email, password: password, context: context);
   } else {
     print(decodeData['custom_message']);
     viewToast(context, '${decodeData['custom_message']}', AppColors.redColor,
@@ -555,6 +565,7 @@ Future updateProfile({
         'token': _pref.getString('token'),
         'Authorization': "bearer ${_pref.getString('token')}",
         'lang': _pref.getString('lang') ?? 'ar',
+        'comeFrom': 'm',
         'Content-Type': 'application/json'
       },
       body: body);
@@ -611,6 +622,7 @@ Future addAdFunction({
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
     'lang': '${_pref.getString('lang') ?? 'ar'}',
+    'comeFrom': 'm',
     'Content-Type': 'application/json'
   };
 
@@ -688,6 +700,7 @@ Future updateAdFunction({
     'token': '${_pref.get('token')}',
     'Authorization': 'bearer ${_pref.getString('token')}',
     'lang': '${_pref.getString('lang') ?? 'ar'}',
+    'comeFrom': 'm',
     'Content-Type': 'application/json'
   };
 
@@ -713,7 +726,6 @@ Future updateAdFunction({
     //https://www.youtube.com/watch?v=kSDJZTzCl8k
     "ad_attributes": adAttributes,
     "images": images
-
   });
   var response = await http.post(
       'https://api.kulshe.nurdevops.com/api/v1/classified/update',
@@ -723,7 +735,6 @@ Future updateAdFunction({
 
   var decodeData = jsonDecode(response.body);
   if (response.statusCode == 200) {
-
     print('********************************${decodeData['custom_message']}');
     viewToast(context, '${decodeData['custom_message']}', AppColors.greenColor,
         Toast.BOTTOM);
@@ -745,12 +756,12 @@ Future logoutFunction({BuildContext context}) async {
   map['token'] = token;
   map['refresh_token'] = "bearer $token";
 
-  http.Response response = await http.post('${baseURL}logout',
-      body: map,
-      headers: {
-        'lang': _pref.getString('lang') ?? 'ar',
-        'Accept': 'application/json'
-      });
+  http.Response response =
+      await http.post('${baseURL}logout', body: map, headers: {
+    'lang': _pref.getString('lang') ?? 'ar',
+    'Accept': 'application/json',
+    'comeFrom': 'm',
+  });
   var decodedData = jsonDecode(response.body);
 
   if (response.statusCode != 200) {
@@ -791,6 +802,7 @@ Future maxPrice({BuildContext context, @required int subSectionId}) async {
       await http.get('${baseURL}classified/$subSectionId/max-price', headers: {
     'lang': _pref.getString('lang') ?? 'ar',
     'Accept': 'application/json',
+    'comeFrom': 'm',
     'Country-id': _pref.getString('countryId')
   });
   var decodedData = jsonDecode(response.body);
@@ -850,7 +862,8 @@ Future createAccountFunctionGoogle(
   var response = await http.post('${baseURL}login/google',
       headers: {
         'lang': _pref.getString('lang') ?? 'ar',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'comeFrom': 'm',
       },
       body: body);
   var decodedData = jsonDecode(response.body);
@@ -919,7 +932,8 @@ Future createAccountFunctionFacebook(
       'https://api.kulshe.nurdevops.com/api/v1/login/facebook',
       headers: {
         'lang': _pref.getString('lang') ?? 'ar',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+  'comeFrom': 'm',
       },
       body: body);
   //

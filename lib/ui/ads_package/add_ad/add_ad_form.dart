@@ -495,49 +495,57 @@ class _AddAdFormState extends State<AddAdForm> {
               _type == 'buttons_groups' ||
               _type == 'multiple_buttons_groups' ||
               _type == 'radio')
-            GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisExtent: _type == 'radio' ? 50 : null,
-                    childAspectRatio: _type == 'select'
-                        ? 7
-                        : (_type == 'multiple_select')
-                            ? (_options.length > 4
-                                ? 1.5
-                                : _options.length * 2.0)
-                            : 3,
-                    crossAxisCount:
-                        _type == 'select' || _type == 'multiple_select'
-                            ? 1
-                            : 2),
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
-                itemCount: _type == 'select' || _type == 'multiple_select'
-                    ? 1
-                    : _options.length,
-                itemBuilder: (context, rcsIndex) {
-                  return Container(
-                    decoration: BoxDecoration(
-
-                        borderRadius: _type == 'select'
-                            ? BorderRadius.circular(8)
-                            : BorderRadius.circular(0)),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        if (_type == 'radio') _buildRadio(mainIndex, rcsIndex),
-                        if (_type == 'checkbox' ||
-                            _type == 'buttons_groups' ||
-                            _type == 'multiple_buttons_groups')
-                          _buildCheckbox(mainIndex, rcsIndex),
-                        if (_type == 'select')
-                          _buildSelect(rcsIndex, mainIndex,mq),
-                        if (_type == 'multiple_select')
-                          buildMultiSelected(mainIndex,mq),
-                      ],
-                    ),
-                  );
-                }),
+            Container(
+              decoration: BoxDecoration(
+                  border: _type == 'radio' || _type == 'checkbox' || _type == 'multiple_select'?Border.all(color: Colors.grey):null,
+                  borderRadius: _type == 'select'
+                      ? BorderRadius.circular(8)
+                      : BorderRadius.circular(4)),
+              child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisExtent: _type == 'radio' ? 50 : null,
+                      childAspectRatio: _type == 'select'
+                          ? 7
+                          : (_type == 'multiple_select')
+                              ? (_options.length > 4
+                                  ? 1.5
+                                  : _options.length * 2.0)
+                              : 3,
+                      crossAxisCount:
+                          _type == 'select' || _type == 'multiple_select'
+                              ? 1
+                              : 2),
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
+                  itemCount: _type == 'select' || _type == 'multiple_select'
+                      ? 1
+                      : _options.length,
+                  itemBuilder: (context, rcsIndex) {
+                    return Container(
+                      decoration: BoxDecoration(
+                               // border: _type == 'radio' || _type == 'checkbox'?Border.all(color: Colors.grey):null,
+                             borderRadius: _type == 'select'
+                              ? BorderRadius.circular(8)
+                              : BorderRadius.circular(4)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (_type == 'radio') Container(
+                              child: _buildRadio(mainIndex, rcsIndex),),
+                          if (_type == 'checkbox' ||
+                              _type == 'buttons_groups' ||
+                              _type == 'multiple_buttons_groups')
+                            _buildCheckbox(mainIndex, rcsIndex),
+                          if (_type == 'select')
+                            _buildSelect(rcsIndex, mainIndex,mq),
+                          if (_type == 'multiple_select')
+                            buildMultiSelected(mainIndex,mq),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
         ],
       ),
     );
@@ -1561,7 +1569,7 @@ class _AddAdFormState extends State<AddAdForm> {
   String _error = 'No Error Dectected';
 
   Widget buildListViewImages() {
-    
+
     return ListView.builder(shrinkWrap: true,scrollDirection: Axis.horizontal,itemCount: images.length,itemBuilder: (context, index) {
       Asset asset = images[index];
       var lastImages =[];

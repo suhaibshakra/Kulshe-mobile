@@ -190,7 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     double height = mq.size.height * 0.2;
     return Scaffold(
-      appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+      // appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
       body: SafeArea(
         child: ProgressHud(
           key: _hudKey,
@@ -212,13 +212,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 borderRadius: BorderRadius.only(
                                     bottomRight: Radius.circular(25),
                                     bottomLeft: Radius.circular(25)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.shade200,
-                                    offset: Offset(0.0, 1.0), //(x,y)
-                                    blurRadius: 2.0,
-                                  ),
-                                ],
+                                color: Colors.blue.shade400,
+                                // boxShadow: [
+                                //   BoxShadow(
+                                //     color: Colors.blue.shade400,
+                                //     offset: Offset(0.0, 1.0), //(x,y)
+                                //     blurRadius: 2.0,
+                                //   ),
+                                // ],
                               ),
                               height: isLandscape
                                   ? mq.size.height * 0.3
@@ -237,16 +238,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   ),
                                   Row(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceAround,
                                     children: [
                                       buildIconWithTxt(
                                         iconData: Icons.camera,
-                                        iconColor: AppColors.grey,
+                                        iconColor: AppColors.whiteColor,
                                         label: Text(
                                           _strController.labelCamera,
                                           style: appStyle(
                                               fontSize: 16,
-                                              color: AppColors.grey,
+                                              color: AppColors.whiteColor,
                                               fontWeight: FontWeight.w400),
                                         ),
                                         action: () =>
@@ -254,12 +255,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                       buildIconWithTxt(
                                         iconData: Icons.image_outlined,
-                                        iconColor: AppColors.grey,
+                                        iconColor: AppColors.whiteColor,
                                         label: Text(
                                           _strController.labelGallery,
                                           style: appStyle(
                                               fontSize: 16,
-                                              color: AppColors.grey,
+                                              color: AppColors.whiteColor,
                                               fontWeight: FontWeight.w400),
                                         ),
                                         action: () =>
@@ -277,7 +278,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   key: _formKeyEditProfile,
                                   child: Column(
                                     mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    MainAxisAlignment.spaceEvenly,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -288,7 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               BoxShadow(
                                                 color: Colors.grey.shade200,
                                                 offset:
-                                                    Offset(0.0, 1.0), //(x,y)
+                                                Offset(0.0, 1.0), //(x,y)
                                                 blurRadius: 2.0,
                                               ),
                                             ],
@@ -301,8 +302,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             },
                                             child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               children: [
                                                 Text(_selectedCountry),
                                                 buildIconWithTxt(
@@ -312,7 +313,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             ),
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(4)),
+                                                BorderRadius.circular(4)),
                                           ),
                                         ),
                                       ),
@@ -326,10 +327,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             controller: _nickName,
                                             fromPhone: true,
                                             validator: (value) =>
-                                                (value.length < 3 ||
-                                                        value.isEmpty)
-                                                    ? "Enter Valid Name"
-                                                    : null,
+                                            (value.length < 3 ||
+                                                value.isEmpty)
+                                                ? "Enter Valid Name"
+                                                : null,
                                           ),
                                         ),
                                       ),
@@ -338,11 +339,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             horizontal: 8),
                                         child: Container(
                                             child: buildTextField(
-                                          textInputType: TextInputType.name,
-                                          label: appController.fullName,
-                                          controller: _fullName,
-                                          fromPhone: true,
-                                        )),
+                                              textInputType: TextInputType.name,
+                                              label: appController.fullName,
+                                              controller: _fullName,
+                                              fromPhone: true,
+                                            )),
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -351,11 +352,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           child: buildTextField(
                                             label: _strController.email,
                                             textInputType:
-                                                TextInputType.emailAddress,
+                                            TextInputType.emailAddress,
                                             controller: _email,
                                             fromPhone: true,
                                             validator: (value) => EmailValidator
-                                                    .validate(value)
+                                                .validate(value)
                                                 ? null
                                                 : "Please enter a valid email",
                                           ),
@@ -370,8 +371,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               flex: 2,
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8),
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 8),
                                                 child: Container(
                                                   decoration: BoxDecoration(
                                                       color: Colors.white
@@ -380,19 +381,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                           width: 1,
                                                           color: Colors.grey),
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              8)),
+                                                      BorderRadius.circular(
+                                                          8)),
                                                   child: CountryListPick(
                                                     appBar: AppBar(
                                                       backgroundColor:
-                                                          Colors.blue,
+                                                      Colors.blue,
                                                       title: Text(
                                                         _strController.country,
                                                         style: appStyle(
                                                             fontSize: 18,
                                                             fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                            FontWeight
+                                                                .w400),
                                                       ),
                                                     ),
                                                     theme: CountryTheme(
@@ -402,7 +403,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                         isDownIcon: false,
                                                         showEnglishName: true,
                                                         initialSelection:
-                                                            '+962'),
+                                                        '+962'),
                                                     initialSelection: '+962',
                                                     useSafeArea: true,
                                                     onChanged:
@@ -417,10 +418,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                         mobileCountryIsoCode
                                                             .text = code.code;
                                                         _mobileCountryCode
-                                                                .text =
+                                                            .text =
                                                             code.dialCode
                                                                 .replaceAll(
-                                                                    '+', '')
+                                                                '+', '')
                                                                 .toString();
                                                         print(
                                                             'code : ${_mobileCountryCode.text}');
@@ -435,11 +436,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               child: Container(
                                                 child: buildTextField(
                                                     textInputType:
-                                                        TextInputType.phone,
+                                                    TextInputType.phone,
                                                     fromPhone: true,
                                                     controller: _mobile,
                                                     label:
-                                                        _strController.mobile),
+                                                    _strController.mobile),
                                               ),
                                             ),
                                           ],
@@ -454,8 +455,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               flex: 2,
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8),
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 8),
                                                 child: Container(
                                                   decoration: BoxDecoration(
                                                       color: Colors.white
@@ -464,12 +465,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                           width: 1,
                                                           color: Colors.grey),
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              8)),
+                                                      BorderRadius.circular(
+                                                          8)),
                                                   child: CountryListPick(
                                                     appBar: AppBar(
                                                       backgroundColor:
-                                                          Colors.blue,
+                                                      Colors.blue,
                                                       title: Text("الدولة"),
                                                     ),
                                                     theme: CountryTheme(
@@ -479,7 +480,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                         isDownIcon: false,
                                                         showEnglishName: true,
                                                         initialSelection:
-                                                            '+962'),
+                                                        '+962'),
                                                     initialSelection: '+962',
                                                     useSafeArea: true,
                                                     onChanged:
@@ -494,10 +495,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                         additionalPhoneCountryIsoCode
                                                             .text = code.code;
                                                         additionalPhoneCountryCode
-                                                                .text =
+                                                            .text =
                                                             code.dialCode
                                                                 .replaceAll(
-                                                                    '+', '')
+                                                                '+', '')
                                                                 .toString();
                                                         print(
                                                             'code : ${additionalPhoneCountryCode.text}');
@@ -512,10 +513,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               child: Container(
                                                 child: buildTextField(
                                                     textInputType:
-                                                        TextInputType.phone,
+                                                    TextInputType.phone,
                                                     fromPhone: true,
                                                     controller:
-                                                        additionalPhoneNumber,
+                                                    additionalPhoneNumber,
                                                     label: _strController
                                                         .additionalMobile),
                                               ),
@@ -529,22 +530,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         child: Container(
                                           child: buildTextField(
                                               textInputType:
-                                                  TextInputType.visiblePassword,
+                                              TextInputType.visiblePassword,
                                               controller: _oldPassword,
                                               fromPhone: true,
                                               validator: (value) => (value
-                                                          .isEmpty &&
-                                                      (_newPassword.text
-                                                              .isNotEmpty ||
-                                                          _confirmPassword
-                                                              .text.isNotEmpty))
+                                                  .isEmpty &&
+                                                  (_newPassword.text
+                                                      .isNotEmpty ||
+                                                      _confirmPassword
+                                                          .text.isNotEmpty))
                                                   ? "كلمة المرور حقل مطلوب"
                                                   : (value.length < 8 &&
-                                                          (value
-                                                              .toString()
-                                                              .isNotEmpty))
-                                                      ? "يجب ان لا تقل عن 8 حروف"
-                                                      : null,
+                                                  (value
+                                                      .toString()
+                                                      .isNotEmpty))
+                                                  ? "يجب ان لا تقل عن 8 حروف"
+                                                  : null,
                                               isPassword: isHiddenOld,
                                               suffixIcon: InkWell(
                                                 onTap: () {
@@ -557,7 +558,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     : Icons.visibility_off),
                                               ),
                                               label:
-                                                  _strController.oldPassword),
+                                              _strController.oldPassword),
                                         ),
                                       ),
                                       Padding(
@@ -566,21 +567,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         child: Container(
                                           child: buildTextField(
                                               textInputType:
-                                                  TextInputType.visiblePassword,
+                                              TextInputType.visiblePassword,
                                               controller: _newPassword,
                                               validator: (value) => (value
-                                                          .isEmpty &&
-                                                      (_oldPassword.text
-                                                              .isNotEmpty ||
-                                                          _confirmPassword
-                                                              .text.isNotEmpty))
+                                                  .isEmpty &&
+                                                  (_oldPassword.text
+                                                      .isNotEmpty ||
+                                                      _confirmPassword
+                                                          .text.isNotEmpty))
                                                   ? "كلمة المرور حقل مطلوب"
                                                   : (value.length < 8 &&
-                                                          (value
-                                                              .toString()
-                                                              .isNotEmpty))
-                                                      ? "يجب ان لا تقل عن 8 حروف"
-                                                      : null,
+                                                  (value
+                                                      .toString()
+                                                      .isNotEmpty))
+                                                  ? "يجب ان لا تقل عن 8 حروف"
+                                                  : null,
                                               fromPhone: true,
                                               isPassword: isHiddenNew,
                                               suffixIcon: InkWell(
@@ -594,7 +595,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     : Icons.visibility_off),
                                               ),
                                               label:
-                                                  _strController.newPassword),
+                                              _strController.newPassword),
                                         ),
                                       ),
                                       Padding(
@@ -604,24 +605,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           child: buildTextField(
                                               fromPhone: true,
                                               validator: (value) => (value
-                                                          .isEmpty &&
-                                                      (_newPassword.text
-                                                              .isNotEmpty ||
-                                                          _oldPassword
-                                                              .text.isNotEmpty))
+                                                  .isEmpty &&
+                                                  (_newPassword.text
+                                                      .isNotEmpty ||
+                                                      _oldPassword
+                                                          .text.isNotEmpty))
                                                   ? "كلمة المرور حقل مطلوب"
                                                   : (value !=
-                                                          _newPassword
-                                                              .text
-                                                              .toString())
-                                                      ? "يجب تطابق كلمتي السر"
-                                                      : null,
+                                                  _newPassword
+                                                      .text
+                                                      .toString())
+                                                  ? "يجب تطابق كلمتي السر"
+                                                  : null,
                                               isPassword: isHiddenConfirm,
                                               suffixIcon: InkWell(
                                                 onTap: () {
                                                   setState(() {
                                                     isHiddenConfirm =
-                                                        !isHiddenConfirm;
+                                                    !isHiddenConfirm;
                                                   });
                                                 },
                                                 child: Icon(isHiddenConfirm
@@ -629,7 +630,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                     : Icons.visibility_off),
                                               ),
                                               textInputType:
-                                                  TextInputType.visiblePassword,
+                                              TextInputType.visiblePassword,
                                               label: _strController.conPassword,
                                               controller: _confirmPassword),
                                         ),
@@ -645,15 +646,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           child: MergeSemantics(
                                             child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               children: [
                                                 Text(
                                                   _strController.news,
                                                   style: appStyle(
                                                       fontSize: 18,
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       color: AppColors
                                                           .blackColor2),
                                                 ),
@@ -681,15 +682,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           child: MergeSemantics(
                                             child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               children: [
                                                 Text(
                                                   _strController.promotion,
                                                   style: appStyle(
                                                       fontSize: 18,
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       color: AppColors
                                                           .blackColor2),
                                                 ),
@@ -710,7 +711,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         onTap: () {
                                           setState(() {
                                             _showContactInfo =
-                                                !_showContactInfo;
+                                            !_showContactInfo;
                                             print('SHOW~:$_showContactInfo');
                                           });
                                         },
@@ -719,8 +720,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           child: MergeSemantics(
                                             child: Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               children: [
                                                 Text(
                                                   _strController
@@ -728,7 +729,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                   style: appStyle(
                                                       fontSize: 18,
                                                       fontWeight:
-                                                          FontWeight.w500,
+                                                      FontWeight.w500,
                                                       color: AppColors
                                                           .blackColor2),
                                                 ),

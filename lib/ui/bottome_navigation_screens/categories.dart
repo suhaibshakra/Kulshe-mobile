@@ -9,6 +9,7 @@ import 'package:kulshe/app_helpers/search_ui.dart';
 import 'package:kulshe/services_api/api.dart';
 import 'package:kulshe/ui/ads_package/public_ads_list_screen.dart';
 import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
+import 'package:kulshe/ui/profile/edit_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : SafeArea(
-            child: Stack(
+              child: Stack(
                 children: [
                   buildBg(),
                   NestedScrollView(
@@ -127,29 +128,46 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                 color: Colors.black54,
                               )),
                           actions: [
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Badge(
-                                badgeColor: AppColors.redColor,
-                                badgeContent: Text(
-                                  !isEmailVerified ? '1' : '',
-                                  style: TextStyle(color: AppColors.whiteColor),
-                                ),
-                                child: InkWell(
-                                  child: Icon(
-                                    Icons.notifications,
-                                    color: Colors.grey,
-                                    size: 24,
+                            Container(
+                              width: 50,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                child: Badge(
+                                  badgeColor: AppColors.redColor,
+                                  badgeContent: Text(
+                                    !isEmailVerified ? '1' : '',
+                                    style:
+                                        TextStyle(color: AppColors.whiteColor),
                                   ),
-                                  onTap: () {
-                                    setState(() {
-                                      showDrop = !showDrop;
-                                    });
-                                    // verifyEmail(context: context);
-                                  },
+                                  child: Container(
+                                    child: IconButton(
+                                      alignment: Alignment.center,
+                                      onPressed: () {
+                                        setState(() {
+                                          showDrop = !showDrop;
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.notifications,
+                                        color: Colors.grey,
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
+                            IconButton(
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditProfileScreen(),
+                                    )),
+                                icon: Icon(
+                                  Icons.account_circle,
+                                  color: AppColors.grey,
+                                ))
                             // buildIconButton(
                             //   icon: Icons.notifications,
                             //   color: Colors.black54,
@@ -193,9 +211,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                     top: 55,
                                   ),
                                   child: Directionality(
-                                      textDirection: _drController,
-                                      child: SearchWidget(),
-
+                                    textDirection: _drController,
+                                    child: SearchWidget(),
                                   )),
                               // decoration: BoxDecoration(
                               //   borderRadius: BorderRadius.circular(8),
@@ -237,33 +254,60 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   if (showDrop)
                     Stack(
                       children: [
-                        if(!isEmailVerified)
-                        Container(
-                          decoration:
+                        if (!isEmailVerified)
+                          Container(
+                            decoration:
                                 BoxDecoration(color: AppColors.whiteColor),
                             width: double.infinity,
                             height: mq.size.height,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 30),
-                                child: ListView.separated(
-                                    itemCount: 1,
-                                    itemBuilder: (context, index) {
-                                      return Container(
-                                        color: Colors.grey.shade200,
-                                        child: ListTile(
-                                          title: Text(
-                                              " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",style: appStyle(color:index == 0? Colors.amber: AppColors.blackColor2,fontWeight: FontWeight.bold),),
-                                          subtitle: index == 0||index == 1?InkWell(child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: InkWell(
-                                                onTap: ()=>verifyEmail(context: context),
-                                                child: Text("أرسل رسالة التحقق مرة أخرى",style: appStyle(fontWeight: FontWeight.bold,color: AppColors.green,fontSize: 20),textAlign: TextAlign.center,)),
-                                          ),):"",
-                                        ),
-                                      );
-                                    }, separatorBuilder: (BuildContext context, int index) { return Divider(); },),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 30),
+                              child: ListView.separated(
+                                itemCount: 1,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    color: Colors.grey.shade200,
+                                    child: ListTile(
+                                      title: Text(
+                                        " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",
+                                        style: appStyle(
+                                            color: index == 0
+                                                ? Colors.amber
+                                                : AppColors.blackColor2,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: index == 0 || index == 1
+                                          ? InkWell(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: InkWell(
+                                                    onTap: () => verifyEmail(
+                                                        context: context),
+                                                    child: Text(
+                                                      "أرسل رسالة التحقق مرة أخرى",
+                                                      style: appStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              AppColors.green,
+                                                          fontSize: 20),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    )),
+                                              ),
+                                            )
+                                          : "",
+                                    ),
+                                  );
+                                },
+                                separatorBuilder:
+                                    (BuildContext context, int index) {
+                                  return Divider();
+                                },
                               ),
                             ),
+                          ),
                         Align(
                           alignment: Alignment.topRight,
                           child: InkWell(
@@ -285,7 +329,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ),
                 ],
               ),
-          ),
+            ),
       // body:_loading?buildLoading(color: AppColors.grey): buildListView(isLandscape, context),
     );
   }
@@ -316,15 +360,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             child: ExpansionTile(
               key: Key(index.toString()),
               backgroundColor: AppColors.whiteColor,
-              initiallyExpanded: index==selected,
-              onExpansionChanged: (expanded){
-                if(expanded)
+              initiallyExpanded: index == selected,
+              onExpansionChanged: (expanded) {
+                if (expanded)
                   setState(() {
                     selected = index;
                   });
-                else setState(() {
-                  selected = -1;
-                });
+                else
+                  setState(() {
+                    selected = -1;
+                  });
               },
               title: Text(
                 _data['label'][lang ?? 'ar'],
@@ -459,6 +504,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  List sampleList = ["","ramadan", "ramadan 2", "ramadan 3"];
+  List sampleList = ["", "ramadan", "ramadan 2", "ramadan 3"];
   var selection = "";
 }

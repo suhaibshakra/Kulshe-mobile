@@ -94,6 +94,7 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   bool pauseIcon = true;
   bool editIcon = true;
   bool renewIcon = true;
+  bool multiList = false;
 
   _getCountries() async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
@@ -268,7 +269,21 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     return Scaffold(
-      appBar: buildAppBar(centerTitle: true, bgColor: AppColors.whiteColor),
+      appBar: widget.fromHome
+          ? null
+          : defaultAppbar(
+              context,
+              '${widget.actionTitle == 'approved' ? "${AppController.strings.postedAds}" : widget.actionTitle == 'rejected' ? '${AppController.strings.rejectedAds}' : widget.actionTitle == 'new' ? '${AppController.strings.waitingAds}' : widget.actionTitle == 'expired' ? '${AppController.strings.expiredAds}' : widget.isFav ? '${AppController.strings.myFav}' : '${AppController.strings.myAds}'}',
+              leading: buildIconButton(
+                  icon: FontAwesomeIcons.listAlt,
+                  size: 24,
+                  color: multiList ? AppColors.redColor : AppColors.grey,
+                  onPressed: () {
+                    setState(() {
+                      multiList = !multiList;
+                    });
+                  }),
+            ),
       body: _loading
           ? buildLoading(color: AppColors.redColor)
           : _publicAd.length == 0
@@ -276,45 +291,42 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                   child: Container(
                     color: Colors.white,
                     child: Center(
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: AppColors.blue.withOpacity(0.3),
-                                    offset: Offset(2, 2),
-                                    blurRadius: 1,
-                                    spreadRadius: 2)
-                              ]),
-                          child: buildIconWithTxt(
-                            label: Text(
-                              "عذرا , لا يوجد اعلانات",
-                              style:
-                                  appStyle(color: AppColors.blue, fontSize: 22),
-                            ),
-                            iconColor: AppColors.blue,
-                            iconData: !(widget.isFav && widget.fromHome)
-                                ? Icons.arrow_back_outlined
-                                : Icons.clear,
-                            size: 30,
-                            action: () {
-                              if (widget.fromHome == true) {
-                                return null;
-                              } else {
-                                Navigator.of(context).pop();
-                              }
-                            },
+                      child: Container(
+                        height: 60,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: AppColors.blue.withOpacity(0.3),
+                                  offset: Offset(2, 2),
+                                  blurRadius: 1,
+                                  spreadRadius: 2)
+                            ]),
+                        child: buildIconWithTxt(
+                          label: Text(
+                            "عذرا , لا يوجد اعلانات",
+                            style:
+                                appStyle(color: AppColors.blue, fontSize: 22),
                           ),
+                          iconColor: AppColors.blue,
+                          iconData: !(widget.isFav && widget.fromHome)
+                              ? Icons.arrow_back_outlined
+                              : Icons.clear,
+                          size: 30,
+                          action: () {
+                            if (widget.fromHome == true) {
+                              return null;
+                            } else {
+                              Navigator.of(context).pop();
+                            }
+                          },
                         ),
                       ),
                     ),
                   ),
                 )
               : Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection: _drController,
                   child: Stack(
                     children: [
                       if (!_privateBool &&
@@ -429,529 +441,229 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
                                 !widget.fromHome
                             ? const EdgeInsets.only(top: 60)
                             : const EdgeInsets.only(top: 4),
-                        child: _buildList(mq),
+                        child: multiList
+                            ? _buildList(mq)
+                            : buildMultiListView(mq, scrollController),
                       ),
                     ],
-                  )),
+                  ),
+                ),
     );
   }
 
-  Container _buildList(MediaQueryData mq) {
-    return Container(
+  _buildList(MediaQueryData mq) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(top: 10),
       child: ListView.builder(
           controller: scrollController,
-          itemCount: _publicAd.length+1,
+          itemCount: _publicAd.length + 1,
           physics: ClampingScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
             if (index == _publicAd.length) {
-              return Container(height: mq.size.height*0.1,color: Colors.grey[200],child: CupertinoActivityIndicator());
+              return Container(
+                height: mq.size.height * 0.1,
+                color: Colors.grey[200],
+                child: CupertinoActivityIndicator(
+                  radius: 15,
+                ),
+              );
             }
             int imgStatus = _publicAd[index]['count_of_images'] != null
                 ? _publicAd[index]['count_of_images']
                 : 0;
             var _data = _publicAd[index];
 
-            return InkWell(
-              onTap: () {
-                print(_data['id'].toString());
-                print(_data['slug']);
-                return Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetailsScreen(
-                      adID: _data['id'],
-                      slug: _data['slug'],
-                      isPrivate: _privateBool,
-                    ),
-                  ),
-                );
-              },
-              child: Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade200,
-                                offset: Offset(1, 1),
-                                spreadRadius: 1,
-                                blurRadius: 1)
-                          ]),
-                      child: Card(
-                        color: AppColors.whiteColor,
-                        elevation: 6,
-                        child: Container(
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                height: mq.size.height * 0.22,
-                                decoration: BoxDecoration(
-                                  color: AppColors.whiteColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    fit: imgStatus >= 1
-                                        ? BoxFit.cover
-                                        : BoxFit.contain,
-                                    image: imgStatus >= 1
-                                        ? NetworkImage(_data['images'][0]
-                                                ['image']
-                                            .toString())
-                                        : AssetImage(
-                                            "assets/images/no_img.png"),
-                                  ),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: buildIcons(
-                                          iconData:
-                                              _data['is_favorite_ad'] == false
-                                                  ? Icons.favorite_border
-                                                  : Icons.favorite,
-                                          color: Colors.red,
-                                          bgColor:
-                                              AppColors.grey.withOpacity(0.1),
-                                          size: 25,
-                                          action: () {
-                                            favoriteAd(
-                                              scaffoldKey: _scaffoldKey,
-                                              context: context,
-                                              adId: _data['id'],
-                                              state: _data['is_favorite_ad'] ==
-                                                      true
-                                                  ? "delete"
-                                                  : "add",
-                                            ).then((value) {
-                                              setState(() {
-                                                _data['is_favorite_ad'] =
-                                                    !_data['is_favorite_ad'];
-                                              });
-                                              if (widget.isFav)
-                                                _publicAd.remove(_data);
-                                            });
-                                          }),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: Container(
-                                            width: mq.size.width * 0.32,
-                                            decoration: BoxDecoration(
-                                                color: Colors.black
-                                                    .withOpacity(0.6),
-                                                borderRadius:
-                                                    BorderRadius.circular(16)),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    myIcon(context,
-                                                        Icons.video_call,
-                                                        color: Colors.white,
-                                                        size: 25,
-                                                        hasDecoration: false),
-                                                    buildTxt(
-                                                        txt: (_data['video'] ==
-                                                                    null
-                                                                ? "0"
-                                                                : 1)
-                                                            .toString(),
-                                                        txtColor: AppColors
-                                                            .whiteColor)
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    myIcon(context,
-                                                        Icons.camera_alt,
-                                                        color: Colors.white,
-                                                        size: 25,
-                                                        hasDecoration: false),
-                                                    buildTxt(
-                                                        txt: _data[
-                                                                'count_of_images']
-                                                            .toString(),
-                                                        txtColor: AppColors
-                                                            .whiteColor)
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          )),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              if (_data['created_at'] != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 16.0, bottom: 8),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Container(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Center(
-                                              child: buildIconWithTxt(
-                                                label: Text(
-                                                  "$_subSectionText",
-                                                  style: appStyle(
-                                                      fontSize: 15,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color:
-                                                          AppColors.descColor),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                iconData:
-                                                    FontAwesomeIcons.windows,
-                                                size: 18,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: 25,
-                                              child: VerticalDivider(
-                                                thickness: 1,
-                                                color: AppColors.greyThree,
-                                              ),
-                                            ),
-                                            Center(
-                                              child: buildIconWithTxt(
-                                                label: Text(
-                                                  "${TimeAgo.timeAgoSinceDate(_data['created_at'])}",
-                                                  style: appStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                      color:
-                                                          AppColors.descColor),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                iconData:
-                                                    FontAwesomeIcons.clock,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              Container(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    if (!_privateBool)
-                                      if (_data['user_contact'] != null)
-                                        Expanded(
-                                          flex: 1,
-                                          child: InkWell(
-                                            onTap: () {
-                                              return Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        AdvertiserProfile(_data[
-                                                                'user_contact']
-                                                            ['hash_id']),
-                                                  ));
-                                            },
-                                            child: Stack(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 20,
-                                                  backgroundImage: _data[
-                                                                  'user_contact']
-                                                              ['user_image'] !=
-                                                          null
-                                                      ? NetworkImage(
-                                                          _data['user_contact']
-                                                              ['user_image'])
-                                                      : AssetImage(
-                                                          "assets/images/user_img.png"),
-                                                ),
-                                                CircleAvatar(
-                                                  radius: 5,
-                                                  backgroundColor:
-                                                      _data['is_user_online']
-                                                          ? AppColors.greenColor
-                                                          : AppColors.grey,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                    Expanded(
-                                      flex: 5,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 16.0, bottom: 16.0),
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.6,
-                                          child: Text(
-                                            _data['title'],
-                                            style: appStyle(
-                                                fontSize: 16,
-                                                color: AppColors.blackColor),
-                                            maxLines: 2,
-                                            textAlign: TextAlign.start,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Container(
-                                  width: double.infinity,
-                                  child: Text(
-                                    _data['body'],
-                                    style: appStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade700),
-                                    maxLines: 2,
-                                    textAlign: TextAlign.start,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              if ((_data['has_price'] &&
-                                      _data['currency'] != null) &&
-                                  _data['is_free'] == false &&
-                                  _data['price'] != 0)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: Text(
-                                      '${_data['price'].toString()}  ${_data['currency'][lang].toString()}',
-                                      style: appStyle(
-                                          fontSize: 18, color: AppColors.green),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              if (_data['is_free'])
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  child: Container(
-                                    width: double.infinity,
-                                    child: Text(
-                                      _strController.free,
-                                      style: appStyle(
-                                          fontSize: 16,
-                                          color: AppColors.greenColor),
-                                      maxLines: 3,
-                                      textAlign: TextAlign.start,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                              if (_privateBool)
-                                if (_data['status'] != 'deleted')
-                                  buildUserSetting(_data, context, index),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return buildItemList(
+                data: _data,
+                context: context,
+                mq: mq,
+                imgStatus: imgStatus,
+                privateBool: widget.isPrivate,
+                userSetting: buildUserSetting(
+                  isMulti: false,
+                  data: _data,
+                  context: context,
+                  index: index,
+                  pauseAds: () {
+                    setState(() {
+                      pauseIcon = false;
+                    });
+                    pauseAd(
+                      context: context,
+                      adId: _data['id'],
+                      pausedStatus: _data['paused'] == true ? 0 : 1,
+                    ).then((value) {
+                      setState(() {
+                        pauseIcon = true;
+                        _data['paused'] = !_data['paused'];
+                      });
+                    });
+                  },
+                  reNew: () => reNewAd(context: context, adId: _data['id'])
+                      .then((value) {
+                    setState(() {
+                      _data['status'] = 'edited';
+                    });
+                  }),
+                  deleteAds: () {
+                    setState(() {
+                      deleteIcon = false;
+                    });
+                    deleteAd(
+                      context: context,
+                      adId: _data['id'],
+                    ).then((value) {
+                      setState(() {
+                        _data['status'] = 'deleted';
+                        deleteIcon = true;
+                      });
+                    });
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                  deleteIcon: deleteIcon,
+                ),
+                index: index,
+                subSectionText: _subSectionText,
+                favAction: () {
+                  favoriteAd(
+                    scaffoldKey: _scaffoldKey,
+                    context: context,
+                    adId: _data['id'],
+                    state: _data['is_favorite_ad'] == true ? "delete" : "add",
+                  ).then((value) {
+                    setState(() {
+                      _data['is_favorite_ad'] = !_data['is_favorite_ad'];
+                    });
+                    if (widget.isFav) _publicAd.remove(_data);
+                  });
+                });
           }),
     );
   }
 
-  Column buildUserSetting(_data, BuildContext context, index) {
-    return Column(
-      children: [
-        Divider(
-          thickness: 1,
-        ),
-        Padding(
+  buildMultiListView(MediaQueryData mq, scrollController) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(top: 10),
+      child: ListView.builder(
+        controller: scrollController,
+        shrinkWrap: true,
+        itemCount: _publicAd.length + 1,
+        physics: ClampingScrollPhysics(),
+        itemBuilder: (context, index) {
+          if (index == _publicAd.length) {
+            return Container(
+              height: mq.size.height * 0.1,
+              color: Colors.grey[200],
+              child: CupertinoActivityIndicator(
+                radius: 15,
+              ),
+            );
+          }
+          var _data = _publicAd[index];
+
+          // log("DATA : ${_data['images'][0]['image']}");
+          bool hasImg = false;
+          int imgStatus = _publicAd[index]['count_of_images'] != null
+              ? _publicAd[index]['count_of_images']
+              : 0;
+          if (_data['images'] != [] || _data['images'] != null)
+            hasImg = imgStatus > 0 ? true : false;
+          // print(hasImg);
+
+          return buildMultiCard(
+              isPrivate: _privateBool,
+              isFav: widget.isFav,
+              scrollController: scrollController,
+              adsData: _publicAd[index],
+              hasImg: hasImg,
+              mq: mq,
+              data: _data,
+              context: context,
+              favAction: () {
+                favoriteAd(
+                  scaffoldKey: _scaffoldKey,
+                  context: context,
+                  adId: _data['id'],
+                  state: _publicAd[index]['is_favorite_ad'] == true
+                      ? "delete"
+                      : "add",
+                ).then((value) {
+                  setState(() {
+                    _publicAd[index]['is_favorite_ad'] =
+                        !_publicAd[index]['is_favorite_ad'];
+                    // LatestAdsServices.getLatestAdsData().then((value) {
+                    //   setState(() {
+                    //     _publicAd = value[0]['responseData'];
+                    //     // log(_publicAd.toString());
+                    //     // log('value $_publicAd');
+                    //     // _loading = false;
+                    //   });
+                    // });
+                  });
+                });
+              },
+          userSetting: buildUserSetting(
+            isMulti: true,
+            data: _data,
+            context: context,
+            index: index,
+            pauseAds: () {
+              setState(() {
+                pauseIcon = false;
+              });
+              pauseAd(
+                context: context,
+                adId: _data['id'],
+                pausedStatus: _data['paused'] == true ? 0 : 1,
+              ).then((value) {
+                setState(() {
+                  pauseIcon = true;
+                  _data['paused'] = !_data['paused'];
+                });
+              });
+            },
+            reNew: () => reNewAd(context: context, adId: _data['id'])
+                .then((value) {
+              setState(() {
+                _data['status'] = 'edited';
+              });
+            }),
+            deleteAds: () {
+              setState(() {
+                deleteIcon = false;
+              });
+              deleteAd(
+                context: context,
+                adId: _data['id'],
+              ).then((value) {
+                setState(() {
+                  _data['status'] = 'deleted';
+                  deleteIcon = true;
+                });
+              });
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            deleteIcon: deleteIcon,
+          ));
+        },
+      ),
+    );
+  }
+
+  buildConvertList() {
+    return Center(
+      child: SizedBox(
+        height: 30,
+        width: double.infinity,
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (_data['status'] == 'expired')
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Container(
-                        child: Column(
-                      children: [
-                        buildIconButton(
-                          icon: Icons.autorenew,
-                          color: AppColors.blue,
-                          onPressed: () {
-                            reNewAd(context: context, adId: _data['id'])
-                                .then((value) {
-                              setState(() {
-                                _data['status'] = 'edited';
-                              });
-                            });
-                          },
-                          size: 25,
-                        ),
-                        buildTxt(txt: "إعادة تفعيل")
-                      ],
-                    )),
-                  ),
-                ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                    child: Column(
-                      children: [
-                        buildIconButton(
-                          icon: _data['paused'] == true
-                              ? Icons.play_arrow
-                              : Icons.pause,
-                          color: _data['paused'] == true
-                              ? AppColors.amberColor
-                              : AppColors.greyFour,
-                          onPressed: () {
-                            setState(() {
-                              pauseIcon = false;
-                            });
-                            pauseAd(
-                              context: context,
-                              adId: _data['id'],
-                              pausedStatus: _data['paused'] == true ? 0 : 1,
-                            ).then((value) {
-                              setState(() {
-                                pauseIcon = true;
-                                _data['paused'] = !_data['paused'];
-                              });
-                            });
-                          },
-                          size: 25,
-                        ),
-                        buildTxt(
-                            txt: _data['paused'] == true ? 'تشغيل' : 'إيقاف',
-                            txtColor: _data['paused'] == true
-                                ? AppColors.amberColor
-                                : AppColors.greyFour)
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                      child: Column(
-                    children: [
-                      buildIconButton(
-                          icon: Icons.edit,
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => EditAdForm(
-                                    fromEdit: true,
-                                    sectionId: _data['section_id'].toString(),
-                                    subSectionId: _data['sub_section_id'],
-                                    adID: _data['id'],
-                                  ),
-                                ));
-                          },
-                          size: 25,
-                          color: AppColors.blue),
-                      buildTxt(txt: _strController.edit)
-                    ],
-                  )),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Container(
-                      child: Column(
-                    children: [
-                      if (deleteIcon == true)
-                        buildIconButton(
-                          icon: Icons.delete,
-                          color: AppColors.redColor,
-                          size: 25,
-                          onPressed: () {
-                            buildDialog(
-                                context: context,
-                                title: _strController.deleteAd,
-                                desc: _strController.askDeleteAd,
-                                yes: _strController.ok,
-                                no: _strController.cancel,
-                                action: () {
-                                  setState(() {
-                                    deleteIcon = false;
-                                  });
-                                  deleteAd(
-                                    context: context,
-                                    adId: _data['id'],
-                                  ).then((value) {
-                                    setState(() {
-                                      _data['status'] = 'deleted';
-                                      deleteIcon = true;
-                                    });
-                                  });
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-                                });
-                          },
-                        ),
-                      if (!deleteIcon) CircularProgressIndicator(),
-                      buildTxt(txt: "حذف")
-                    ],
-                  )),
-                ),
-              ),
-            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [],
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 }

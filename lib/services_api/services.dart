@@ -10,9 +10,8 @@ class SectionServicesNew {
   static Future<List> getSections() async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get(
-        url,headers: {'lang':_pref.getString('lang')??'ar'}
-      );
+      final response = await http
+          .get(url, headers: {'lang': _pref.getString('lang') ?? 'ar'});
       // print(response.statusCode);
       if (200 == response.statusCode) {
         // print(response.body);
@@ -33,8 +32,9 @@ class CountriesServices {
   static Future<List> getCountries({double isClassified = 0}) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response =
-          await http.get('${baseURL}countries?classified=$isClassified',headers: {'lang':_pref.getString('lang')??'ar'});
+      final response = await http.get(
+          '${baseURL}countries?classified=$isClassified',
+          headers: {'lang': _pref.getString('lang') ?? 'ar'});
       // print(response.statusCode);
       if (200 == response.statusCode) {
         final List _countries = jsonDecode('[${response.body}]');
@@ -62,9 +62,10 @@ class MyAdsServicesNew {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/user/classifieds?status=$status&limit=$limit&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
@@ -92,7 +93,7 @@ class PublicAdsServicesNew {
     String subBrand = "",
     String hasPrice = "",
     int hasImage = 0,
-    String sort="",
+    String sort = "",
     String limit,
     String offset,
     String txt = "",
@@ -103,9 +104,10 @@ class PublicAdsServicesNew {
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&sectionId=$sectionId&subSectionId=$subSectionId&price=&countryId=${_pref.getString('countryId')}&cityId=&brand=&subBrand=&hasPrice=&hasImage=$hasImage&sort=$sort&limit=10&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
 
@@ -126,17 +128,18 @@ class PublicAdsServicesNew {
     }
   }
 }
+
 class LatestAdsServices {
-  static Future<List> getLatestAdsData({
-    int offset
-  }) async {
+  static Future<List> getLatestAdsData({int offset}) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get('${baseURL}classifieds/latest-mobile/${_pref.getString('countryId')}?limit=10&offset=$offset',
+      final response = await http.get(
+          '${baseURL}classifieds/latest-mobile/${_pref.getString('countryId')}?limit=10&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
@@ -154,19 +157,19 @@ class LatestAdsServices {
     }
   }
 }
+
 class FilterAdsServices {
-  static Future<List> getAdsData({
-    var filteredData,int offset
-   }) async {
+  static Future<List> getAdsData({var filteredData, int offset}) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       print('filtered Data: $filteredData');
       final response = await http.get(
           '${baseURL}classifieds?${filteredData}&limit=10&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
       print(response.statusCode);
@@ -193,14 +196,12 @@ class GetAboutData {
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get(
-          '${baseURL}pages/$id',
-          headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
-            'Accept': 'application/json',
-            // 'token': '${_pref.getString('token')}',
-            // 'Authorization': 'bearer ${_pref.getString('token')}'
-          });
+      final response = await http.get('${baseURL}pages/$id', headers: {
+        'lang': '${_pref.getString('lang') ?? 'ar'}',
+        'Accept': 'application/json', 'comeFrom': 'm',
+        // 'token': '${_pref.getString('token')}',
+        // 'Authorization': 'bearer ${_pref.getString('token')}'
+      });
       print(response.statusCode);
       if (200 == response.statusCode) {
         print(response.statusCode);
@@ -233,8 +234,9 @@ class SearchAdsServices {
       final response = await http.get(
           '${baseURL}classifieds?text=$txt&hasImage=$hasImage&sort=$sort&offset=$offset&limit=$limit&countryId=${_pref.getString('countryId')}',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
+            'comeFrom': 'm',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
@@ -267,9 +269,10 @@ class AdAddForm {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/$subSectionId/classified?iso=JO',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
       print(response.statusCode);
@@ -279,7 +282,10 @@ class AdAddForm {
         // print('ads : $ads');
         return ads;
       } else {
-        List<dynamic> data = [response.statusCode,jsonDecode('[${response.body}]')[0]['custom_message'],];
+        List<dynamic> data = [
+          response.statusCode,
+          jsonDecode('[${response.body}]')[0]['custom_message'],
+        ];
         return data;
       }
     } catch (e) {
@@ -287,6 +293,7 @@ class AdAddForm {
     }
   }
 }
+
 class AdEditForm {
   static Future<List> getAdsForm({
     String adID,
@@ -296,9 +303,10 @@ class AdEditForm {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/classified/$adID',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}'
           });
       print(response.statusCode);
@@ -318,16 +326,17 @@ class AdEditForm {
 
 class FavoriteAdsServices {
   static Future<List> getFavData({
-     String offset,
+    String offset,
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
       final response = await http.get(
           '${baseURL}user/classifieds/favorite?limit=10&offset=$offset',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
             'Accept': 'application/json',
             'token': '${_pref.getString('token')}',
+            'comeFrom': 'm',
             'Authorization': 'bearer ${_pref.getString('token')}',
           });
       print(response.statusCode);
@@ -352,7 +361,8 @@ class ProfileServicesNew {
         'accept': 'application/json',
         'token': "${_pref.getString('token')}",
         'Authorization': 'bearer ${_pref.getString('token')}',
-        'lang': '${_pref.getString('lang')??'ar'}',
+        'comeFrom': 'm',
+        'lang': '${_pref.getString('lang') ?? 'ar'}',
       });
       print(response.statusCode);
       if (200 == response.statusCode) {
@@ -366,6 +376,7 @@ class ProfileServicesNew {
     }
   }
 }
+
 class AdvertiserProfileServices {
   static Future<List> advertiserProfile({
     String limit,
@@ -374,10 +385,13 @@ class AdvertiserProfileServices {
   }) async {
     SharedPreferences _pref = await SharedPreferences.getInstance();
     try {
-      final response = await http.get('${baseURL}user-profile/$idHash?limit=$limit&offset=$offset', headers: {
-        'accept': 'application/json',
-        'lang': 'ar',
-      });
+      final response = await http.get(
+          '${baseURL}user-profile/$idHash?limit=$limit&offset=$offset',
+          headers: {
+            'accept': 'application/json',
+            'lang': 'ar',
+            'comeFrom': 'm',
+          });
       print(response.statusCode);
       if (200 == response.statusCode) {
         final List profile = jsonDecode('[${response.body}]');
@@ -419,7 +433,6 @@ class AdvertiserProfileServices {
 //   }
 // }
 
-
 class AdDetailsServicesNew {
   static Future getAdData({
     int adId,
@@ -432,9 +445,11 @@ class AdDetailsServicesNew {
       final response = await http.get(
           'https://api.kulshe.nurdevops.com/api/v1/classified/$adId/view?slug=$slug',
           headers: {
-            'lang': '${_pref.getString('lang')??'ar'}',
-            'Accept': 'application/json',
-            'Country-id': countryId == null?'${_pref.getString('countryId')}':countryId,
+            'lang': '${_pref.getString('lang') ?? 'ar'}',
+            'Accept': 'application/json', 'comeFrom': 'm',
+            'Country-id': countryId == null
+                ? '${_pref.getString('countryId')}'
+                : countryId,
             // 'Country-id': '$countryId',
             'token': '${_pref.getString('token')}',
             'Authorization': 'bearer ${_pref.getString('token')}',

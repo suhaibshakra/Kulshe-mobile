@@ -448,7 +448,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topLeft,child: IconButton(icon: Icon(Icons.arrow_back,color: AppColors.blackColor2,),onPressed: ()=>Navigator.pop(context),))),
+                        child: Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topRight,child: IconButton(icon: Icon(Icons.clear,color: AppColors.redColor,),onPressed: ()=>Navigator.pop(context),))),
                       ),
                     ],
                   ),
@@ -461,7 +461,7 @@ class _AdvertiserProfileState extends State<AdvertiserProfile> {
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     if (index == _publicAd.length) {
-                      return Container(height: mq.size.height*0.1,color: Colors.grey[200],child: CupertinoActivityIndicator());
+                      return Container(height: mq.size.height*0.1,color: Colors.grey[200],child: CupertinoActivityIndicator(radius: 15,));
                     }
 
 

@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   txt: _strController.loginTitle,
                                   fontSize: 25,
                                   fontWeight: FontWeight.w700,
-                                  txtColor: AppColors.redColor),
+                                  txtColor: AppColors.blackColor2),
                             ),
                             Container(
                               child: Column(
@@ -152,16 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               alignment: AppController.strings is EnglishString
                                   ? Alignment.centerLeft
                                   : Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),)),
-                                // no: _strController.cancel,context: ctx,content: buildTextField(label: _strController.email,controller: _emailForgetController),yes: _strController.done,action: ()=>forgetPasswordEmail(context, _emailForgetController.text.toString())),
-                                child: buildTxt(
-                                    txt: _strController.forgetPassword +" ؟",
-                                    txtColor: AppColors.redColor,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700
-                                   ),
-                              ),
+                              child: buildTxt(
+                                action: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ForgetPasswordScreen(),),),
+                                  txt: _strController.forgetPassword +" ؟",
+                                  txtColor: AppColors.blue,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w400
+                                 ),
                             ),
                             //0/05
                             SizedBox(
@@ -176,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontSize: 20,
                                   txtColor: AppColors.whiteColor,
                                   radius: 10,
-                                  btnColor: AppColors.redColor,
+                                  btnColor: AppColors.greenColor,
                                   onPressed: () {
                                     _validateAndSubmit(ctx: ctx);
                                     // _showLoadingHud(context);
@@ -206,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         TextSpan(
                                           text: _strController.signUp,
                                           style: TextStyle(
-                                              color: AppColors.redColor,
+                                              color: AppColors.blue,
                                               fontSize: 17,
                                               decoration:
                                                   TextDecoration.underline,

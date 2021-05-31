@@ -1,14 +1,20 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bmprogresshud/progresshud.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kulshe/ui/about_pages/about_screen.dart';
 import 'package:kulshe/ui/about_pages/contact_us_screen.dart';
 import 'package:kulshe/ui/ads_package/add_ad/add_ad_sections.dart';
+import 'package:kulshe/ui/ads_package/add_ad/edit_ad_form.dart';
+import 'package:kulshe/ui/ads_package/details_screen.dart';
 import 'package:kulshe/ui/ads_package/public_ads_screen.dart';
+import 'package:kulshe/ui/ads_package/time_ago.dart';
 import 'package:kulshe/ui/ads_package/user_panel.dart';
+import 'package:kulshe/ui/profile/advertiser_profile.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../app_helpers/app_controller.dart';
@@ -54,194 +60,221 @@ buildAppBar({
 }
 GlobalKey<ProgressHudState> _hudKey = GlobalKey();
 
+defaultAppbar(BuildContext context,String txt, {Widget leading}){
+  return AppBar(
+    elevation: 0,
+    leading: leading,
+    actions: [
+      IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(
+            Icons.clear,
+            color: Colors.red,
+          ))
+    ],
+    centerTitle: true,
+    backgroundColor: AppColors.whiteColor,
+    title: buildTxt(
+      txt: txt,
+      fontWeight: FontWeight.w700,
+      fontSize: 18,
+      txtColor: AppColors.blackColor2,
+      textAlign: TextAlign.center,
+      maxLine: 1,
+    ),
+  );
+}
+
 buildDrawer(BuildContext context, Function action, {fromNav = false}) {
-  return Directionality(
-    textDirection: AppController.textDirection,
-    child: ProgressHud(
-       isGlobalHud: true,
-      child: LayoutBuilder(
-        builder: (ctx, constraints) => Container(
-          width: double.infinity,
-          child: ListView(
-            children: ListTile.divideTiles(context: context, tiles: [
-              if (!fromNav)
-                Container(
+  return ProgressHud(
+     isGlobalHud: true,
+    child: LayoutBuilder(
+      builder: (ctx, constraints) => Container(
+        width: double.infinity,
+        child: ListView(
+          children: ListTile.divideTiles(context: context, tiles: [
+            if (!fromNav)
+              Directionality(
+              textDirection:AppController.textDirection,
+                child: Container(
                   width: double.infinity,
                   height: 50,
                   color: Colors.white,
                   child: Align(
-                    alignment: Alignment.topRight,
+                    alignment: Alignment.topLeft,
                     child: buildIconButton(
-                        icon: Icons.arrow_forward_ios,
+                        icon: Icons.arrow_back_outlined,
                         color: Colors.black,
                         onPressed: action),
                   ),
                 ),
-              buildBorder(buildListTile(
-                  context: context,
-                  title: _strController.userPanel,
-                  hasLeading: true,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserPanel(),
-                        ),
+              ),
+            buildBorder(buildListTile(
+                context: context,
+                title: _strController.userPanel,
+                hasLeading: true,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserPanel(),
                       ),
-                  iconL: Icons.account_circle,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  title: _strController.myAccount,
-                  hasLeading: true,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditProfileScreen(),
-                        ),
-                      ),
-                  iconL: Icons.account_circle,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                            actionTitle: '',
-                          ),
-                        ),
-                      ),
-                  title: _strController.myAds,
-                  hasLeading: true,
-                  iconL: Icons.addchart_sharp,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.addchart_sharp,
-                  title: _strController.myPostsAds,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                            actionTitle: 'approved',
-                          ),
-                        ),
-                      ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.post_add_sharp,
-                  title: _strController.myWaitingAds,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
-                            actionTitle: 'new',
-                          ),
-                        ),
-                      ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.close,
-                  title: _strController.myRejectedAds,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
-                            actionTitle: 'rejected',
-                          ),
-                        ),
-                      ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.close,
-                  title: _strController.expiredAds,
-                  tapHandler: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
-                            actionTitle: 'expired',
-                          ),
-                        ),
-                      ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.favorite,
-                  title: _strController.myFavAds,
-                  tapHandler: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,)
                     ),
-                  ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.filter_list,
-                  title: _strController.filter,
-                  tapHandler: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddAdSectionsScreen(comeFrom: 'filter',)
+                iconL: Icons.account_circle,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                title: _strController.myAccount,
+                hasLeading: true,
+                tapHandler: () {
+                  return Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditProfileScreen(),
+                      ),
+                    );
+                },
+                iconL: Icons.account_circle,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                          actionTitle: '',
+                        ),
+                      ),
                     ),
-                  ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasLeading: true,
-                  iconL: Icons.add_circle,
-                  title: _strController.newAd,
-                  tapHandler: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)
+                title: _strController.myAds,
+                hasLeading: true,
+                iconL: Icons.addchart_sharp,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.addchart_sharp,
+                title: _strController.myPostsAds,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                          actionTitle: 'approved',
+                        ),
+                      ),
                     ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.post_add_sharp,
+                title: _strController.myWaitingAds,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
+                          actionTitle: 'new',
+                        ),
+                      ),
+                    ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.close,
+                title: _strController.myRejectedAds,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFilter: false,isFav: false,fromHome: false,
+                          actionTitle: 'rejected',
+                        ),
+                      ),
+                    ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.close,
+                title: _strController.expiredAds,
+                tapHandler: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PublicAdsScreen(isPrivate:true,isFav: false,isFilter: false,fromHome: false,
+                          actionTitle: 'expired',
+                        ),
+                      ),
+                    ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.favorite,
+                title: _strController.myFavAds,
+                tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PublicAdsScreen(isPrivate: false,isFav: true,isFilter: false,fromHome: false,)
                   ),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  title: _strController.contactWithUs,
-                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUsScreen(),)),
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'howWeAre',),)),
-                  context: context,
-                  title: _strController.whoAreWe,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 't&c',),)),
-                  context: context,
-                  title: _strController.termsAndCon,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'privacy',),)),
-                  context: context,
-                  title: _strController.privacyPolicy,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  title: _strController.followUs,
-                  icon: Icons.arrow_forward_ios)),
-              buildBorder(buildListTile(
-                  context: context,
-                  hasColor: true,
-                  tapHandler: () {
-                    showLoadingHud(context: ctx,hudKey: _hudKey);
-                    return logoutFunction(context: context);
-                  },
-                  title: _strController.logout,
-                  icon: Icons.logout)),
-            ]).toList(),
-          ),
+                ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.filter_list,
+                title: _strController.filter,
+                tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddAdSectionsScreen(comeFrom: 'filter',)
+                  ),
+                ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasLeading: true,
+                iconL: Icons.add_circle,
+                title: _strController.newAd,
+                tapHandler: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AddAdSectionsScreen(comeFrom: 'addAd',)
+                  ),
+                ),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                title: _strController.contactWithUs,
+                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUsScreen(),)),
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+              tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'howWeAre',),)),
+                context: context,
+                title: _strController.whoAreWe,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 't&c',),)),
+                context: context,
+                title: _strController.termsAndCon,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                tapHandler: ()=>Navigator.push(context, MaterialPageRoute(builder: (context) => PrivacyPolicyScreen(comeFrom: 'privacy',),)),
+                context: context,
+                title: _strController.privacyPolicy,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                title: _strController.followUs,
+                icon: Icons.arrow_forward_ios)),
+            buildBorder(buildListTile(
+                context: context,
+                hasColor: true,
+                tapHandler: () {
+                  showLoadingHud(context: ctx,hudKey: _hudKey);
+                  return logoutFunction(context: context);
+                },
+                title: _strController.logout,
+                icon: Icons.logout)),
+          ]).toList(),
         ),
       ),
     ),
@@ -285,28 +318,31 @@ Widget buildListTile(
     bool hasColor = false,
     Function tapHandler,
     @required BuildContext context}) {
-  return ListTile(
-    leading: hasLeading
-        ? Icon(
-            iconL,
-            color: AppColors.blackColor,
-            size: 24,
-          )
-        : null,
-    trailing: Icon(
-      icon,
-      color: hasColor ? Colors.redAccent : AppColors.blackColor,
-      size: 20,
-    ),
-    title: Text(
-      title,
-      style: appStyle(
-        color: Theme.of(context).textTheme.button.color,
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
+  return Directionality(
+    textDirection: AppController.textDirection,
+    child: ListTile(
+      leading: hasLeading
+          ? Icon(
+              iconL,
+              color: AppColors.blackColor,
+              size: 24,
+            )
+          : null,
+      trailing: Icon(
+        icon,
+        color: hasColor ? Colors.redAccent : AppColors.blackColor,
+        size: 20,
       ),
+      title: Text(
+        title,
+        style: appStyle(
+          color: Theme.of(context).textTheme.button.color,
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      onTap: tapHandler,
     ),
-    onTap: tapHandler,
   );
 }
 
@@ -857,6 +893,19 @@ Future<void> showInformationDialog({
   );
 }
 
+//buildPage({Widget widget, BuildContext context,Color color = Colors.white}){
+//  return Directionality(
+//    textDirection: AppController.textDirection,
+//    child: SafeArea(
+//      child: Stack(
+//        children: [
+//          widget,
+//          Directionality(textDirection: TextDirection.ltr,child: Align(alignment: Alignment.topRight,child: IconButton(icon: Icon(Icons.close,color: color,),onPressed: ()=>Navigator.pop(context),),),),
+//        ],
+//      ),
+//    ),
+//  );
+//}
 
 String validateName(String value) {
   String patttern = r'(^[a-zA-Z ]*$)';
@@ -947,4 +996,662 @@ String validateCurrency(String value) {
   }else{
     return null;
   }
+}
+
+
+
+//listing
+ buildMultiCard(
+     {Widget userSetting,bool isPrivate = false,adsData,bool isFav, MediaQueryData mq,data,scrollController,BuildContext context,bool hasImg, favAction}) {
+  // log(data.toString());
+  return Card(
+    elevation: 2.0,
+    margin: EdgeInsets.only(bottom: 5.0),
+    child: Stack(
+      children: [
+        InkWell(
+          onTap: () {
+            print(data['id'].toString());
+            print(data['slug']);
+            return Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailsScreen(
+                  isPrivate: false,
+                  adID: data['id'],
+                  slug: data['slug'],
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Row(
+              children: [
+                // Hero(
+                //   tag: '${item.newsTitle}',
+                // if (hasImg)
+                  Stack(
+                    children: [
+                      Container(
+                        width: mq.size.width * 0.4,
+                        height: mq.size.height * 0.19,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: hasImg?NetworkImage(data['images'][0]['image']):AssetImage('assets/images/no_img.png'),
+                              // image: NetworkImage(
+                              //     data['images'][0]['image']),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0)),
+                      ),
+                      Container(
+                        height: mq.size.height * 0.18,
+                        width: mq.size.width * 0.4,
+                        alignment: Alignment.center,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width:
+                            MediaQuery.of(context).size.width * 0.32,
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  children: [
+                                    myIcon(context, Icons.video_call,
+                                        color: Colors.white,
+                                        size: 25,
+                                        hasDecoration: false),
+                                    buildTxt(
+                                        txt: (data['video'] == null ||
+                                            data['video'] == ""
+                                            ? "0"
+                                            : 1)
+                                            .toString(),
+                                        txtColor: AppColors.whiteColor)
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    myIcon(context, Icons.camera_alt,
+                                        color: Colors.white,
+                                        size: 25,
+                                        hasDecoration: false),
+                                    buildTxt(
+                                        txt: data['count_of_images']
+                                            .toString(),
+                                        txtColor: AppColors.whiteColor)
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                SizedBox(
+                  width: 10.0,
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        data['title'],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: appStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30.0,
+                      ),
+                      Text(
+                        data['body'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: appStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 15.0,
+                        ),
+                      ),
+                      SizedBox(height: 10,),
+                      if (data['show_contact'] != false && !isPrivate && !isFav)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              data['user_contact']['nick_name'],
+                              style: appStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                            SizedBox(width: 10,),
+                            InkWell(
+                              onTap: () {
+                                print('hash_id: ${data['hash_id']}');
+                                return Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AdvertiserProfile(
+                                              data['user_contact']
+                                              ['hash_id']),
+                                    ));
+                              },
+                              child: Stack(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundImage: data['user_contact']
+                                    ['user_image'] !=
+                                        null
+                                        ? NetworkImage(
+                                        data['user_contact']
+                                        ['user_image'])
+                                        : AssetImage(
+                                        "assets/images/no_img.png"),
+                                  ),
+                                  CircleAvatar(
+                                    radius: 5,
+                                    backgroundColor:
+                                    data['is_user_online']
+                                        ? AppColors.greenColor
+                                        : AppColors.grey,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (isPrivate)
+                        if (data['status'] != 'deleted')
+                          userSetting,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: buildIcons(
+              iconData: adsData['is_favorite_ad'] == false
+                  ? Icons.favorite_border
+                  : Icons.favorite,
+              color: Colors.red,
+              bgColor: AppColors.whiteColor.withOpacity(0.7),
+              size: 26,
+              action: favAction),
+        ),
+      ],
+    ),
+  );
+}
+
+
+//one item
+InkWell buildItemList({data,BuildContext context,MediaQueryData mq,int imgStatus,String subSectionText,int index,bool privateBool,Function favAction,Widget userSetting}) {
+  return InkWell(
+    onTap: () {
+      print(data['id'].toString());
+      print(data['slug']);
+      return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailsScreen(
+            adID: data['id'],
+            slug: data['slug'],
+            isPrivate: privateBool,
+          ),
+        ),
+      );
+    },
+    child: Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.shade200,
+                      offset: Offset(1, 1),
+                      spreadRadius: 1,
+                      blurRadius: 1)
+                ]),
+            child: Card(
+              color: AppColors.whiteColor,
+              elevation: 6,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: mq.size.height * 0.22,
+                      decoration: BoxDecoration(
+                        color: AppColors.whiteColor,
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                          fit: imgStatus >= 1
+                              ? BoxFit.cover
+                              : BoxFit.contain,
+                          image: imgStatus >= 1
+                              ? NetworkImage(data['images'][0]
+                          ['image']
+                              .toString())
+                              : AssetImage(
+                              "assets/images/no_img.png"),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: buildIcons(
+                                iconData:
+                                data['is_favorite_ad'] == false
+                                    ? Icons.favorite_border
+                                    : Icons.favorite,
+                                color: Colors.red,
+                                bgColor:
+                                AppColors.grey.withOpacity(0.1),
+                                size: 25,
+                                action: favAction),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Container(
+                                  width: mq.size.width * 0.32,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black
+                                          .withOpacity(0.6),
+                                      borderRadius:
+                                      BorderRadius.circular(16)),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          myIcon(context,
+                                              Icons.video_call,
+                                              color: Colors.white,
+                                              size: 25,
+                                              hasDecoration: false),
+                                          buildTxt(
+                                              txt: (data['video'] ==
+                                                  null
+                                                  ? "0"
+                                                  : 1)
+                                                  .toString(),
+                                              txtColor: AppColors
+                                                  .whiteColor)
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          myIcon(context,
+                                              Icons.camera_alt,
+                                              color: Colors.white,
+                                              size: 25,
+                                              hasDecoration: false),
+                                          buildTxt(
+                                              txt: data[
+                                              'count_of_images']
+                                                  .toString(),
+                                              txtColor: AppColors
+                                                  .whiteColor)
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    if (data['created_at'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 16.0, bottom: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius:
+                              BorderRadius.circular(10)),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceAround,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: buildIconWithTxt(
+                                      label: Text(
+                                        "$subSectionText",
+                                        style: appStyle(
+                                            fontSize: 15,
+                                            fontWeight:
+                                            FontWeight.w400,
+                                            color:
+                                            AppColors.descColor),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      iconData:
+                                      FontAwesomeIcons.windows,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 25,
+                                    child: VerticalDivider(
+                                      thickness: 1,
+                                      color: AppColors.greyThree,
+                                    ),
+                                  ),
+                                  Center(
+                                    child: buildIconWithTxt(
+                                      label: Text(
+                                        "${TimeAgo.timeAgoSinceDate(data['created_at'])}",
+                                        style: appStyle(
+                                            fontSize: 16,
+                                            fontWeight:
+                                            FontWeight.w400,
+                                            color:
+                                            AppColors.descColor),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      iconData:
+                                      FontAwesomeIcons.clock,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment:
+                        MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (!privateBool)
+                            if (data['user_contact'] != null)
+                              Expanded(
+                                flex: 1,
+                                child: InkWell(
+                                  onTap: () {
+                                    return Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AdvertiserProfile(data[
+                                              'user_contact']
+                                              ['hash_id']),
+                                        ));
+                                  },
+                                  child: Stack(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: data[
+                                        'user_contact']
+                                        ['user_image'] !=
+                                            null
+                                            ? NetworkImage(
+                                            data['user_contact']
+                                            ['user_image'])
+                                            : AssetImage(
+                                            "assets/images/user_img.png"),
+                                      ),
+                                      CircleAvatar(
+                                        radius: 5,
+                                        backgroundColor:
+                                        data['is_user_online']
+                                            ? AppColors.greenColor
+                                            : AppColors.grey,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          Expanded(
+                            flex: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 16.0, bottom: 16.0),
+                              child: Container(
+                                width: MediaQuery.of(context)
+                                    .size
+                                    .width *
+                                    0.6,
+                                child: Text(
+                                  data['title'],
+                                  style: appStyle(
+                                      fontSize: 16,
+                                      color: AppColors.blackColor),
+                                  maxLines: 2,
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Container(
+                        width: double.infinity,
+                        child: Text(
+                          data['body'],
+                          style: appStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade700),
+                          maxLines: 2,
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                    if ((data['has_price'] &&
+                        data['currency'] != null) &&
+                        data['is_free'] == false &&
+                        data['price'] != 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16),
+                        child: Container(
+                          width: double.infinity,
+                          child: Text(
+                            '${data['price'].toString()}  ${data['currency']['ar'].toString()}',
+                            style: appStyle(
+                                fontSize: 18, color: AppColors.green),
+                            maxLines: 2,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    if (data['is_free'])
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16),
+                        child: Container(
+                          width: double.infinity,
+                          child: Text(
+                            _strController.free,
+                            style: appStyle(
+                                fontSize: 16,
+                                color: AppColors.greenColor),
+                            maxLines: 3,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    if (privateBool)
+                      if (data['status'] != 'deleted')
+                        userSetting,
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+Column buildUserSetting({isMulti = true,data, BuildContext context, index, Function reNew, Function pauseAds, Function deleteAds,bool deleteIcon}) {
+  return Column(
+    children: [
+      if(!isMulti)
+        Divider(
+        thickness: 1,
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (data['status'] == 'expired')
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Container(
+                      child: Column(
+                        children: [
+                          buildIconButton(
+                            icon: Icons.autorenew,
+                            color: AppColors.blue,
+                            onPressed: reNew,
+                            size: 25,
+                          ),
+                          if(!isMulti)
+                          buildTxt(txt: "إعادة تفعيل")
+                        ],
+                      )),
+                ),
+              ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Container(
+                  child: Column(
+                    children: [
+                      buildIconButton(
+                        icon: data['paused'] == true
+                            ? Icons.play_arrow
+                            : Icons.pause,
+                        color: data['paused'] == true
+                            ? AppColors.amberColor
+                            : AppColors.greyFour,
+                        onPressed: pauseAds,
+                        size: 25,
+                      ),
+                      if(!isMulti)
+                        buildTxt(
+                          txt: data['paused'] == true ? 'تشغيل' : 'إيقاف',
+                          txtColor: data['paused'] == true
+                              ? AppColors.amberColor
+                              : AppColors.greyFour)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: isMulti == true? 1:8.0),
+                child: Container(
+                    child: Column(
+                      children: [
+                        buildIconButton(
+                            icon: Icons.edit,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditAdForm(
+                                      fromEdit: true,
+                                      sectionId: data['section_id'].toString(),
+                                      subSectionId: data['sub_section_id'],
+                                      adID: data['id'],
+                                    ),
+                                  ));
+                            },
+                            size: 25,
+                            color: AppColors.blue),
+                        if(!isMulti)
+                          buildTxt(txt: _strController.edit)
+                      ],
+                    )),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Container(
+                    child: Column(
+                      children: [
+                        if (deleteIcon == true)
+                          buildIconButton(
+                            icon: Icons.delete,
+                            color: AppColors.redColor,
+                            size: 25,
+                            onPressed: () {
+                              buildDialog(
+                                  context: context,
+                                  title: _strController.deleteAd,
+                                  desc: _strController.askDeleteAd,
+                                  yes: _strController.ok,
+                                  no: _strController.cancel,
+                                  action: deleteAds);
+                            },
+                          ),
+                        if (!deleteIcon) CircularProgressIndicator(),
+                        if(!isMulti)
+                          buildTxt(txt: "حذف")
+                      ],
+                    )),
+              ),
+            ),
+          ],
+        ),
+      )
+    ],
+  );
 }

@@ -67,6 +67,7 @@ class _MainBottomNavigationState extends State<MainBottomNavigation>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: _lastSelected,
       bottomNavigationBar: FABBottomAppBar(
         height: 52,
@@ -243,8 +244,7 @@ class FabWithIcons extends StatefulWidget {
   State createState() => FabWithIconsState();
 }
 
-class FabWithIconsState extends State<FabWithIcons>
-    with TickerProviderStateMixin {
+class FabWithIconsState extends State<FabWithIcons>  with TickerProviderStateMixin {
   AnimationController _controller;
 
   @override

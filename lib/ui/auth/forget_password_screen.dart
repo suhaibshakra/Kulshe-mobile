@@ -33,7 +33,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(),
         body: Directionality(
           textDirection: AppController.textDirection,
           child: Stack(

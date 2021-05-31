@@ -31,24 +31,21 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(centerTitle: true,bgColor: AppColors.whiteColor),
-      body: Directionality(
-        textDirection: AppController.textDirection,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SingleChildScrollView(
-            child: _loading?Center(child: buildLoading(color: AppColors.green),):Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Center(child: buildTxt(txt: _data['title']['ar'].toString(),txtColor: AppColors.blackColor2.withOpacity(0.8),fontWeight: FontWeight.w700,fontSize: 22 ),),
-                SizedBox(height: 20,),
-                Center(child: buildTxt(txt: _data['intro']['ar'].toString(),txtColor: AppColors.blackColor2,fontWeight: FontWeight.w400,fontSize: 18 ),),
-                SizedBox(height: 20,),
-                Center(child: buildTxt(txt: _data['description']['ar'].toString(),txtColor: AppColors.blackColor2,fontWeight: FontWeight.w400,fontSize: 16 ),),
+      appBar: defaultAppbar(context, widget.comeFrom == 'whoAreWe'?AppController.strings.whoAreWe :AppController.strings.privacyPolicy),
+      body: SingleChildScrollView(
+        child: _loading? Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Directionality(textDirection: AppController.textDirection,child: buildLoading(color: AppColors.green)),
+        ):Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Center(child: buildTxt(txt: _data['title']['ar'].toString(),txtColor: AppColors.blackColor2.withOpacity(0.8),fontWeight: FontWeight.w700,fontSize: 22 ),),
+            SizedBox(height: 20,),
+            buildTxt(txt: _data['intro']['ar'].toString(),txtColor: AppColors.blackColor2,fontWeight: FontWeight.w400,fontSize: 18 ,textAlign: TextAlign.start),
+            SizedBox(height: 20,),
+            buildTxt(txt: _data['description']['ar'].toString(),txtColor: AppColors.blackColor2,fontWeight: FontWeight.w400,fontSize: 16 ,textAlign: TextAlign.start),
 
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

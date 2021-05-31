@@ -78,7 +78,7 @@ class _MainSplashScreenState extends State<MainSplashScreen>
       home: Scaffold(
         body: Stack(
           children: [
-            buildBg(),
+            // buildBg(),
             Padding(
               padding: const EdgeInsets.only(bottom: 100),
               child: Center(
