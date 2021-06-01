@@ -19,6 +19,7 @@ import 'package:kulshe/services_api/services.dart';
 import 'package:kulshe/ui/ads_package/user_panel.dart';
 import 'package:multi_image_picker2/multi_image_picker2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // import 'package:simple_location_picker/simple_location_picker_screen.dart';
 // import 'package:simple_location_picker/simple_location_result.dart';
 // import 'package:simple_location_picker/utils/slp_constants.dart';
@@ -31,7 +32,12 @@ class EditAdForm extends StatefulWidget {
   final bool fromEdit;
   final int adID;
 
-  EditAdForm({this.section, this.sectionId, this.subSectionId, this.adID,this.fromEdit});
+  EditAdForm(
+      {this.section,
+      this.sectionId,
+      this.subSectionId,
+      this.adID,
+      this.fromEdit});
 
   @override
   _EditAdFormState createState() => _EditAdFormState();
@@ -63,6 +69,7 @@ class _EditAdFormState extends State<EditAdForm> {
   TextEditingController _videoController = TextEditingController()..text;
   TextEditingController _bodyController = TextEditingController()..text;
   TextEditingController _birthDateController = TextEditingController()..text;
+
   // SimpleLocationResult _selectedLocation;
   List _adForm;
   List _countryData;
@@ -74,6 +81,7 @@ class _EditAdFormState extends State<EditAdForm> {
   List _listUnits;
   String _values;
   List _options;
+
   // List _images;
   String _type;
   var validation;
@@ -92,8 +100,13 @@ class _EditAdFormState extends State<EditAdForm> {
   GlobalKey<ProgressHudState> _hudKey = GlobalKey();
 
   List<dynamic> pickedImages = [];
+
   _buildImagesMap(
-      {String imgName ='', bool isNew = true, bool isDeleted = false, bool isMain = false,String identifier =''}) {
+      {String imgName = '',
+      bool isNew = true,
+      bool isDeleted = false,
+      bool isMain = false,
+      String identifier = ''}) {
     pickedImages.add({
       'new': isNew,
       'deleted': isDeleted,
@@ -120,7 +133,7 @@ class _EditAdFormState extends State<EditAdForm> {
           .toList();
       _citiesData = _countryData
           .where((element) =>
-      element['id'].toString() == _gp.getString('countryId'))
+              element['id'].toString() == _gp.getString('countryId'))
           .toList();
       _citiesData = _citiesData[0]['cities'];
       // print('CITIES DATA:${_citiesData}');
@@ -130,7 +143,6 @@ class _EditAdFormState extends State<EditAdForm> {
   }
 
   _buildMap(id, value, {unitID}) {
-
     int trendIndex = myAdAttributesArray.indexWhere((f) => f['id'] == id);
 
     if (trendIndex == -1) {
@@ -145,19 +157,18 @@ class _EditAdFormState extends State<EditAdForm> {
     // // print(myAdAttributesArray);
   }
 
-  void _pickDateDialog(id,{String value}) {
+  void _pickDateDialog(id, {String value}) {
     showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1920),
-        lastDate: DateTime.now())
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(1920),
+            lastDate: DateTime.now())
         .then((pickedDate) {
       if (pickedDate == null) {
         return;
       }
       setState(() {
         _selectedDate = pickedDate;
-
 
         _birthDateController.text = DateFormat("yyyy-MM-dd").format(pickedDate);
         chosenDate = _birthDateController.text;
@@ -176,9 +187,8 @@ class _EditAdFormState extends State<EditAdForm> {
     myAdAttributesArray = [];
     myAdAttributes = {};
     myAdAttributesMulti = [];
-    if(widget.fromEdit)
-      AdEditForm.getAdsForm(adID: widget.adID.toString())
-          .then((value) {
+    if (widget.fromEdit)
+      AdEditForm.getAdsForm(adID: widget.adID.toString()).then((value) {
         setState(() {
           _adForm = value;
           _brandId = _adForm[0]['responseData']['brand_id'].toString();
@@ -188,14 +198,16 @@ class _EditAdFormState extends State<EditAdForm> {
           _imagesNetwork = _adForm[0]['responseData']['images'].toList();
           print('Images ${_images}');
           // log('${_adForm[0]['responseData']['brand_id'] }  BOOaaL');
-           _titleController.text = value[0]['responseData']['title'];
+          _titleController.text = value[0]['responseData']['title'];
           _bodyController.text = value[0]['responseData']['body'];
           _videoController.text = value[0]['responseData']['video'];
           // print("value[0]['responseData']['has_price']");
           print(_adForm[0]['responseData']['currency_id']);
-          if(value[0]['responseData']['has_price'] == true)
-            _priceController.text = value[0]['responseData']['price'].toString();
-          _currenciesData = value[0]['responseData']['sub_section']['currencies'];
+          if (value[0]['responseData']['has_price'] == true)
+            _priceController.text =
+                value[0]['responseData']['price'].toString();
+          _currenciesData =
+              value[0]['responseData']['sub_section']['currencies'];
           _listAttributes = value[0]['responseData']['attributes'];
           _listBrands = value[0]['responseData']['sub_section']['brands'];
 
@@ -219,11 +231,10 @@ class _EditAdFormState extends State<EditAdForm> {
           _currencyId = _adForm[0]['responseData']['currency_id'].toString();
           _lat = value[0]['responseData']['lat'];
           _lng = value[0]['responseData']['lag'];
-
         });
       });
 
-    if(!widget.fromEdit)
+    if (!widget.fromEdit)
       AdAddForm.getAdsForm(subSectionId: widget.subSectionId.toString())
           .then((value) {
         setState(() {
@@ -245,8 +256,6 @@ class _EditAdFormState extends State<EditAdForm> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
@@ -262,65 +271,100 @@ class _EditAdFormState extends State<EditAdForm> {
           child: Directionality(
             textDirection: AppController.textDirection,
             child: _loading
-
                 ? Center(child: buildLoading(color: AppColors.redColor))
                 : Form(
-              key: _formKey,
-              child: LayoutBuilder(
-                builder: (ctx, constraints) =>  SingleChildScrollView(
-                  child: Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // if (!widget.fromEdit)
-                        //   _buildPath(),
-                        _buildImages(),
-                        if(_imagesNetwork.length!=0)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Container(
-                            height: 112,
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                physics: ClampingScrollPhysics(),
-                                itemCount: _imagesNetwork.length,
-                                itemBuilder: (context, i) {
-                                  print(_imagesNetwork[i]['small']);
-                                  return _imagesNetwork[i]['deleted'] != false? Stack(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 8),
-                                        child: Container(
-                                          width: 112,height: 112,
-                                          decoration: BoxDecoration(image: DecorationImage(image: NetworkImage("${_imagesNetwork[i]['small']}"),fit: BoxFit.cover)),
-                                        ),
-                                      ),
-                                      Align(alignment:Alignment.topLeft,child: Padding(
-                                        padding: const EdgeInsets.all(1 ),
-                                        child: InkWell(onTap: (){setState(() {
-                                          _imagesNetwork[i]['deleted'] = false;
-                                          _imagesNetwork.removeAt(i);
-                                        });},child: buildIcons(iconData: Icons.delete_forever,color: Colors.red,bgColor: AppColors.whiteColor.withOpacity(0.6),height: 35,width: 35),),
-                                      ),),
-                                    ],
-                                  ): Container()
-                                  ;
-                                }),
+                    key: _formKey,
+                    child: LayoutBuilder(
+                      builder: (ctx, constraints) => SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // if (!widget.fromEdit)
+                              //   _buildPath(),
+                              _buildImages(),
+                              if (_imagesNetwork.length != 0)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: Container(
+                                    height: 112,
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        physics: ClampingScrollPhysics(),
+                                        itemCount: _imagesNetwork.length,
+                                        itemBuilder: (context, i) {
+                                          print(_imagesNetwork[i]['small']);
+                                          return _imagesNetwork[i]['deleted'] !=
+                                                  false
+                                              ? Stack(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8),
+                                                      child: Container(
+                                                        width: 112,
+                                                        height: 112,
+                                                        decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                                image: NetworkImage(
+                                                                    "${_imagesNetwork[i]['small']}"),
+                                                                fit: BoxFit
+                                                                    .cover)),
+                                                      ),
+                                                    ),
+                                                    Align(
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(1),
+                                                        child: InkWell(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _imagesNetwork[i][
+                                                                      'deleted'] =
+                                                                  false;
+                                                              _imagesNetwork
+                                                                  .removeAt(i);
+                                                            });
+                                                          },
+                                                          child: buildIcons(
+                                                              iconData: Icons
+                                                                  .delete_forever,
+                                                              color: Colors.red,
+                                                              bgColor: AppColors
+                                                                  .whiteColor
+                                                                  .withOpacity(
+                                                                      0.6),
+                                                              height: 35,
+                                                              width: 35),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              : Container();
+                                        }),
+                                  ),
+                                ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              _buildConstData(mq),
+                              _buildDynamicData(mq),
+                              _buildButton(context, ctx),
+                            ],
                           ),
                         ),
-                        SizedBox(height: 10,),
-                        _buildConstData(mq),
-                        _buildDynamicData(mq),
-                        _buildButton(context,ctx),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ),
           ),
         ),
       ),
@@ -339,121 +383,122 @@ class _EditAdFormState extends State<EditAdForm> {
             _listUnits = _listAttributes[mainIndex]['units'];
             _options = _listAttributes[mainIndex]['options'];
             _type = _listAttributes[mainIndex]['config']['type'];
-            _type = _listAttributes[mainIndex]['config']['type'];
-            // List<dynamic> selectedValues = [];
-            // String selectedValues2 = "";
-            // if (_type != 'checkbox' || _type != 'radio')
-            //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-            //   myAdAttributes[_listAttributes[mainIndex]["name"]] =selectedValues2;
-            // if (_type == 'checkbox' || _type == 'radio')
-            //   if (myAdAttributes[_listAttributes[mainIndex]["name"]]?.isEmpty ??true)
-            //   myAdAttributes[_listAttributes[mainIndex]["name"]] =selectedValues;
             return buildMainAttributes(mainIndex, mq);
           }),
     );
   }
 
-    buildMainAttributes(int mainIndex, MediaQueryData mq) {
-    // print("VAL:${_listAttributes[mainIndex]['label'][_lang]}");
-    // print("type:${_type}");
-    // print("_options:${_options}");
+  buildMainAttributes(int mainIndex, MediaQueryData mq) {
     return Column(
-     mainAxisAlignment: MainAxisAlignment.center,
-     crossAxisAlignment: CrossAxisAlignment.start,
-     children: [
-       Text(
-         _listAttributes[mainIndex]['label'][_lang].toString(),
-         style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
-       ),
-
-       if (_type == 'string' || _type == 'number' || _type == 'year')
-         _buildSNY(mainIndex),
-       if (_listAttributes[mainIndex]['has_unit'] == 1)
-       // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
-         ListView.builder(
-             itemCount: 1,
-             physics: ClampingScrollPhysics(),
-             shrinkWrap: true,
-             itemBuilder: (_, unitIndex) {
-               return Column(
-                 children: [
-                   if (_listAttributes[mainIndex]['id'] ==
-                       _listUnits[unitIndex]['attribute_id'])
-                     if (_listAttributes[mainIndex]['id'] == _listUnits[unitIndex]['attribute_id'])
-                       Padding(
-                         padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                         child: _buildUnits(_listUnits, unitIndex, mainIndex,mq),
-                       ), // TODO: UNITS
-                 ],
-               );
-             }),
-       if (_type == 'dob')
-         myButton(
-             fontSize: 16,
-             width: mq.size.width * 0.5,
-             height: 45,
-             onPressed: () {
-               // print("${_listAttributes[mainIndex]['value']}");
-               _pickDateDialog(_listAttributes[mainIndex]['id'],value: "");
-             },
-             radius: 10,
-             btnTxt: chosenDate,
-             txtColor: Colors.black54,
-             btnColor: Colors.white),
-       if (_type == 'multiple_select' || _type == 'select' || _type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups' || _type == 'radio')
-         SingleChildScrollView(
-           child: GridView.builder(
-               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                   mainAxisExtent: _type == 'radio' ? 50 : null,
-                   childAspectRatio: _type == 'select'
-                       ? 7
-                       : (_type == 'multiple_select')
-                       ? (_options.length > 4
-                       ? 1
-                       : _options.length * 2.0)
-                       : 3,
-                   crossAxisCount:
-                   _type == 'select' || _type == 'multiple_select'
-                       ? 1
-                       : 2),
-               shrinkWrap: true,
-               physics: ClampingScrollPhysics(),
-               itemCount: _type == 'select' || _type == 'multiple_select'
-                   ? 1
-                   : _options.length,
-               itemBuilder: (context, rcsIndex) {
-                 return Container(
-                   decoration: BoxDecoration(
-                       borderRadius: _type == 'select'
-                           ? BorderRadius.circular(8)
-                           : BorderRadius.circular(0)),
-                   child: Column(
-                     crossAxisAlignment: CrossAxisAlignment.center,
-                     mainAxisAlignment: MainAxisAlignment.start,
-                     children: [
-                       if (_type == 'radio')
-                         _buildRadio(mainIndex, rcsIndex),
-                       if (_type == 'checkbox' || _type == 'buttons_groups' || _type == 'multiple_buttons_groups')
-                         _buildCheckbox(mainIndex, rcsIndex),
-                       if (_type == 'select')
-                         _buildSelect(rcsIndex, mainIndex,mq),
-                       if (_type == 'multiple_select')
-                         buildMultiSelected(mainIndex),
-                     ],
-                   ),
-                 );
-               }),
-         ),
-     ],
-      );
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _listAttributes[mainIndex]['label'][_lang].toString(),
+          style: appStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        if (_type == 'string' || _type == 'number' || _type == 'year')
+          _buildSNY(mainIndex),
+        if (_listAttributes[mainIndex]['has_unit'] == 1)
+          // Text("mainIndex:${mainIndex} ${_listAttributes[mainIndex]['units']}"),
+          ListView.builder(
+              itemCount: 1,
+              physics: ClampingScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (_, unitIndex) {
+                return Column(
+                  children: [
+                    if (_listAttributes[mainIndex]['id'] ==
+                        _listUnits[unitIndex]['attribute_id'])
+                      if (_listAttributes[mainIndex]['id'] ==
+                          _listUnits[unitIndex]['attribute_id'])
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                          child:
+                              _buildUnits(_listUnits, unitIndex, mainIndex, mq),
+                        ), // TODO: UNITS
+                  ],
+                );
+              }),
+        if (_type == 'dob')
+          myButton(
+              fontSize: 16,
+              width: mq.size.width * 0.5,
+              height: 45,
+              onPressed: () {
+                // print("${_listAttributes[mainIndex]['value']}");
+                _pickDateDialog(_listAttributes[mainIndex]['id'], value: "");
+              },
+              radius: 10,
+              btnTxt: chosenDate,
+              txtColor: Colors.black54,
+              btnColor: Colors.white),
+        if (_type == 'multiple_select' ||
+            _type == 'color' ||
+            _type == 'multiple_color' ||
+            _type == 'select' ||
+            _type == 'checkbox' ||
+            _type == 'buttons_groups' ||
+            _type == 'multiple_buttons_groups' ||
+            _type == 'radio')
+          SingleChildScrollView(
+            child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisExtent:
+                        _type == 'radio' || _type == 'color' ? 50 : null,
+                    childAspectRatio: _type == 'select'
+                        ? 7
+                        : (_type == 'multiple_color')
+                            ? 2
+                            : 3,
+                    crossAxisCount: _type == 'select'
+                        ? 1
+                        : _type == 'color' || _type == 'multiple_color'
+                            ? 3
+                            : 2),
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                itemCount: _type == 'select' ? 1: _options.length,
+                itemBuilder: (context, rcsIndex) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        borderRadius: _type == 'select'
+                            ? BorderRadius.circular(8)
+                            : BorderRadius.circular(4)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        if (_type == 'radio' || _type == 'color')
+                          _buildRadio(mainIndex, rcsIndex),
+                        if (_type == 'checkbox' ||
+                            _type == 'multiple_color' ||
+                            _type == 'multiple_select' ||
+                            _type == 'buttons_groups' ||
+                            _type == 'multiple_buttons_groups')
+                          _buildCheckbox(mainIndex, rcsIndex),
+                        if (_type == 'select')
+                          _buildSelect(rcsIndex, mainIndex, mq),
+                        // if (_type == 'multiple_select')
+                        //   buildMultiSelected(mainIndex),
+                      ],
+                    ),
+                  );
+                }),
+          ),
+      ],
+    );
   }
 
-  Container _buildUnits(List _listUnits, int unitIndex, int mainIndex,MediaQueryData mq) {
+  Container _buildUnits(
+      List _listUnits, int unitIndex, int mainIndex, MediaQueryData mq) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
 
-    if(trendIndex == -1){
-      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['units'][0]['id'],unitID:_listUnits[0]['unit_id']);
+    if (trendIndex == -1) {
+      _buildMap(_listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['units'][0]['id'],
+          unitID: _listUnits[0]['unit_id']);
       trendIndex = myAdAttributesArray
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
@@ -487,27 +532,27 @@ class _EditAdFormState extends State<EditAdForm> {
                     // testID = value;
                     // // print(_listAttributes[mainIndex]['id']);
                     // // print(_listAttributes[mainIndex]);
-                    int trendIndex = myAdAttributesArray
-                        .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
+                    int trendIndex = myAdAttributesArray.indexWhere(
+                        (f) => f['id'] == _listAttributes[mainIndex]['id']);
                     // // print('op:${_listAttributes[mainIndex]}');
                     // if(trendIndex!= -1)
-                    if(trendIndex == -1){
-                      _buildMap(_listAttributes[mainIndex]['id'],'',unitID: value);
-                    }else{
+                    if (trendIndex == -1) {
+                      _buildMap(_listAttributes[mainIndex]['id'], '',
+                          unitID: value);
+                    } else {
                       _buildMap(_listAttributes[mainIndex]['id'],
                           myAdAttributesArray[trendIndex]['value'],
                           unitID: value);
                     }
-
                   });
                 },
                 items: _listUnits.map<DropdownMenuItem<String>>((listUnits) {
-                  // // print('LIST  :$list');
-                  return new DropdownMenuItem(
-                    child: new Text("${listUnits['label'][_lang]}"),
-                    value: listUnits['unit_id'].toString(),
-                  );
-                })?.toList() ??
+                      // // print('LIST  :$list');
+                      return new DropdownMenuItem(
+                        child: new Text("${listUnits['label'][_lang]}"),
+                        value: listUnits['unit_id'].toString(),
+                      );
+                    })?.toList() ??
                     [],
               ),
             ),
@@ -521,21 +566,21 @@ class _EditAdFormState extends State<EditAdForm> {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
 
-    if(trendIndex == -1){
-      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['value'].toString(), unitID: _listAttributes[mainIndex]['unit_id']);
+    if (trendIndex == -1) {
+      _buildMap(_listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['value'].toString(),
+          unitID: _listAttributes[mainIndex]['unit_id']);
     }
-
 
     return Container(
       child: buildTextField(
-
           initialValue: _listAttributes[mainIndex]['value'].toString(),
           onChanged: (val) {
             myAdAttributes[_listAttributes[mainIndex]['id']] = val;
             if (_listAttributes[mainIndex]['has_unit'] == 1) {
-
               // print(_listAttributes[mainIndex]['unit_id']);
-              _buildMap(_listAttributes[mainIndex]['id'], val, unitID: _listAttributes[mainIndex]['unit_id']);
+              _buildMap(_listAttributes[mainIndex]['id'], val,
+                  unitID: _listAttributes[mainIndex]['unit_id']);
             } else {
               _buildMap(
                 _listAttributes[mainIndex]['id'],
@@ -548,15 +593,14 @@ class _EditAdFormState extends State<EditAdForm> {
             // // print(myAdAttributesArray);
             // // print('MYCAT:$myAdAttributes');
           },
-          label:  _listAttributes[mainIndex]['label'][_lang].toString(),
+          label: _listAttributes[mainIndex]['label'][_lang].toString(),
           textInputType: TextInputType.text),
     );
   }
 
   buildMultiSelected(mainIndex) {
     return SingleChildScrollView(
-      child:
-      Expanded(
+      child: Expanded(
         flex: 1,
         child: SingleChildScrollView(
           child: Row(
@@ -564,12 +608,17 @@ class _EditAdFormState extends State<EditAdForm> {
               Expanded(
                 flex: 1,
                 child: Container(
-                  height: _options.length <= 4 ?   MediaQuery.of(context).size.height*0.08 :  null,
-                  child:Scrollbar(
-                    child:GridView(
-                      gridDelegate:SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisExtent: 30) ,
+                  height: _options.length <= 4
+                      ? MediaQuery.of(context).size.height * 0.08
+                      : null,
+                  child: Scrollbar(
+                    child: GridView(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, mainAxisExtent: 30),
                       shrinkWrap: true,
-                      children: _options.map((item)=>_buildItem(item,mainIndex)).toList(),
+                      children: _options
+                          .map((item) => _buildItem(item, mainIndex))
+                          .toList(),
                     ),
                   ),
                 ),
@@ -578,40 +627,37 @@ class _EditAdFormState extends State<EditAdForm> {
           ),
         ),
       ),
-
     );
   }
 
-  Container _buildSelect(int rcsIndex, int mainIndex,MediaQueryData mq) {
+  Container _buildSelect(int rcsIndex, int mainIndex, MediaQueryData mq) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['value']);
-    if(trendIndex == -1){
-      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['value']??_listAttributes[mainIndex]['options'][0]['id']);
+    if (trendIndex == -1) {
+      _buildMap(
+          _listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['value'] ??
+              _listAttributes[mainIndex]['options'][0]['id']);
       trendIndex = myAdAttributesArray
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     }
 
-
-
-
     var val = "";
     return Container(
       width: mq.size.width,
-
       decoration: BoxDecoration(
-          border:Border.all(color: Colors.black54),
+          border: Border.all(color: Colors.black54),
           borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: [
           DropdownButtonHideUnderline(
             child: ButtonTheme(
-              padding: const EdgeInsets.only(bottom: 200,top: 10,left: 3,right: 3),
-
+              padding: const EdgeInsets.only(
+                  bottom: 200, top: 10, left: 3, right: 3),
               alignedDropdown: true,
               child: DropdownButton<String>(
-
                 isExpanded: true,
-                value:myAdAttributesArray[trendIndex]['value'].toString(),
+                value: myAdAttributesArray[trendIndex]['value'].toString(),
                 // value: '1',
                 iconSize: 30,
                 // icon: (null),
@@ -627,7 +673,6 @@ class _EditAdFormState extends State<EditAdForm> {
                 // ),
                 onChanged: (value) {
                   setState(() {
-
                     // myAdAttributesArray[_listAttributes[mainIndex]['id']]['value'] = value;
                     _listAttributes[mainIndex]['value'] = value;
                     // // print("select:  ${_listAttributes[mainIndex]['id']}");
@@ -646,13 +691,13 @@ class _EditAdFormState extends State<EditAdForm> {
                   });
                 },
                 items: _listAttributes[mainIndex]['options']
-                    .map<DropdownMenuItem<String>>((listOptions) {
-                  return new DropdownMenuItem(
-                    child: new Text(
-                        val == "" ? "${listOptions['label'][_lang]}" : val),
-                    value: listOptions['id'].toString(),
-                  );
-                })?.toList() ??
+                        .map<DropdownMenuItem<String>>((listOptions) {
+                      return new DropdownMenuItem(
+                        child: new Text(
+                            val == "" ? "${listOptions['label'][_lang]}" : val),
+                        value: listOptions['id'].toString(),
+                      );
+                    })?.toList() ??
                     [],
               ),
             ),
@@ -663,27 +708,95 @@ class _EditAdFormState extends State<EditAdForm> {
   }
 
   CheckboxListTile _buildCheckbox(int mainIndex, int rcsIndex) {
+    var _name = _listAttributes[mainIndex]['options'][rcsIndex];
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
 
-    if(trendIndex == -1){
-      myAdAttributes[_listAttributes[mainIndex]['name']] = _listAttributes[mainIndex]['value'];
+    if (trendIndex == -1) {
+      // print("*************************************");
+      // print(_listAttributes[mainIndex]['value']);
+      // print(_listAttributes[mainIndex]['name']);
+      // print(myAdAttributesArray);
+      // print("*************************************");
+      myAdAttributes[_listAttributes[mainIndex]['name']] =
+          _listAttributes[mainIndex]['value'];
+      // myAdAttributes[_listAttributes[mainIndex]['name']].contains(
+      //     _listAttributes[mainIndex]['options'][rcsIndex]['id'])
+      //     ? myAdAttributes[_listAttributes[mainIndex]['name']].remove(
+      //     _listAttributes[mainIndex]['options'][rcsIndex]['id'])
+      //     : myAdAttributes[_listAttributes[mainIndex]['name']]
+      //     .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
+      // _buildMap(_listAttributes[mainIndex]['id'],
+      //     myAdAttributes[_listAttributes[mainIndex]['name']]);
     }
 
     return CheckboxListTile(
         value: myAdAttributes[_listAttributes[mainIndex]['name']]
             .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id']),
-        title: new Text("${_listAttributes[mainIndex]['options'][rcsIndex]['label'][_lang]}"),
+        title: _options[rcsIndex]['name'] == 'other'
+            ? CircleAvatar(
+          backgroundColor: AppColors.whiteColor,
+          radius: 15,
+              child: Container(
+          width: 25,
+          height: 25,
+          decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                    Colors.red,
+                    Colors.green,
+                    Colors.yellow,
+                    Colors.red,
+                    Colors.yellow,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.greyFour,
+                      offset: Offset(0.4, 0.4),
+                      spreadRadius: 0.4,
+                      blurRadius: 0.4)
+                ]),
+        ),
+            )
+            : _type != 'multiple_color'
+            ? Text(
+          _name['label'][_lang],
+          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+        )
+            : CircleAvatar(
+          radius: 14,
+          backgroundColor: AppColors.whiteColor,
+          child: Container(
+            height: 25,
+            width: 25,
+            decoration: BoxDecoration(
+                color: Color(
+                  int.parse(_name['name'].replaceAll('#', '0xFF')),
+                ),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.greyFour,
+                      offset: Offset(0.4, 0.4),
+                      spreadRadius: 0.4,
+                      blurRadius: 0.4)
+                ]),
+          ),
+        ),
         controlAffinity: ListTileControlAffinity.leading,
         tristate: true,
         onChanged: (bool val) {
           setState(() {
-            myAdAttributes[_listAttributes[mainIndex]['name']]
-                .contains(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
-                ? myAdAttributes[_listAttributes[mainIndex]['name']]
-                .remove(_listAttributes[mainIndex]['options'][rcsIndex]['id'])
+            myAdAttributes[_listAttributes[mainIndex]['name']].contains(
+                    _listAttributes[mainIndex]['options'][rcsIndex]['id'])
+                ? myAdAttributes[_listAttributes[mainIndex]['name']].remove(
+                    _listAttributes[mainIndex]['options'][rcsIndex]['id'])
                 : myAdAttributes[_listAttributes[mainIndex]['name']]
-                .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
+                    .add(_listAttributes[mainIndex]['options'][rcsIndex]['id']);
             _buildMap(_listAttributes[mainIndex]['id'],
                 myAdAttributes[_listAttributes[mainIndex]['name']]);
             // print(myAdAttributesArray);
@@ -694,8 +807,11 @@ class _EditAdFormState extends State<EditAdForm> {
   Row _buildRadio(int mainIndex, int rcsIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
-    if(trendIndex == -1){
-      _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['value']??_listAttributes[mainIndex]['options'][0]['id']);
+    if (trendIndex == -1) {
+      _buildMap(
+          _listAttributes[mainIndex]['id'],
+          _listAttributes[mainIndex]['value'] ??
+              _listAttributes[mainIndex]['options'][0]['id']);
 
       trendIndex = myAdAttributesArray
           .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
@@ -715,7 +831,7 @@ class _EditAdFormState extends State<EditAdForm> {
                 isValid = true;
                 print('TRUE STATE $isValid');
               });
-            }else{
+            } else {
               setState(() {
                 isValid = false;
                 print('FALSE STATE');
@@ -734,10 +850,58 @@ class _EditAdFormState extends State<EditAdForm> {
           },
           value: _options[rcsIndex]['id'],
         ),
-        Text(
-          _options[rcsIndex]['label'][_lang],
-          style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
-        ),
+        if (_options[rcsIndex]['name'] == 'other')
+          CircleAvatar(
+            backgroundColor: AppColors.whiteColor,
+            radius: 15,
+            child: Container(
+              width: 25,
+              height: 25,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                    colors: [
+                      Colors.red,
+                      Colors.green,
+                      Colors.yellow,
+                      Colors.red,
+                      Colors.yellow,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                        color: AppColors.greyFour,
+                        offset: Offset(0.4, 0.4),
+                        spreadRadius: 0.4,
+                        blurRadius: 0.4)
+                  ]),
+            ),
+          ),
+        if (_options[rcsIndex]['name'] != 'other')
+          _type == 'radio'
+              ? Text(
+            _options[rcsIndex]['label'][_lang],
+            style: TextStyle(fontWeight: FontWeight.w400, fontSize: 13),
+          )
+              : Container(
+            width: 25,
+            height: 25,
+            decoration: BoxDecoration(
+                color: Color(
+                  int.parse(
+                      _options[rcsIndex]['name'].replaceAll('#', '0xFF')),
+                ),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.greyFour,
+                      offset: Offset(0.4, 0.4),
+                      spreadRadius: 0.4,
+                      blurRadius: 0.4)
+                ]),
+          ),
       ],
     );
   }
@@ -796,7 +960,7 @@ class _EditAdFormState extends State<EditAdForm> {
   //   );
   // }
 
-  Container _buildButton(BuildContext context,ctx) {
+  Container _buildButton(BuildContext context, ctx) {
     return Container(
       child: myButton(
         context: context,
@@ -809,34 +973,30 @@ class _EditAdFormState extends State<EditAdForm> {
         btnColor: AppColors.redColor,
         onPressed: () {
           final FormState form = _formKey.currentState;
-          if(form.validate()){
-            showLoadingHud(context: ctx,hudKey: _hudKey,time: 5000);
+          if (form.validate()) {
+            showLoadingHud(context: ctx, hudKey: _hudKey, time: 5000);
 
             setState(() {
-              if(_imagesNetwork.length!=0)
-                for(int i = 0;i<_imagesNetwork.length;i++){
+              if (_imagesNetwork.length != 0)
+                for (int i = 0; i < _imagesNetwork.length; i++) {
                   _imagesNetwork[i]['main'] = false;
                   _imagesNetwork[i]['new'] = false;
                   _imagesNetwork[i]['identifier'] = _imagesNetwork[i]['small'];
 
-                  if(_imagesNetwork[i]['deleted'] != true)
+                  if (_imagesNetwork[i]['deleted'] != true)
                     _imagesNetwork[i]['deleted'] = false;
-
 
                   _images.add(_imagesNetwork[i]['small']);
                   pickedImages.add(_imagesNetwork[i]);
-
                 }
-              pickedImages.where((pickedImagesElement){
-                if(!_images.contains(pickedImagesElement['identifier'])){
-                  pickedImagesElement['deleted']= true;
+              pickedImages.where((pickedImagesElement) {
+                if (!_images.contains(pickedImagesElement['identifier'])) {
+                  pickedImagesElement['deleted'] = true;
                 }
                 return true;
               }).toList();
 
-
               print('IMAGES LAST: $_images');
-
             });
             final FormState form = _formKey.currentState;
 
@@ -844,34 +1004,39 @@ class _EditAdFormState extends State<EditAdForm> {
             print(_images);
 
             updateAdFunction(
-                context: context,
-                adID: widget.adID.toString(),
-                title: _titleController.text.toString(),
-                bodyAd: _bodyController.text.toLowerCase(),
-                cityId: _cityId,
-                price: _priceController.text.toString().isNotEmpty
-                    ? double.parse(_priceController.text.toString())
-                    : 0,
-                localityId: '1',
-                brandId: _brandId != null ? _brandId : "",
-                subBrandId: _subBrandId != null ? _subBrandId : "",
-                isDelivery: true,
-                isFree: _isFree,
-                showContact: _showContactInfo,
-                negotiable: _negotiable,
-                zoom: 14,
-                video: _videoController.text.toString(),
-                adAttributes: myAdAttributesArray,
-                images: pickedImages != null ? pickedImages : [],
-                currencyId: _currencyId).then((value){
+                    context: context,
+                    adID: widget.adID.toString(),
+                    title: _titleController.text.toString(),
+                    bodyAd: _bodyController.text.toLowerCase(),
+                    cityId: _cityId,
+                    price: _priceController.text.toString().isNotEmpty
+                        ? double.parse(_priceController.text.toString())
+                        : 0,
+                    localityId: '1',
+                    brandId: _brandId != null ? _brandId : "",
+                    subBrandId: _subBrandId != null ? _subBrandId : "",
+                    isDelivery: true,
+                    isFree: _isFree,
+                    showContact: _showContactInfo,
+                    negotiable: _negotiable,
+                    zoom: 14,
+                    video: _videoController.text.toString(),
+                    adAttributes: myAdAttributesArray,
+                    images: pickedImages != null ? pickedImages : [],
+                    currencyId: _currencyId)
+                .then((value) {
               print(' status code $value');
-              if(value == 200)
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => UserPanel(),));
+              if (value == 200)
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserPanel(),
+                    ));
             });
-          }else{
+          } else {
             print('Form is invalid');
-            viewToast(context, 'Form is invalid', AppColors.redColor,
-                Toast.BOTTOM);
+            viewToast(
+                context, 'Form is invalid', AppColors.redColor, Toast.BOTTOM);
           }
           // _validateAndSubmit();
         },
@@ -888,16 +1053,16 @@ class _EditAdFormState extends State<EditAdForm> {
           style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         Padding(
-          padding: const EdgeInsets.only(bottom: 20,top: 10,right: 3,left: 3),
+          padding:
+              const EdgeInsets.only(bottom: 20, top: 10, right: 3, left: 3),
           child: Container(
-            width:double.infinity,
+            width: double.infinity,
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black54),
                 borderRadius: BorderRadius.circular(10)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-
                 Expanded(
                   flex: 1,
                   child: DropdownButtonHideUnderline(
@@ -917,7 +1082,7 @@ class _EditAdFormState extends State<EditAdForm> {
                           _cityId != null
                               ? _cityId.toString()
                               : _strController.selectCity,
-                          style: appStyle( fontSize: 16),
+                          style: appStyle(fontSize: 16),
                         ),
                         onChanged: (String value) {
                           setState(() {
@@ -925,16 +1090,16 @@ class _EditAdFormState extends State<EditAdForm> {
                           });
                         },
                         items: _citiesData.map((listCity) {
-                          return new DropdownMenuItem(
-                            child: new Text(
-                              listCity['label'][_lang??'ar'],
-                              style: appStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                            ),
-                            value: listCity['id'].toString(),
-                          );
-                        })?.toList() ??
+                              return new DropdownMenuItem(
+                                child: new Text(
+                                  listCity['label'][_lang ?? 'ar'],
+                                  style: appStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                value: listCity['id'].toString(),
+                              );
+                            })?.toList() ??
                             [],
                       ),
                     ),
@@ -952,7 +1117,6 @@ class _EditAdFormState extends State<EditAdForm> {
               Text(
                 _strController.adTitle,
                 style: appStyle(fontWeight: FontWeight.bold, fontSize: 18),
-
               ),
               Container(
                 child: buildTextField(
@@ -997,10 +1161,10 @@ class _EditAdFormState extends State<EditAdForm> {
                     Text(
                       _strController.price,
                       style:
-                      appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Container(
-                      width:double.infinity,
+                      width: double.infinity,
                       child: buildTextField(
                           label: _strController.price,
                           controller: _priceController,
@@ -1014,12 +1178,12 @@ class _EditAdFormState extends State<EditAdForm> {
                     Text(
                       _strController.currencies,
                       style:
-                      appStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          appStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 4,right: 4),
+                      padding: const EdgeInsets.only(left: 4, right: 4),
                       child: Container(
-                        width:double.infinity,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black54),
                             borderRadius: BorderRadius.circular(10)),
@@ -1053,17 +1217,18 @@ class _EditAdFormState extends State<EditAdForm> {
                                       });
                                     },
                                     items: _currenciesData.map((listCurrency) {
-                                      return new DropdownMenuItem(
-                                        child: new Text(
-                                          listCurrency['currency_label']
-                                          [_lang],
-                                          style: appStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
-                                        value: listCurrency['id'].toString(),
-                                      );
-                                    })?.toList() ??
+                                          return new DropdownMenuItem(
+                                            child: new Text(
+                                              listCurrency['currency_label']
+                                                  [_lang],
+                                              style: appStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                            ),
+                                            value:
+                                                listCurrency['id'].toString(),
+                                          );
+                                        })?.toList() ??
                                         [],
                                   ),
                                 ),
@@ -1102,14 +1267,13 @@ class _EditAdFormState extends State<EditAdForm> {
                           child: DropdownButtonHideUnderline(
                             child: ButtonTheme(
                               alignedDropdown: true,
-
                               child: DropdownButtonFormField<String>(
                                 isExpanded: false,
                                 value: _brandId,
                                 validator: (value) =>
-                                (_brandId == null || _brandId.isEmpty)
-                                    ? "يجب اختيار _brandId"
-                                    : null,
+                                    (_brandId == null || _brandId.isEmpty)
+                                        ? "يجب اختيار _brandId"
+                                        : null,
                                 iconSize: 30,
                                 icon: (null),
                                 style: appStyle(
@@ -1120,7 +1284,8 @@ class _EditAdFormState extends State<EditAdForm> {
                                   // _brandId!=null?_brandId.toString():"choose type",
                                   _listBrands[0]['label'][_lang],
                                   style: appStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 18),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
                                 ),
                                 onChanged: (String value) {
                                   setState(() {
@@ -1128,12 +1293,13 @@ class _EditAdFormState extends State<EditAdForm> {
                                     _brandId = value;
                                     _listSubBrands = _listBrands
                                         .where((element) =>
-                                    element['id'].toString() ==
-                                        value.toString())
+                                            element['id'].toString() ==
+                                            value.toString())
                                         .toList();
                                     _listSubBrands =
-                                    _listSubBrands[0]['sub_brands'];
-                                    _listSubBrands = _listSubBrands.toSet().toList();
+                                        _listSubBrands[0]['sub_brands'];
+                                    _listSubBrands =
+                                        _listSubBrands.toSet().toList();
                                     if (_listSubBrands != [] &&
                                         _listSubBrands != null &&
                                         _listSubBrands.isNotEmpty) {
@@ -1145,21 +1311,20 @@ class _EditAdFormState extends State<EditAdForm> {
                                         hasSubBrands = false;
                                       });
                                     }
-
                                   });
                                 },
                                 items: _listBrands.map((listBrand) {
-                                  // // print("LIST BRAND ${listBrand['id']}");
-                                  return new DropdownMenuItem(
-                                    child: new Text(
-                                      listBrand['label'][_lang],
-                                      style: appStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                    value: listBrand['id'].toString(),
-                                  );
-                                })?.toList() ??
+                                      // // print("LIST BRAND ${listBrand['id']}");
+                                      return new DropdownMenuItem(
+                                        child: new Text(
+                                          listBrand['label'][_lang],
+                                          style: appStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        value: listBrand['id'].toString(),
+                                      );
+                                    })?.toList() ??
                                     [],
                               ),
                             ),
@@ -1171,13 +1336,13 @@ class _EditAdFormState extends State<EditAdForm> {
                 ),
                 if (hasSubBrands == true)
                   Padding(
-                    padding: const EdgeInsets.only(top: 20, bottom: 20,left:3,right:3),
+                    padding: const EdgeInsets.only(
+                        top: 20, bottom: 20, left: 3, right: 3),
                     child: Container(
                       width: mq.size.width,
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black54),
-                          borderRadius: BorderRadius.circular(10)
-                      ),
+                          borderRadius: BorderRadius.circular(10)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
@@ -1189,8 +1354,8 @@ class _EditAdFormState extends State<EditAdForm> {
                                 child: DropdownButtonFormField<String>(
                                   isExpanded: false,
                                   value: _subBrandId,
-                                  validator: (value) =>
-                                  (_subBrandId == null || _subBrandId.isEmpty)
+                                  validator: (value) => (_subBrandId == null ||
+                                          _subBrandId.isEmpty)
                                       ? "يجب اختيار _subBrandId"
                                       : null,
                                   iconSize: 30,
@@ -1216,17 +1381,17 @@ class _EditAdFormState extends State<EditAdForm> {
                                     });
                                   },
                                   items: _listSubBrands.map((listSubBrand) {
-                                    // // print("LIST BRAND ${listSubBrand['id']}");
-                                    return new DropdownMenuItem(
-                                      child: new Text(
-                                        listSubBrand['label'][_lang],
-                                        style: appStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      value: listSubBrand['id'].toString(),
-                                    );
-                                  })?.toList() ??
+                                        // // print("LIST BRAND ${listSubBrand['id']}");
+                                        return new DropdownMenuItem(
+                                          child: new Text(
+                                            listSubBrand['label'][_lang],
+                                            style: appStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          value: listSubBrand['id'].toString(),
+                                        );
+                                      })?.toList() ??
                                       [],
                                 ),
                               ),
@@ -1253,8 +1418,8 @@ class _EditAdFormState extends State<EditAdForm> {
                     child: ListTile(
                       title: Text(
                         _strController.showContactInfo,
-                        style: appStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
+                        style:
+                            appStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       trailing: CupertinoSwitch(
                         value: _showContactInfo,
@@ -1271,7 +1436,7 @@ class _EditAdFormState extends State<EditAdForm> {
                       },
                     ),
                   ),
-                  if(_isFreeVis)
+                  if (_isFreeVis)
                     MergeSemantics(
                       child: ListTile(
                         title: Text(
@@ -1294,7 +1459,7 @@ class _EditAdFormState extends State<EditAdForm> {
                         },
                       ),
                     ),
-                  if(_negotiableVis)
+                  if (_negotiableVis)
                     MergeSemantics(
                       child: ListTile(
                         title: Text(
@@ -1317,7 +1482,7 @@ class _EditAdFormState extends State<EditAdForm> {
                         },
                       ),
                     ),
-                  if(_isDeliveryVis)
+                  if (_isDeliveryVis)
                     MergeSemantics(
                       child: ListTile(
                         title: Text(
@@ -1345,7 +1510,7 @@ class _EditAdFormState extends State<EditAdForm> {
             ],
           ),
         ),
-        if (_adForm[0]['responseData']['is_delivery']??false)
+        if (_adForm[0]['responseData']['is_delivery'] ?? false)
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
@@ -1407,7 +1572,7 @@ class _EditAdFormState extends State<EditAdForm> {
             ],
           ),
         ),
-        if (_adForm[0]['responseData']['has_map']??false)
+        if (_adForm[0]['responseData']['has_map'] ?? false)
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Container(
@@ -1447,7 +1612,6 @@ class _EditAdFormState extends State<EditAdForm> {
               ),
             ),
           ),
-
       ],
     );
   }
@@ -1456,10 +1620,9 @@ class _EditAdFormState extends State<EditAdForm> {
 
   void _onSubmitTap() {}
 
-
-  void _onItemCheckedChange(itemValue, bool checked,attributeId) {
-    var trendIndex = myAdAttributesArray
-        .indexWhere((f) => f['id'] == attributeId);
+  void _onItemCheckedChange(itemValue, bool checked, attributeId) {
+    var trendIndex =
+        myAdAttributesArray.indexWhere((f) => f['id'] == attributeId);
     setState(() {
       if (checked) {
         myAdAttributesArray[trendIndex]['value'].add(itemValue);
@@ -1467,21 +1630,21 @@ class _EditAdFormState extends State<EditAdForm> {
         myAdAttributesArray[trendIndex]['value'].remove(itemValue);
       }
 
-      _buildMap(attributeId,myAdAttributesArray[trendIndex]['value']);
-
+      _buildMap(attributeId, myAdAttributesArray[trendIndex]['value']);
     });
   }
 
-
-  Widget _buildItem(item,mainIndex) {
+  Widget _buildItem(item, mainIndex) {
     int trendIndex = myAdAttributesArray
         .indexWhere((f) => f['id'] == _listAttributes[mainIndex]['id']);
     var checked = false;
     print('_langss : ${item['label'][_lang]}');
 
-    if(trendIndex == -1){
+    if (trendIndex == -1) {
       if (_listAttributes[mainIndex]['has_unit'] == 1) {
-        _buildMap(_listAttributes[mainIndex]['id'], _listAttributes[mainIndex]['value'], unitID: _listAttributes[mainIndex]['unit_id']);
+        _buildMap(_listAttributes[mainIndex]['id'],
+            _listAttributes[mainIndex]['value'],
+            unitID: _listAttributes[mainIndex]['unit_id']);
       } else {
         _buildMap(
           _listAttributes[mainIndex]['id'],
@@ -1498,7 +1661,8 @@ class _EditAdFormState extends State<EditAdForm> {
       title: Text(item['label'][_lang]),
       controlAffinity: ListTileControlAffinity.leading,
       onChanged: (checked) {
-        _onItemCheckedChange(item['id'], checked,_listAttributes[mainIndex]['id']);
+        _onItemCheckedChange(
+            item['id'], checked, _listAttributes[mainIndex]['id']);
       },
     );
   }
@@ -1516,65 +1680,86 @@ class _EditAdFormState extends State<EditAdForm> {
   String _error = 'No Error Dectected';
 
   Widget buildGridView() {
-    return ListView.builder(shrinkWrap: true,scrollDirection: Axis.horizontal,itemCount: images.length,itemBuilder: (context, index) {
-      Asset asset = images[index];
-      var lastImages =[];
-      images.forEach((element) {
-        lastImages.add(element.identifier);
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      itemCount: images.length,
+      itemBuilder: (context, index) {
+        Asset asset = images[index];
+        var lastImages = [];
+        images.forEach((element) {
+          lastImages.add(element.identifier);
+        });
+        _images = lastImages;
 
-      });
-      _images = lastImages;
-
-      FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
-          .then((value) async {
-        print('val: $value');
-        var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
-        var file = await getImageFileFromAsset(path2);
-        String fileExt = path2.split('/').last;
-        fileExt = fileExt.split('.').last;
-        var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
-        // log('base64Encode : ${base64Image.toString()}');
-        var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
-        if(alreadyChoose.length == 0){
-
-          await uploadImage(context,base64Image).then((value){
-            _buildImagesMap(isMain:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
-          });
-          print(pickedImages);
-        }
-      });
-      return Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Stack(
-              children: [
-                AssetThumb(
-                  asset: asset,
-                  width: 200,
-                  height: 200,
-                ),
-              ],
+        FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
+            .then((value) async {
+          print('val: $value');
+          var path2 = await FlutterAbsolutePath.getAbsolutePath(
+              images[index].identifier);
+          var file = await getImageFileFromAsset(path2);
+          String fileExt = path2.split('/').last;
+          fileExt = fileExt.split('.').last;
+          var base64Image =
+              "data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+          // log('base64Encode : ${base64Image.toString()}');
+          var alreadyChoose = pickedImages.where(
+              (element) => element['identifier'] == images[index].identifier);
+          if (alreadyChoose.length == 0) {
+            await uploadImage(context, base64Image).then((value) {
+              _buildImagesMap(
+                  isMain: false,
+                  imgName: value[0]['responseData']['image'],
+                  identifier: images[index].identifier);
+            });
+            print(pickedImages);
+          }
+        });
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Stack(
+                children: [
+                  AssetThumb(
+                    asset: asset,
+                    width: 200,
+                    height: 200,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Align(alignment:Alignment.topLeft,child: Padding(
-            padding: const EdgeInsets.all(1 ),
-            child: InkWell(onTap: (){setState(() {
-              images.removeAt(index);
-            });},child: buildIcons(iconData: Icons.delete_forever,color: Colors.red,bgColor: AppColors.whiteColor.withOpacity(0.6),height: 35,width: 35),),
-          ),),
-        ],
-      );
-    },);
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(1),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      images.removeAt(index);
+                    });
+                  },
+                  child: buildIcons(
+                      iconData: Icons.delete_forever,
+                      color: Colors.red,
+                      bgColor: AppColors.whiteColor.withOpacity(0.6),
+                      height: 35,
+                      width: 35),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
 
     return GridView.count(
       crossAxisCount: 4,
       children: List.generate(images.length, (index) {
         Asset asset = images[index];
-        var lastImages =[];
+        var lastImages = [];
         images.forEach((element) {
           lastImages.add(element.identifier);
-
         });
         _images = lastImages;
         print("_images ${_images.length}");
@@ -1588,17 +1773,22 @@ class _EditAdFormState extends State<EditAdForm> {
         FlutterAbsolutePath.getAbsolutePath(images[index].identifier)
             .then((value) async {
           print('val: $value');
-          var path2 = await FlutterAbsolutePath.getAbsolutePath(images[index].identifier);
+          var path2 = await FlutterAbsolutePath.getAbsolutePath(
+              images[index].identifier);
           var file = await getImageFileFromAsset(path2);
           String fileExt = path2.split('/').last;
           fileExt = fileExt.split('.').last;
-          var base64Image ="data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
+          var base64Image =
+              "data:image/$fileExt;base64,${base64Encode(file.readAsBytesSync())}";
           // log('base64Encode : ${base64Image.toString()}');
-          var alreadyChoose = pickedImages.where((element) => element['identifier'] == images[index].identifier);
-          if(alreadyChoose.length == 0){
-
-            await uploadImage(context,base64Image).then((value){
-              _buildImagesMap(isMain:false,imgName: value[0]['responseData']['image'],identifier: images[index].identifier);
+          var alreadyChoose = pickedImages.where(
+              (element) => element['identifier'] == images[index].identifier);
+          if (alreadyChoose.length == 0) {
+            await uploadImage(context, base64Image).then((value) {
+              _buildImagesMap(
+                  isMain: false,
+                  imgName: value[0]['responseData']['image'],
+                  identifier: images[index].identifier);
             });
             print(pickedImages);
           }
@@ -1607,7 +1797,7 @@ class _EditAdFormState extends State<EditAdForm> {
           padding: const EdgeInsets.all(4.0),
           child: Stack(
             children: [
-               AssetThumb(
+              AssetThumb(
                 asset: asset,
                 width: 300,
                 height: 300,
@@ -1618,7 +1808,6 @@ class _EditAdFormState extends State<EditAdForm> {
       }),
     );
   }
-
 
   getImageFileFromAsset(String path) async {
     final file = File(path);
@@ -1672,16 +1861,15 @@ class _EditAdFormState extends State<EditAdForm> {
           width: double.infinity,
           child: ElevatedButton(
             child: Text("إختر صور"),
-            onPressed:(){ loadAssets();
-            print('___images : $_images');
+            onPressed: () {
+              loadAssets();
+              print('___images : $_images');
             },
           ),
         ),
         // if (files.isNotEmpty)
-        if(images.length!=0)
-          SizedBox(height: 120, child: buildGridView())
+        if (images.length != 0) SizedBox(height: 120, child: buildGridView())
       ],
     );
   }
-
 }

@@ -608,7 +608,7 @@ Future addAdFunction({
   String lat,
   String lag,
   double price,
-  int zoom,
+  bool zoom,
   bool negotiable,
   bool isFree,
   bool isDelivery,
@@ -976,6 +976,8 @@ Future createAccountFunctionFacebook(
     print(decodedData['custom_message']);
     print(decodedData['custom_code']);
     print('********************************Not Done');
+    viewToast(context, '${decodedData['custom_message']}', AppColors.redColor,Toast.BOTTOM);
+
     return decodedData['custom_code']; //2095
     // _widgets.viewToast('${decodeData['custom_message']}', AppColors.redColor);
   }

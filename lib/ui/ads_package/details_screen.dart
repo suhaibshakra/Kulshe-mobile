@@ -69,6 +69,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   String _subSectionText;
   int _relatedLength = 0;
   bool _loadMore = false;
+  bool reported = false;
 
   _getSections({int sec, int subSec, int br, int subBr}) async {
     SharedPreferences _gp = await SharedPreferences.getInstance();
@@ -1049,7 +1050,35 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                                                           'multiple_color' ||
                                                                       type ==
                                                                           'color'
-                                                                  ? Center(
+                                                                  ?attributeName[i]['name'] == 'other'
+                                                                  ? CircleAvatar(
+                                                                backgroundColor: AppColors.whiteColor,
+                                                                    radius: 15,
+                                                                    child: Container(
+                                                                width: 25,
+                                                                height: 25,
+                                                                decoration: BoxDecoration(
+                                                                      gradient: LinearGradient(
+                                                                        begin: Alignment.bottomLeft,
+                                                                        end: Alignment.topRight,
+                                                                        colors: [
+                                                                          Colors.red,
+                                                                          Colors.green,
+                                                                          Colors.yellow,
+                                                                          Colors.red,
+                                                                          Colors.yellow,
+                                                                        ],
+                                                                      ),
+                                                                      borderRadius: BorderRadius.circular(30),
+                                                                      boxShadow: [
+                                                                        BoxShadow(
+                                                                            color: AppColors.greyFour,
+                                                                            offset: Offset(0.4, 0.4),
+                                                                            spreadRadius: 0.4,
+                                                                            blurRadius: 0.4)
+                                                                      ]),
+                                                              ),
+                                                                  ): Center(
                                                                       child:
                                                                           Column(
                                                                         mainAxisAlignment:
@@ -1175,25 +1204,37 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     (status == 'approved' ||
                                         status == 'new' ||
                                         status == 'edited'))
+                                  if (!_details['is_abuse_ad'] && !reported)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 8),
+                                      child: InkWell(
+                                        onTap: () async {
+                                          print(
+                                              'REASON: ${abuseReasons.runtimeType}');
+                                          await showInformationDialog(
+                                              context, abuseReasons);
+                                          // _buildAbuseDialog(
+                                          //     context: context, details: abuseReasons);
+                                        },
+                                        child: buildTxt(
+                                            txt: "بلغ عن إساءة",
+                                            fontSize: 18,
+                                            txtColor: AppColors.blue,
+                                            fontWeight: FontWeight.w700,
+                                            decoration:
+                                                TextDecoration.underline),
+                                      ),
+                                    ),
+                                if (_details['is_abuse_ad'] || reported)
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 10, vertical: 8),
-                                    child: InkWell(
-                                      onTap: () async {
-                                        print(
-                                            'REASON: ${abuseReasons.runtimeType}');
-                                        await showInformationDialog(
-                                            context, abuseReasons);
-                                        // _buildAbuseDialog(
-                                        //     context: context, details: abuseReasons);
-                                      },
-                                      child: buildTxt(
-                                          txt: "بلغ عن إساءة",
-                                          fontSize: 18,
-                                          txtColor: AppColors.blue,
-                                          fontWeight: FontWeight.w700,
-                                          decoration: TextDecoration.underline),
-                                    ),
+                                    child: buildTxt(
+                                        txt: 'شكرا لك على تقديم طلب الاساءة',
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                        txtColor: AppColors.amberColor),
                                   ),
                                 Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -1367,85 +1408,82 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        content: SingleChildScrollView(
-          child: Container(
-            child: buildTextField(
-              validator: (value) =>
-                  (_bodyController.text == null || _bodyController.text.isEmpty)
-                      ? "يرجى إدخال النص"
-                      : null,
-              label: "نص الرسالة",
-              controller: _bodyController,
-              minLines: 12,
-              textInputType: TextInputType.multiline,
-            ),
-          ),
-        ),
-        title: Row(children: [
-          Expanded(flex: 1,child: SizedBox(width: 10,)),
-          Expanded(flex: 5,child: buildTxt(
-              txt: 'أرسل رسالة عبر البريد الالكتروني',
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
-              textAlign: TextAlign.center),),
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.clear,
-                color: Colors.red,
+        content: Directionality(
+          textDirection: AppController.textDirection,
+          child: SingleChildScrollView(
+            child: Container(
+              child: buildTextField(
+                validator: (value) => (_bodyController.text == null ||
+                        _bodyController.text.isEmpty)
+                    ? "يرجى إدخال النص"
+                    : null,
+                label: "نص الرسالة",
+                controller: _bodyController,
+                minLines: 12,
+                textInputType: TextInputType.multiline,
               ),
             ),
           ),
-        ],),
-
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: buildTxt(
+                  txt: 'أرسل رسالة عبر البريد الالكتروني',
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center),
+            ),
+            Expanded(
+              flex: 1,
+              child: Align(
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
         actions: <Widget>[
           Row(
             children: [
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: myButton(
-                      height: 40,
-                      onPressed: () {
-                        sendMessage(
-                          context: context,
-                          adId: widget.adID,
-                          txtBody: _bodyController.text.toString(),
-                        ).then((value) {
-                          if (value != 412) {
-                            Navigator.of(context, rootNavigator: true).pop();
-                            _bodyController.clear();
-                          }
-                        });
-                      },
-                      context: context,
-                      btnTxt: _strController.done,
-                      txtColor: AppColors.whiteColor,
-                      fontSize: 18,
-                      btnColor: AppColors.greenColor,
-                      radius: 8,
-                      // child: TextButton(
-                      //   onPressed: () {
-                      //     sendMessage(
-                      //       context: context,
-                      //       adId: widget.adID,
-                      //       txtBody: _bodyController.text.toString(),
-                      //     ).then((value) {
-                      //       if (value != 412) {
-                      //         Navigator.of(context, rootNavigator: true).pop();
-                      //         _bodyController.clear();
-                      //       }
-                      //     });
-                      //   },
-                    ),
-                  )),
+              Directionality(
+                textDirection: AppController.textDirection,
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      decoration: BoxDecoration(
+                        color: AppColors.green,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: myButton(
+                        height: 40,
+                        onPressed: () {
+                          sendMessage(
+                            context: context,
+                            adId: widget.adID,
+                            txtBody: _bodyController.text.toString(),
+                          ).then((value) {
+                            if (value != 412) {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              _bodyController.clear();
+                            }
+                          });
+                        },
+                        context: context,
+                        btnTxt: _strController.done,
+                        txtColor: AppColors.whiteColor,
+                        fontSize: 18,
+                        btnColor: AppColors.greenColor,
+                        radius: 8,
+                      ),
+                    )),
+              ),
             ],
           ),
         ],
@@ -1577,92 +1615,72 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     ),
                   ),
                 ),
-                title: buildTxt(
-                    txt: 'بلغ عن إساءة',
-                    fontWeight: FontWeight.bold,
-                    textAlign: TextAlign.center),
+                title: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Align(
+                        child: IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: Icon(
+                            Icons.clear,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 5,
+                      child: buildTxt(
+                          txt: 'الإبلاغ عن إساءة أو مخالفة',
+                          fontWeight: FontWeight.bold,
+                          textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
                 actions: <Widget>[
                   Row(
                     children: [
                       Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            decoration: BoxDecoration(
-                              color: AppColors.green,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: myButton(
-                              height: 40,
-                              onPressed: () {
-                                final FormState form =
-                                    _formKeyAbuse.currentState;
-                                if (form.validate()) {
-                                  abuseAd(
-                                          context: context,
-                                          adId: widget.adID,
-                                          abuseId: abuseID,
-                                          abuseDescription:
-                                              _otherReason.text.isNotEmpty
-                                                  ? _otherReason.text.toString()
-                                                  : null)
-                                      .then((value) {
-                                    value == "done"
-                                        ? Navigator.of(context).pop()
-                                        : null;
-                                  });
-                                }
-                              },
-                              context: context,
-                              btnTxt: _strController.done,
-                              txtColor: AppColors.whiteColor,
-                              fontSize: 18,
-                              btnColor: AppColors.greenColor,
-                              radius: 8,
-                              // child: TextButton(
-                              //   onPressed: () {
-                              //     final FormState form = _formKeyAbuse.currentState;
-                              //     if(form.validate()){
-                              //     abuseAd(
-                              //             context: context,
-                              //             adId: widget.adID,
-                              //             abuseId: abuseID,
-                              //             abuseDescription:
-                              //                 _otherReason.text.isNotEmpty
-                              //                     ? _otherReason.text.toString()
-                              //                     : null)
-                              //         .then((value) {
-                              //       value == "done"
-                              //           ? Navigator.of(context).pop()
-                              //           : null;
-                              //     });
-                              //   }},
-                              //   child: buildTxt(
-                              //       txt: _strController.done,
-                              //       txtColor: AppColors.whiteColor),
-                              // )
-                            ),
-                          )),
-                      // SizedBox(
-                      //   width: 10,
-                      // ),
-                      // Expanded(
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(8.0),
-                      //     child: Container(
-                      //       decoration: BoxDecoration(
-                      //         color: AppColors.redColor,
-                      //         borderRadius: BorderRadius.circular(10),
-                      //       ),
-                      //       child: TextButton(
-                      //         onPressed: () => Navigator.pop(context),
-                      //         child: buildTxt(
-                      //             txt: _strController.cancel,
-                      //             txtColor: AppColors.whiteColor),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          decoration: BoxDecoration(
+                            color: AppColors.green,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: myButton(
+                            height: 40,
+                            onPressed: () {
+                              final FormState form = _formKeyAbuse.currentState;
+                              if (form.validate()) {
+                                abuseAd(
+                                        context: context,
+                                        adId: widget.adID,
+                                        abuseId: abuseID,
+                                        abuseDescription:
+                                            _otherReason.text.isNotEmpty
+                                                ? _otherReason.text.toString()
+                                                : null)
+                                    .then((value) {
+                                  if (value == "done") {
+                                    setState(() {
+                                      reported = true;
+                                    });
+                                    Navigator.of(context).pop();
+                                  }
+                                });
+                              }
+                            },
+                            context: context,
+                            btnTxt: _strController.done,
+                            txtColor: AppColors.whiteColor,
+                            fontSize: 18,
+                            btnColor: AppColors.greenColor,
+                            radius: 8,
+                          ),
+                        ),
+                      ),
                     ],
                   )
                 ],

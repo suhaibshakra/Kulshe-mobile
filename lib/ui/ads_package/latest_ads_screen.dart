@@ -99,210 +99,189 @@ class _LatestAdsState extends State<LatestAds> {
       drawer: buildDrawer(context, () => Navigator.of(context).pop()),
       body: _loading
           ? buildLoading(color: AppColors.redColor)
-          : SafeArea(
-              child: Stack(
-                children: [
-                  buildBg(),
-                  NestedScrollView(
-                    headerSliverBuilder: (context, innerBoxScrolled) {
-                      return <Widget>[
-                        SliverAppBar(
-                          foregroundColor: Colors.lightBlue,
-                          shadowColor: Colors.red,
-                          expandedHeight: isLandscape
-                              ? mq.size.height * 0.3
-                              : mq.size.height * 0.14,
-                          pinned: true,
-                          floating: false,
-                          title: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 6),
-                            child: CircleAvatar(
-                              radius: 20.0,
-                              backgroundImage:
-                                  AssetImage('assets/images/logo_icon.png'),
-                              backgroundColor: Colors.transparent,
+          : Directionality(
+        textDirection: AppController.textDirection,
+            child: SafeArea(
+                child: Stack(
+                  children: [
+                    buildBg(),
+                    NestedScrollView(
+                      headerSliverBuilder: (context, innerBoxScrolled) {
+                        return <Widget>[
+                          Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: SliverAppBar(
+                              foregroundColor: Colors.lightBlue,
+                              shadowColor: Colors.red,
+                              expandedHeight: isLandscape
+                                  ? mq.size.height * 0.3
+                                  : mq.size.height * 0.14,
+                              pinned: true,
+                              floating: false,
+                              title: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 6),
+                                child: CircleAvatar(
+                                  radius: 20.0,
+                                  backgroundImage:
+                                      AssetImage('assets/images/logo_icon.png'),
+                                  backgroundColor: Colors.transparent,
+                                ),
+                              ),
+                              leading: GestureDetector(
+                                  onTap: () => Scaffold.of(context).openDrawer(),
+                                  child: Icon(
+                                    Icons.list,
+                                    color: Colors.black54,
+                                  )),
+                              actions: [
+                                Container(
+                                  width: 50,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                                    child: Badge(
+                                      badgeColor: AppColors.redColor,
+                                      badgeContent: Text(
+                                        !isEmailVerified ? '1' : '',
+                                        style: TextStyle(color: AppColors.whiteColor),
+                                      ),
+                                      child: Container(
+                                        child: IconButton(
+                                          alignment: Alignment.center,
+                                          onPressed: (){
+                                            setState(() {
+                                              showDrop = !showDrop;
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.notifications,
+                                            color: Colors.grey,
+                                            size: 24,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                IconButton(onPressed: () =>Navigator.push(context,MaterialPageRoute(builder: (context) => EditProfileScreen(),)) , icon: Icon(Icons.account_circle,color: AppColors.grey,))],
+                              centerTitle: true,
+                              backgroundColor: Colors.white,
+                              toolbarHeight: 50,
+                              flexibleSpace: FlexibleSpaceBar(
+                                background: Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      image: DecorationImage(
+                                          image: AssetImage(
+                                              "assets/images/main_bg.png"),
+                                          fit: BoxFit.cover)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 55,
+                                    ),
+                                    child: Directionality(
+                                      textDirection: AppController.textDirection,
+                                      child: SearchWidget(),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          leading: GestureDetector(
-                              onTap: () => Scaffold.of(context).openDrawer(),
-                              child: Icon(
-                                Icons.list,
-                                color: Colors.black54,
-                              )),
-                          actions: [
+                        ];
+                      },
+                      body: Column(
+                        children: [
+                          buildConvertList(),
+                          if (multiList)
+                            Expanded(
+                              child: buildMultiListView(mq, scrollController),
+                            )
+                          else
+                            Expanded(child: _buildList(mq)),
+                        ],
+                      ),
+                    ),
+                    if (showDrop)
+                      Stack(
+                        children: [
+                          if (!isEmailVerified)
                             Container(
-                              width: 50,
+                              decoration:
+                                  BoxDecoration(color: AppColors.whiteColor),
+                              width: double.infinity,
+                              height: mq.size.height,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                                child: Badge(
-                                  badgeColor: AppColors.redColor,
-                                  badgeContent: Text(
-                                    !isEmailVerified ? '1' : '',
-                                    style: TextStyle(color: AppColors.whiteColor),
-                                  ),
-                                  child: Container(
-                                    child: IconButton(
-                                      alignment: Alignment.center,
-                                      onPressed: (){
-                                        setState(() {
-                                          showDrop = !showDrop;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.notifications,
-                                        color: Colors.grey,
-                                        size: 24,
+                                padding: const EdgeInsets.only(top: 30),
+                                child: ListView.separated(
+                                  itemCount: 1,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      color: Colors.grey.shade200,
+                                      child: ListTile(
+                                        title: Text(
+                                          " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",
+                                          style: appStyle(
+                                              color: index == 0
+                                                  ? Colors.amber
+                                                  : AppColors.blackColor2,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        subtitle: index == 0 || index == 1
+                                            ? InkWell(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: InkWell(
+                                                      onTap: () => verifyEmail(
+                                                          context: context),
+                                                      child: Text(
+                                                        "أرسل رسالة التحقق مرة أخرى",
+                                                        style: appStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                AppColors.green,
+                                                            fontSize: 20),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      )),
+                                                ),
+                                              )
+                                            : "",
                                       ),
-                                    ),
+                                    );
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) {
+                                    return Divider();
+                                  },
+                                ),
+                              ),
+                            ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    showDrop = false;
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Icon(
+                                    Icons.cancel,
+                                    size: 26,
+                                    color: AppColors.grey,
                                   ),
-                                ),
-                              ),
-                            ),
-                            IconButton(onPressed: () =>Navigator.push(context,MaterialPageRoute(builder: (context) => EditProfileScreen(),)) , icon: Icon(Icons.account_circle,color: AppColors.grey,))
-                            // buildIconButton(
-                            //   icon: Icons.notifications,
-                            //   color: Colors.black54,
-                            //   size: 25,
-                            //   onPressed: () {
-                            //     // Navigator.push(
-                            //     //     context,
-                            //     //     MaterialPageRoute(
-                            //     //       builder: (context) => EditProfileScreen(),
-                            //     //     ),
-                            //     // );
-                            //   },
-                            // ),
-                            // buildIconButton(
-                            //   icon: Icons.account_circle_rounded,
-                            //   color: Colors.black54,
-                            //   size: 25,
-                            //   onPressed: () {
-                            //     // Navigator.push(
-                            //     //     context,
-                            //     //     MaterialPageRoute(
-                            //     //       builder: (context) => EditProfileScreen(),
-                            //     //     ),
-                            //     // );
-                            //   },
-                            // ),
-                          ],
-                          centerTitle: true,
-                          backgroundColor: Colors.white,
-                          toolbarHeight: 50,
-                          flexibleSpace: FlexibleSpaceBar(
-                            background: Container(
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/images/main_bg.png"),
-                                      fit: BoxFit.cover)),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 55,
-                                ),
-                                child: Directionality(
-                                  textDirection: AppController.textDirection,
-                                  child: SearchWidget(),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ];
-                    },
-                    body: Column(
-                      children: [
-                        buildConvertList(),
-                        if (multiList)
-                          Expanded(
-                            child: buildMultiListView(mq, scrollController),
+                                )),
                           )
-                        else
-                          Expanded(child: _buildList(mq)),
-                      ],
-                    ),
-                  ),
-                  if (showDrop)
-                    Stack(
-                      children: [
-                        if (!isEmailVerified)
-                          Container(
-                            decoration:
-                                BoxDecoration(color: AppColors.whiteColor),
-                            width: double.infinity,
-                            height: mq.size.height,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 30),
-                              child: ListView.separated(
-                                itemCount: 1,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    color: Colors.grey.shade200,
-                                    child: ListTile(
-                                      title: Text(
-                                        " لم يتم التحقق من بريدك الإلكتروني. لن يتم نشر إعلاناتك حتى يتم تفعيل البريد الإلكتروني الخاص بك. ",
-                                        style: appStyle(
-                                            color: index == 0
-                                                ? Colors.amber
-                                                : AppColors.blackColor2,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      subtitle: index == 0 || index == 1
-                                          ? InkWell(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: InkWell(
-                                                    onTap: () => verifyEmail(
-                                                        context: context),
-                                                    child: Text(
-                                                      "أرسل رسالة التحقق مرة أخرى",
-                                                      style: appStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color:
-                                                              AppColors.green,
-                                                          fontSize: 20),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    )),
-                                              ),
-                                            )
-                                          : "",
-                                    ),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return Divider();
-                                },
-                              ),
-                            ),
-                          ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  showDrop = false;
-                                });
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Icon(
-                                  Icons.cancel,
-                                  size: 26,
-                                  color: AppColors.grey,
-                                ),
-                              )),
-                        )
-                      ],
-                    ),
-                ],
+                        ],
+                      ),
+                  ],
+                ),
               ),
-            ),
+          ),
       // body:_loading?buildLoading(color: AppColors.grey): buildListView(isLandscape, context),
     );
   }

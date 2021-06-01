@@ -275,9 +275,9 @@ class _PublicAdsScreenState extends State<PublicAdsScreen> {
               context,
               '${widget.actionTitle == 'approved' ? "${AppController.strings.postedAds}" : widget.actionTitle == 'rejected' ? '${AppController.strings.rejectedAds}' : widget.actionTitle == 'new' ? '${AppController.strings.waitingAds}' : widget.actionTitle == 'expired' ? '${AppController.strings.expiredAds}' : widget.isFav ? '${AppController.strings.myFav}' : '${AppController.strings.myAds}'}',
               leading: buildIconButton(
-                  icon: FontAwesomeIcons.listAlt,
+                  icon: multiList?FontAwesomeIcons.listAlt:FontAwesomeIcons.box,
                   size: 24,
-                  color: multiList ? AppColors.redColor : AppColors.grey,
+                  color: AppColors.greenColor,
                   onPressed: () {
                     setState(() {
                       multiList = !multiList;

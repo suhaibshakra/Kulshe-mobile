@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class FilterScreen extends StatefulWidget {
   var sectionId;
-
   var subSectionId;
 
   FilterScreen({Key key, this.sectionId, this.subSectionId}) : super(key: key);
@@ -115,7 +114,8 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
+      appBar: defaultAppbar(context, AppController.strings.filter),
+      // appBar: buildAppBar(bgColor: AppColors.whiteColor, centerTitle: true),
       body: Stack(
         children: [
           // buildBg(),
@@ -587,7 +587,7 @@ class _FilterScreenState extends State<FilterScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Card(
-        elevation: 2,
+        elevation: 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Container(
