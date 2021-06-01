@@ -371,7 +371,7 @@ myButton(
     height: height,
     width: width,
     decoration: BoxDecoration(
-        color: btnColor,
+        color: AppColors.greenColor,
         borderRadius: BorderRadius.circular(radius),
         boxShadow: [
           BoxShadow(color: AppColors.grey, offset: Offset(0, 1), blurRadius: 1)
